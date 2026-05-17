@@ -1,0 +1,50 @@
+.mat-mdc-form-field { width: 100%; }
+
+.btn-cancelar {
+    background: #ffffff;
+    color: #f72828;
+    border: 1px solid #d3d3d3;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+}
+
+/* Efecto al pasar el mouse */
+.btn-cancelar:hover {
+    background-color: #f72828;
+    /* border-color: #000000; */
+    color: #ffffff;
+}
+
+.btn-confirmar {
+    /* Tu gradiente azul original */
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: white !important; /* Aseguramos texto blanco */
+    transition: all 0.3s ease; /* Suaviza el hover */
+}
+
+/* Efecto Hover Azul */
+.btn-confirmar:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(115%); /* Un poco más brillante para que se note */
+}
+
+.btn-confirmar:disabled {
+    background: #e0e0e0;  /* Fondo gris plano que tapa el gradiente */
+    color: #a6a6a6;       /* Texto gris oscuro */
+    box-shadow: none;     /* Quitamos la sombra brillante */
+    border: 1px solid #dcdcdc; /* Opcional: un borde sutil */
+    
+    /* Reseteamos los efectos de movimiento/brillo */
+    transform: none;
+    filter: none;
+    cursor: not-allowed;
+    pointer-events: none; /* Bloquea cualquier interacción del mouse */
+}

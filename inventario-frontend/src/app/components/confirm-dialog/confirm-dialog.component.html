@@ -1,0 +1,19 @@
+<h2 mat-dialog-title [ngClass]="{'text-danger': colorBoton === 'warn', 'text-primary': colorBoton === 'primary'}">
+    {{ titulo }}
+</h2>
+
+<mat-dialog-content>
+    <p class="text-secondary">{{ mensaje }}</p>
+
+    @if (colorBoton === 'warn'){
+        <small class="text-muted d-block mt-2">Esta acción no se puede deshacer.</small>
+    }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="mt-3">
+    <button mat-stroked-button (click)="cerrar(false)" class="btn-cancelar">Cancelar</button>
+    
+    <button mat-flat-button [color]="colorBoton" (click)="cerrar(true)" class="btn-confirmar" cdkFocusInitial>
+        {{ textoBoton }}
+    </button>
+</mat-dialog-actions>

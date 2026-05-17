@@ -1,0 +1,126 @@
+/* Cabecera con Gradiente */
+.header-gradient {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    color: white;
+}
+
+.bg-white-20 {
+    background-color: rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Avatar de la tabla */
+.avatar-item {
+    width: 36px;
+    height: 36px;
+    background-color: #e8eaf6;
+    color: #3f51b5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* Badges */
+.badges-soft {
+    padding: 4px 10px;
+    border-radius: 120px;
+    border-color: #000000 !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badges {
+    padding: 4px 15px;
+    background-color: #153863 !important;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-aprobada { background-color: #e8fff3; color: #19cb69; }
+.status-rechazada { background-color: #fff5f8; color: #f1416c; }
+
+/* Tabla */
+.hover-row:hover { background-color: #f8faff; }
+
+/* Sticky Header de la Tabla (Para que no se pierda al scrollear el modal) */
+::ng-deep .mat-mdc-header-row {
+    z-index: 100 !important; /* Asegurar que quede por encima */
+}
+
+/* Botones pequeños */
+.btn-sm {
+    line-height: 30px;
+    height: 30px;
+    padding: 0 16px;
+    font-size: 0.8rem;
+}
+
+.mat-mdc-row {
+    height: 50px;
+    transition: all 0.2s ease-in-out;
+}
+
+.center-align{
+    text-align: center !important;
+}
+
+.mat-mdc-cell { 
+    font-size: 0.9rem;
+    color: #344767;
+    font-weight: 500;
+    border-bottom: 1px solid #ebebeb !important;
+}
+
+.mat-mdc-header-row {
+    background: #ffffff;
+    border-bottom: 1px solid #1467bb;
+    height: 50px;
+
+}
+
+.btn-cancelar {
+    background: #ffffff;
+    color: #f72828;
+    border: 1px solid #d3d3d3;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+}
+
+/* Efecto al pasar el mouse */
+.btn-cancelar:hover {
+    background-color: #f72828;
+    /* border-color: #000000; */
+    color: #ffffff;
+}
+
+.btn-confirmar {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+/* Efecto Hover */
+.btn-confirmar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(105%);
+}
+
+.btn-confirmar:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    box-shadow: none;
+}

@@ -1,0 +1,133 @@
+.custom-card {
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    background: white;
+    overflow: hidden;
+}
+
+.mat-mdc-table {
+    background: transparent;
+}
+
+.mat-mdc-header-row {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    border-bottom: 2px solid #f1f3f5; 
+    height: 60px; 
+    text-align: center !important;
+}
+
+.mat-mdc-header-cell {
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px; 
+    text-align: center !important;
+}
+
+
+/* --- FILAS Y HOVER --- */
+.mat-mdc-row {
+    height: 55px; 
+    transition: all 0.2s ease-in-out;
+    text-align: center !important;
+}
+
+.hover-row:hover {
+    background-color: #f8faff !important; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    z-index: 1;
+    position: relative;
+}
+
+.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #344767; 
+    font-weight: 500;
+    border-bottom: 1px solid #ebebeb !important;
+    text-align: center !important;
+}
+
+.badge-soft {
+    padding: 8px 12px;
+    border-radius: 15px; 
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.role-admin {
+    background-color: #e1ffe3; 
+    color: #00b215; 
+}
+
+.role-jefe {
+    background-color: #ffeeee; 
+    color: #b20000; 
+}
+
+.role-inventario {
+    background-color: #e7f6f8; 
+    color: #11cdef; 
+}
+
+.role-tecnico {
+    background-color: #fff6e5; 
+    color: #fb8c00; 
+}
+
+.role-default {
+    background-color: #f3f4f6;
+    color: #5d6676;
+}
+
+.action-btn {
+    transition: transform 0.2s;
+}
+.action-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(0,0,0,0.04);
+}
+
+.mat-column-acciones {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+    padding-right: 0px !important;
+    overflow: visible !important;
+}
+
+.btn-nuevo {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+button[mat-icon-button][color="primary"] {
+    color: var(--mat-sys-primary) !important;
+}
+
+
+button[mat-icon-button][color="warn"] {
+    color: var(--mat-sys-error) !important;
+}
+
+::ng-deep .mat-sort-header-arrow {
+    color: #ffffff !important;
+}
+
+::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
+    opacity: 0.9 !important;
+}
+
+/* --- CENTRAR LOS ENCABEZADOS CUANDO TIENEN MAT-SORT --- */
+::ng-deep .mat-sort-header-container {
+    justify-content: center !important;
+}

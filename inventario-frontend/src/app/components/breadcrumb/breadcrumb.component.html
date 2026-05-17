@@ -1,0 +1,31 @@
+@if (breadcrumbs.length > 0) {
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0 py-2">
+        
+        <li class="breadcrumb-item">
+          <a routerLink="/" class="text-decoration-none d-flex align-items-center">
+            <mat-icon style="font-size: 18px; width: 18px; height: 18px;" class="me-1">rocket_launch</mat-icon>
+            Inicio
+          </a>
+        </li>
+  
+        @for (crumb of breadcrumbs; track crumb.url; let last = $last) {
+          
+          @if (last) {
+            <li class="breadcrumb-item active text-secondary" aria-current="page">
+              {{ crumb.label }}
+            </li>
+          } @else {
+            <li class="breadcrumb-item">
+              <a [routerLink]="crumb.url" class="text-decoration-none">
+                {{ crumb.label }}
+              </a>
+            </li>
+          }
+  
+        }
+      </ol>
+    </nav>
+  
+  }

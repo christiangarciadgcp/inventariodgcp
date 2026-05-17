@@ -1,0 +1,112 @@
+<div class="custom-modal-container">
+
+    <div class="modal-header d-flex justify-content-between align-items-start p-4 border-bottom text-white" style="background: linear-gradient(#031e3f 0%, #153863 100%); border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
+                    Solicitud #{{ data.solicitud.idSolicitudCompra }}
+                </h6>
+                
+                <span class="badge-soft" 
+                      [ngClass]="{
+                        'status-pendiente': data.solicitud.estado === 'PENDIENTE',
+                        'status-aprobada': data.solicitud.estado === 'APROBADA',
+                        'status-recepcionada': data.solicitud.estado === 'RECEPCIONADA',
+                        'status-rechazada': data.solicitud.estado === 'RECHAZADA'
+                      }">
+                    {{ data.solicitud.estado }}
+                </span>
+            </div>
+
+            <h3 class="fw-bold text-white m-0">{{ data.solicitud.nombresolicitud }}</h3>
+            
+            <div class="d-flex align-items-center mt-2 text-white ">
+                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">store</mat-icon>
+                <small class="fw-bold text-white">Recepción: {{ data.solicitud.idbodegadestino.nombrebodega }}</small>
+                <span class="mx-2"> | </span>
+                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
+                <small class="fw-bold text-white">Solicitante: {{ fn.formatearNombre(data.solicitud.idusuariosolicitante.nombreusuario) }}</small>
+            </div>
+        </div>
+        
+        <button mat-icon-button (click)="cerrar()" class="text-white">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <div class="modal-body p-0">
+
+        <mat-dialog-content class="mat-typography p-0">
+        
+            @if (cargando) {
+                <div class="d-flex justify-content-center align-items-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            } @else {
+                
+                <table mat-table [dataSource]="dataSource" class="w-100">
+
+                    <ng-container matColumnDef="producto">
+                        <th mat-header-cell *matHeaderCellDef class="ps-4"> ITEM </th>
+                        <td mat-cell *matCellDef="let element" class="ps-4"> 
+                            <div class="d-flex flex-column py-2">
+                                <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
+                                <span class="small text-muted">{{ element.producto.skuproducto }}</span>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="cantidad">
+                        <th mat-header-cell *matHeaderCellDef class="text-center"> CANTIDAD </th>
+                        <td mat-cell *matCellDef="let element" class="text-center"> 
+                            {{ element.cantidad_solicitada }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="precio">
+                        <th mat-header-cell *matHeaderCellDef class="text-end"> PRECIO </th>
+                        <td mat-cell *matCellDef="let element" class="text-end text-muted"> 
+                            ${{ element.producto.preciocostoproducto | number:'1.2-2' }} 
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="subtotal">
+                        <th mat-header-cell *matHeaderCellDef class="text-end pe-4"> SUBTOTAL </th>
+                        <td mat-cell *matCellDef="let element" class="text-end fw-bold text-dark pe-4"> 
+                            ${{ (element.cantidad_solicitada * element.producto.preciocostoproducto) | number:'1.2-2' }} 
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+                </table>
+            }
+        </mat-dialog-content>
+
+    </div>
+
+    <div class="modal-footer p-3 bg-light border-top d-flex justify-content-between align-items-center">
+        
+        <div class="d-flex flex-column ms-2">
+            <span class="text-uppercase text-muted" style="font-size: 0.7rem; font-weight: 700;">Monto Total</span>
+            <span class="fs-4 fw-bold text-primary">${{ total | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cerrar</button>
+
+            @if (data.solicitud.estado === 'PENDIENTE' && esJefeUTDI()) {
+                <button mat-flat-button color="primary" class="btn-confirmar" (click)="aprobar()">
+                    <mat-icon class="me-2">check</mat-icon> Aprobar
+                </button>
+            }
+
+            @if (data.solicitud.estado === 'APROBADA') {
+                <button mat-flat-button color="primary" class="btn-confirmar" (click)="recepcionar()">
+                    <mat-icon class="me-2">inventory_2</mat-icon> Recepcionar
+                </button>
+            }
+        </div>
+    </div>
+
+</div>

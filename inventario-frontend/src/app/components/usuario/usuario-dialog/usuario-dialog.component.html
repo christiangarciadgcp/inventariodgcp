@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar Usuario' : 'Nuevo Usuario' }}</h2>
+
+<mat-dialog-content>
+
+    <p class="text-secondary small mb-3">
+        {{ esEdicion ? 'Modifique el rol asignado al usuario.' : 'Ingrese los datos para registrar un Nuevo Usuario en el sistema.' }}
+    </p>
+
+    <form [formGroup]="form" class="d-flex flex-column gap-2 pt-2">
+
+        <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Nombre de Usuario</mat-label>
+            <input matInput formControlName="nombreusuario" autocomplete="off" placeholder="Ej. nombre.apellido">
+            <mat-icon matSuffix>person</mat-icon>
+            @if(form.get('nombreusuario')?.hasError('minlength')){
+                <mat-error>Mínimo 4 caracteres</mat-error>
+            }
+        </mat-form-field>
+
+        @if (!esEdicion) {
+            <mat-form-field appearance="outline" class="w-100 mb-2">
+                <mat-label>Contraseña</mat-label>
+                <input matInput type="password" formControlName="passwordusuario" autocomplete="off">
+                <mat-icon matSuffix>lock</mat-icon>
+                @if(form.get('passwordusuario')?.hasError('minlength')){
+                    <mat-error>Mínimo 6 caracteres</mat-error>
+                }
+            </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline">
+            <mat-label>Rol Asignado</mat-label>
+            <mat-select formControlName="idrol">
+                @for (rol of listaRoles; track rol.idRol) {
+                    <mat-option [value]="rol.idRol">
+                        {{ rol.nombrerol | uppercase}}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
+    <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+        {{ esEdicion ? 'Guardar Cambios' : 'Crear Usuario' }}
+    </button>
+</mat-dialog-actions>

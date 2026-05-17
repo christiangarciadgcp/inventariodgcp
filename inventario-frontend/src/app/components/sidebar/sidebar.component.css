@@ -1,0 +1,208 @@
+:host {
+    display: block;
+    background-color: #fff;
+    border-right: 1px solid rgba(0,0,0,0.08);
+}
+
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    transition: all 0.3s ease; 
+}
+
+/* --- HEADER --- */
+.sidebar-header {
+    height: 90px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    justify-content: space-between;
+}
+
+/* Logo */
+.logo-area {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.logo-text {
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.toggle-btn {
+    color: #031e3f;
+    border-radius: 50%;
+}
+
+/* --- ESTADO COLAPSADO --- */
+
+.sidebar-container.collapsed .sidebar-header {
+    padding: 0 !important;
+    justify-content: center !important;
+}
+
+.sidebar-container.collapsed .logo-area,
+.sidebar-container.collapsed .logo-text {
+    display: none !important;
+}
+
+
+.sidebar-container.collapsed .toggle-btn {
+    display: flex !important;
+    margin: 0 !important; 
+}
+
+/* --- LINKS DE NAVEGACIÓN --- */
+.scroller {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
+    padding-top: 10px;
+}
+
+.nav-link {
+    height: 46px;
+    margin: 4px 12px;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    color: #495361;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background-color: #f1f5f9;
+    color: #031e3f;
+}
+
+.nav-link.active {
+    background-color: #e0eaff;
+    color: #031e3f;
+}
+
+/* Iconos */
+.nav-icon {
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-right: 12px; 
+}
+
+.nav-text {
+    font-weight: 500;
+}
+
+/* --- ESTADO COLAPSADO: LINKS --- */
+
+.sidebar-container.collapsed .nav-link {
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 4px 8px !important;
+}
+
+.sidebar-container.collapsed .nav-icon {
+    margin-right: 0 !important;
+}
+
+.sidebar-container.collapsed .nav-text {
+    display: none !important;
+}
+
+/* --- HEADERS DE SECCIÓN --- */
+.nav-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #031e3f;
+    margin: 20px 0 8px 16px;
+    white-space: nowrap;
+}
+
+.nav-divider {
+    height: 1px;
+    background-color: #e2e8f0;
+    margin: 10px auto;
+    width: 60%;
+    display: none;
+}
+
+/* Colapsado: Headers */
+.sidebar-container.collapsed .nav-header {
+    display: none !important;
+}
+
+.sidebar-container.collapsed .nav-divider {
+    display: block !important;
+}
+
+::ng-deep .mat-tooltip {
+    font-size: 12px !important;
+}
+
+/* Hace que el cursor parezca clicable en el padre */
+.cursor-pointer {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Animación de la flecha */
+.menu-arrow {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    transition: transform 0.3s ease;
+    opacity: 0.7;
+}
+
+/* Clase para rotar la flecha cuando está abierto */
+.rotated {
+    transform: rotate(180deg);
+}
+
+/* Contenedor de los hijos */
+.nav-children {
+    background-color: rgba(0, 0, 0, 0.03); /* Un fondo sutilmente más oscuro (opcional) */
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
+}
+
+/* Estilo específico para los enlaces hijos */
+.nav-link.child-link {
+    padding-left: 2.5rem !important; /* Indentación importante */
+    font-size: 0.9em; /* Texto un poco más pequeño */
+    height: 40px; /* Un poco más compactos */
+}
+
+/* Iconos de los hijos un poco más pequeños */
+.nav-icon.small-icon mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Animación suave de apertura */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{esEdicion ? 'Editar Bodega' : 'Nueva Bodega'}}</h2>
+
+<mat-dialog-content>
+    <p class="text-secondary small mb-3">
+        {{esEdicion ? 'Modificar los datos de la Bodega' : 'Ingrese los datos para registrar una nueva Bodega en el sistema.'}}
+
+    </p>
+    
+    <form [formGroup]="form" (ngSubmit)="guardar()">
+
+        <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Nombre de la Bodega</mat-label>
+            <input matInput formControlName="nombre" placeholder="Ej. Bodega Central" autocomplete="off">
+            @if (form.get('nombre')?.hasError('required')) {
+                <mat-error>El nombre es obligatorio</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Dirección Física</mat-label>
+            <input matInput formControlName="direccion" placeholder="Ej. Calle Principal #123" autocomplete="off">
+            @if (form.get('direccion')?.hasError('required')) {
+                <mat-error>La dirección es obligatoria</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Teléfono de Contacto</mat-label>
+            <input matInput formControlName="telefono" placeholder="Ej. 2255-8888" autocomplete="off" maxlength="9" (input)="mascaraTelefono($event)">
+            @if (form.get('telefono')?.hasError('pattern')) {
+                <mat-error>El formato debe ser ####-####</mat-error>
+            }
+        </mat-form-field>
+
+    </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
+    <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+        {{esEdicion ? 'Guardar cambios' : 'Guardar'}}
+        
+    </button>
+</mat-dialog-actions>

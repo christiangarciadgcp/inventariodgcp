@@ -1,0 +1,163 @@
+/* Card Base */
+.stat-card {
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+    background: white;
+    transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
+    border-left: 5px solid transparent !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* Colores de Borde Izquierdo */
+.border-custom { border-left-color: #153863 !important;}
+.border-warning { border-left-color: #ffc107 !important; }
+.border-success { border-left-color: #198754 !important; }
+.border-primary { border-left-color: #0d6efd !important; }
+.border-orange { border-left-color: #f36739 !important; } 
+.border-indigo { border-left-color: #6610f2 !important; } 
+
+/* Caja del Icono */
+.icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.bg-custom-subtle {
+    background-color: #153863 !important;
+}
+.text-custom {
+    color: #153863 !important;
+}
+
+
+.bg-indigo-subtle {
+    background-color: #e0cffc !important;
+}
+.text-indigo {
+    color: #6610f2 !important;
+}
+
+.bg-orange-subtle {
+    background-color: #fef1ed !important;
+}
+.text-orange {
+    color: #f25810 !important;
+}
+
+/* --- TARJETAS SECUNDARIAS --- */
+.activity-card {
+    border: 1px solid #f1f3f5 !important;
+    border-radius: 16px !important;
+    background-color: #ffffff;
+}
+
+/* --- ICONO PRINCIPAL HEADER --- */
+.icon-box-rounded {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+/* --- CONTENEDOR SCROLL --- */
+.table-scroll-container {
+    max-height: 480px; /* Ajustado para pantallas estándar */
+    overflow-y: auto;
+    padding-bottom: 20px; /* <--- ESPACIO CLAVE PARA VER EL FINAL */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+.table-scroll-container::-webkit-scrollbar { width: 6px; }
+.table-scroll-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+
+/* --- ESTILOS DE LA TABLA MODERNA (MÁS COMPACTA) --- */
+.table-modern {
+    background: transparent;
+    border-collapse: separate;
+    border-spacing: 0 8px; /* <--- REDUCIDO DE 8px a 4px PARA SER MÁS COMPACTO */
+}
+
+/* Cabecera */
+.table-modern .mat-mdc-header-row {
+    height: 35px; /* <--- CABECERA MÁS FINA */
+    background-color: white;
+    z-index: 100 !important;
+}
+
+.table-modern .mat-mdc-header-cell {
+    border-bottom: none !important;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.tracking-wide {
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+/* Filas (Rows) */
+.table-modern .mat-mdc-row {
+    background-color: #ffffff;
+    border-radius: 8px; /* Bordes ligeramente menos curvos */
+    transition: all 0.2s ease-in-out;
+}
+
+.table-modern .mat-mdc-cell {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* Hover de Fila */
+.hover-row-modern:hover {
+    background-color: #f8fafc !important;
+    transform: translateX(2px); /* Movimiento más sutil */
+}
+.hover-row-modern:hover .mat-mdc-cell { border-bottom-color: transparent !important; }
+
+/* --- ICONOS CIRCULARES DINÁMICOS COMPACTOS --- */
+.avatar-icon-compact {
+    width: 34px; /* <--- REDUCIDO DE 42px a 34px */
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-icon-compact mat-icon {
+    font-size: 18px; /* <--- ICONO MÁS PEQUEÑO */
+    width: 18px;
+    height: 18px;
+}
+
+/* Utilidades de color */
+.bg-success-subtle { background-color: #d1fae5 !important; }
+.text-success { color: #10b981 !important; }
+
+.bg-danger-subtle { background-color: #fee2e2 !important; }
+.text-danger { color: #ef4444 !important; }
+
+.bg-primary-subtle { background-color: #e0f2fe !important; }
+.text-primary { color: #0ea5e9 !important; }
+
+.bg-light { background-color: #f1f5f9 !important; }

@@ -1,0 +1,103 @@
+/* --- ESTILOS BASE --- */
+
+.custom-card {
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    background: white;
+    overflow: hidden;
+}
+
+.mat-mdc-table { background: transparent; }
+
+.mat-mdc-header-row {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    border-bottom: 2px solid #f1f3f5;
+    height: 60px;
+}
+
+.mat-mdc-header-cell {
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mat-mdc-row {
+    height: 70px;
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-row:hover {
+    background-color: #f8faff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    z-index: 1;
+    position: relative;
+}
+
+.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #344767;
+    font-weight: 500;
+    border-bottom: 1px solid #ebebeb !important;
+}
+
+/* --- BADGES / ETIQUETAS --- */
+.badge-soft {
+    padding: 8px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+/*     text-transform: uppercase; */
+    border: 1px solid transparent;
+    display: inline-block;
+}
+
+
+/* Verde (Estilo Aprobada) -> Stock Normal */
+.stock-high {
+    background-color: #e8fff3;
+    color: #0fba5c;
+    border-color: #d1fbe4;
+}
+
+/* Amarillo (Estilo Pendiente) -> Stock Bajo */
+.stock-low {
+    background-color: #fff8dd;
+    color: #c99e03;
+    border-color: #ffedb8;
+}
+
+/* Rojo (Estilo Rechazada) -> Sin Stock */
+.stock-empty {
+    background-color: #fff5f8;
+    color: #f1416c;
+    border-color: #ffe1e9;
+}
+
+/* Gris (Neutro) -> SKU */
+.badge-sku {
+    background-color: #f8f9fa;
+    color: #5e6278;
+    border-color: #e9ecef;
+    font-family: monospace;
+    font-size: 0.85rem;
+}
+
+.text-end { text-align: right !important; }
+.text-center { text-align: center !important; }
+
+.mat-mdc-form-field {
+    font-size: 0.9rem;
+}
+
+::ng-deep .mat-sort-header-arrow {
+    color: #ffffff !important;
+}
+
+::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
+    opacity: 0.9 !important;
+}

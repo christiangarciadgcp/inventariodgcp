@@ -1,0 +1,57 @@
+
+.bodega-card {
+    border-radius: 20px !important; 
+    border: 1px solid #f0f0f0 !important;
+    background: #fff;
+    box-shadow: 0 15px 20px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.bodega-card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 15px 30px rgba(63, 81, 181, 0.15) !important; 
+    border-color: rgba(63, 81, 181, 0.2) !important;
+}
+
+.icon-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 10px 3px 30px rgba(4, 4, 4, 0.5) !important; 
+}
+
+.icon-circle mat-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+.bodega-card:hover .icon-circle {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    color: rgb(255, 255, 255);
+    transform: scale(1);
+}
+
+.action-text {
+    letter-spacing: 1px;
+    transition: color 0.3s;
+}
+
+.icon-arrow {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s;
+}
+
+.bodega-card:hover .icon-arrow {
+    transform: translateX(5px);
+}

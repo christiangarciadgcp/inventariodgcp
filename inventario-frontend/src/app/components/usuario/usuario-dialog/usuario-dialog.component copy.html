@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>Nuevo Usuario</h2>
+
+<mat-dialog-content>
+
+    <p class="text-secondary small mb-3">Ingrese los datos para registrar un Nuevo Usuario en el sistema.</p>
+
+    <form [formGroup]="form" class="d-flex flex-column gap-2 pt-2">
+        
+        <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Nombre de Usuario</mat-label>
+            <input matInput formControlName="nombreusuario" autocomplete="off" placeholder="Ej. nombre.apellido">
+            <mat-icon matSuffix>person</mat-icon>
+            @if(form.get('nombreusuario')?.hasError('minlength')){
+                <mat-error>Mínimo 4 caracteres</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 mb-2">
+            <mat-label>Contraseña</mat-label>
+            <input matInput type="password" formControlName="passwordusuario" autocomplete="off">
+            <mat-icon matSuffix>lock</mat-icon>
+            @if(form.get('passwordusuario')?.hasError('minlength')){
+                <mat-error>Mínimo 6 caracteres</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Rol Asignado</mat-label>
+            <mat-select formControlName="idrol">
+                @for (rol of listaRoles; track rol.idRol) {
+                    <mat-option [value]="rol.idRol">
+                        {{ rol.nombrerol }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="guardar()" [disabled]="form.invalid">
+        Crear Usuario
+    </button>
+</mat-dialog-actions>

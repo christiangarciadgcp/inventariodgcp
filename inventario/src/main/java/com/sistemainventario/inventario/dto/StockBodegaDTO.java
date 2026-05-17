@@ -1,0 +1,13 @@
+package com.sistemainventario.inventario.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class StockBodegaDTO {
+    private String nombreBodega;
+    private Integer cantidadActual;
+}

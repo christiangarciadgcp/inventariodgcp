@@ -1,0 +1,194 @@
+/* --- HEADER BRAND --- */
+.card-header-brand {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.bg-white-20 {
+    background-color: rgba(255,255,255, 0.2);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- TARJETA --- */
+.card {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+}
+
+/* --- INPUTS --- */
+.input-lg ::ng-deep .mat-mdc-form-field-flex {
+    background-color: #f8f9fa !important;
+    border-radius: 8px;
+    height: 56px;
+    align-items: center;
+}
+
+.input-lg ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.density-comfortable ::ng-deep .mat-mdc-form-field-flex {
+    height: 50px;
+    background-color: white;
+}
+
+/* --- BARRA AGREGAR --- */
+.add-bar-container {
+    background-color: #fcfcfc;
+    border: 1px dashed #dbe0e6 !important;
+}
+
+/* --- BOTÓN AGREGAR (ESTILO NUEVO) --- */
+.btn-add-custom {
+    /* Altura idéntica al input outline */
+    height: 56px; 
+    
+    /* EL MISMO GRADIENTE QUE EL HEADER Y BOTÓN GUARDAR */
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    color: #ffffff;
+    
+    /* Limpieza de texto borroso */
+    text-shadow: none !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Tipografía */
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    
+    /* Borde y Forma */
+    border: none;
+    outline: none;
+    border-radius: 50px; /* Píldora */
+    
+    /* Flexbox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Sombras */
+    box-shadow: 0 4px 6px rgba(63, 81, 181, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-add-custom:hover:not(:disabled) {
+    /* Efecto hover: sube un poco y aumenta sombra */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(63, 81, 181, 0.4);
+    filter: brightness(1.1); /* Lo hacemos brillar un poco */
+}
+
+.btn-add-custom:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-add-custom:disabled {
+    background: #e0e0e0; /* Gris plano para disabled */
+    color: #9e9e9e;
+    box-shadow: none;
+    cursor: default;
+}
+
+/* --- BOTÓN GUARDAR --- */
+.btn-guardar {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3);
+    font-size: 0.95rem;
+    height: 48px;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+}
+
+.btn-guardar:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    box-shadow: none;
+}
+
+/* --- TABLA --- */
+.table-container {
+    border-color: #e0e0e0 !important;
+}
+
+.mat-mdc-table { background: transparent; }
+
+.mat-mdc-header-row {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    border-bottom: 2px solid #f1f3f5;
+    height: 60px;
+}
+
+.mat-mdc-header-cell {
+    color: #ffffff !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+}
+
+.mat-mdc-row {
+    height: 70px;
+    transition: all 0.2s ease-in-out;
+}
+
+.hover-row:hover {
+    background-color: #f8faff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    z-index: 1;
+    position: relative;
+}
+
+.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #344767;
+    font-weight: 500;
+    border-bottom: 1px solid #ebebeb !important;
+
+}
+
+.avatar-item {
+    width: 40px;
+    height: 40px;
+    background-color: #e8eaf6;
+    color: #3f51b5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.badge-pill-qty {
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.hover-danger:hover {
+    color: #ef4444 !important;
+    background-color: #fef2f2;
+}
+
+.icon-small { font-size: 20px; width: 20px; height: 20px; }
+.icon-tiny { font-size: 16px; width: 16px; height: 16px; }
+.ls-1 { letter-spacing: 1px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-add-custom {
+        margin-top: 5px;
+    }
+}

@@ -1,0 +1,346 @@
+package com.sistemainventario.inventario.service;
+
+import com.sistemainventario.inventario.dto.*;
+import com.sistemainventario.inventario.model.*;
+import com.sistemainventario.inventario.repository.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+//import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class PresupuestoService {
+
+    private final Long ID_BODEGA_DESPACHO = 1L; // CONSTANTE DE BODEGA VIRTUAL/DESPACHO
+
+    private final PresupuestoRepository presupuestoRepository;
+    private final PresupuestoDetalleRepository presupuestoDetalleRepository;
+    private final InventarioRepository inventarioRepository;
+    private final ProductoRepository productoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final InventarioService inventarioService;
+    private final MovimientoStockRepository movimientoStockRepository;
+    private final UbicacionRepository ubicacionRepository;
+
+    public PresupuestoService(PresupuestoRepository presupuestoRepository,
+                              PresupuestoDetalleRepository presupuestoDetalleRepository,
+                              InventarioRepository inventarioRepository,
+                              ProductoRepository productoRepository,
+                              UsuarioRepository usuarioRepository,
+                            InventarioService inventarioService,
+                            MovimientoStockRepository movimientoStockRepository,
+                            UbicacionRepository ubicacionRepository) {
+        this.presupuestoRepository = presupuestoRepository;
+        this.presupuestoDetalleRepository = presupuestoDetalleRepository;
+        this.inventarioRepository = inventarioRepository;
+        this.productoRepository = productoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.inventarioService = inventarioService;
+        this.movimientoStockRepository = movimientoStockRepository;
+        this.ubicacionRepository = ubicacionRepository;
+    }
+
+    // METODOS PARA LISTAR LOS PRESUPUESTOS
+
+    @Transactional(readOnly = true)
+    public List<Presupuesto> listarTodos() {
+        return presupuestoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Presupuesto obtenerPorId(Long id) {
+        return presupuestoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado con ID: " + id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Presupuesto> listarPorEstado(String estado) {
+        return presupuestoRepository.findByEstado(estado);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PresupuestoDetalle> listarDetallePresupuesto(Long idPresupuesto){
+        Presupuesto presupuesto = presupuestoRepository.findById(idPresupuesto)
+            .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado"));
+
+        return presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+    }
+
+    // METODOS PARA GESTIONAR LAS SOLICITUDES DE PRESUPUESTO
+
+    //CREAR LA SOLICITUD DE PRESUPUESTO
+    @Transactional
+    public Presupuesto crearPresupuesto(PresupuestoCreacionDTO dto) {
+        Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
+                .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
+
+        Presupuesto presupuesto = new Presupuesto();
+        presupuesto.setNombre_presupuesto(dto.getNombrePresupuesto());
+        presupuesto.setIdusuariopresupuesto(usuario);
+        presupuesto.setUbicacion(ubicacion);
+        presupuesto.setObservaciones(dto.getObservaciones());
+        presupuesto.setFecha_creacion(Instant.now());
+        presupuesto.setFecha_modificacion(Instant.now());
+        presupuesto.setEstado("PENDIENTE"); 
+        
+        Presupuesto presupuestoGuardado = presupuestoRepository.save(presupuesto);
+
+        for (PresupuestoCreacionDTO.DetalleItemDTO item : dto.getItems()) {
+            Producto producto = productoRepository.findById(item.getIdProducto())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + item.getIdProducto()));
+
+            PresupuestoDetalle detalle = new PresupuestoDetalle();
+            detalle.setPresupuesto(presupuestoGuardado);
+            detalle.setProducto(producto);
+            detalle.setCantidad_solicitada(item.getCantidad());
+            
+            presupuestoDetalleRepository.save(detalle);
+        }
+
+        return presupuestoGuardado;
+    }
+
+
+    //EDITAR UN PRESUPUESTO CUANDO YA FUE CREADO
+    @Transactional
+    public Presupuesto actualizarPresupuesto(Long id, PresupuestoCreacionDTO dto) {
+        Presupuesto presupuesto = this.obtenerPorId(id);
+
+        if (!"PENDIENTE".equals(presupuesto.getEstado())) {
+            throw new RuntimeException("Solo se pueden editar presupuestos en estado PENDIENTE.");
+        }
+
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
+                .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
+
+        presupuesto.setNombre_presupuesto(dto.getNombrePresupuesto());
+        presupuesto.setUbicacion(ubicacion);
+        presupuesto.setObservaciones(dto.getObservaciones());
+        presupuesto.setFecha_modificacion(Instant.now());
+        
+        presupuestoDetalleRepository.deleteByPresupuesto(presupuesto);
+
+        for (PresupuestoCreacionDTO.DetalleItemDTO item : dto.getItems()) {
+            Producto producto = productoRepository.findById(item.getIdProducto())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + item.getIdProducto()));
+
+            PresupuestoDetalle detalle = new PresupuestoDetalle();
+            detalle.setPresupuesto(presupuesto);
+            detalle.setProducto(producto);
+            detalle.setCantidad_solicitada(item.getCantidad());
+            
+            presupuestoDetalleRepository.save(detalle);
+        }
+
+        return presupuestoRepository.save(presupuesto);
+    }
+
+    // VALIDACION DE INVENTARIO PARA LAS EXISTENCIAS
+    @Transactional(readOnly = true)
+    public List<PresupuestoRevisionDTO> obtenerDetallesConDisponibilidad(Long idPresupuesto) {
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+        List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+
+        return detalles.stream().map(detalle -> {
+            PresupuestoRevisionDTO dto = new PresupuestoRevisionDTO();
+            dto.setIdDetalle(detalle.getIdPresupuestoDetalle());
+            dto.setIdProducto(detalle.getProducto().getIdProducto().longValue());
+            dto.setNombreProducto(detalle.getProducto().getNombreproducto());
+            dto.setCantidadSolicitada(detalle.getCantidad_solicitada());
+
+            //VALIDAR LA EXISTENCIA DEL PRODUCTO PARA EL DESPACHO PARCIAL
+            int despachada = detalle.getCantidad_despachada() != null ? detalle.getCantidad_despachada() : 0;
+            dto.setCantidadDespachada(despachada);
+            dto.setCantidadPendiente(detalle.getCantidad_solicitada() - despachada);
+
+            // Buscar stock en todas las bodegas
+            List<Inventario> stockEncontrado = inventarioRepository.findByIdIdProducto(detalle.getProducto().getIdProducto());
+
+            // Calcular stock específico en Bodega Despacho (ID 1)
+            int stockEnDespacho = stockEncontrado.stream()
+                    .filter(inv -> inv.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue()))
+                    .mapToInt(Inventario::getCantidad_actual)
+                    .findFirst()
+                    .orElse(0);
+            
+            dto.setCantidadEnBodegaDespacho(stockEnDespacho);
+
+            // Calcular desglose general
+            List<StockBodegaDTO> listaBodegas = stockEncontrado.stream()
+                    .map(inv -> new StockBodegaDTO(
+                        inv.getBodega().getNombrebodega(), 
+                        inv.getCantidad_actual()
+                    ))
+                    .collect(Collectors.toList());
+
+            dto.setDesglosePorBodega(listaBodegas);
+            
+            int totalGlobal = listaBodegas.stream().mapToInt(StockBodegaDTO::getCantidadActual).sum();
+            dto.setTotalStockGlobal(totalGlobal);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void aprobarPresupuesto(Long idPresupuesto){
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+        if(!"PENDIENTE".equals(presupuesto.getEstado())){
+            throw new RuntimeException("Solo se pueden aprobar presupuestos PENDIENTES");
+        }
+
+        presupuesto.setEstado("APROBADO");
+        presupuesto.setFecha_modificacion(Instant.now());
+        presupuestoRepository.save(presupuesto);
+    }
+
+    @Transactional
+    public void cancelarPresupuesto(Long idPresupuesto){
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+        if(!"PENDIENTE".equals(presupuesto.getEstado())){
+            throw new RuntimeException("Solo se puede cancelar un presupuesto si está PENDIENTE");
+        }
+
+        presupuesto.setEstado("CANCELADO");
+        presupuesto.setFecha_modificacion(Instant.now());
+        presupuestoRepository.save(presupuesto);
+    }
+
+    // MÉTODO: APROBAR Y DESPACHAR (SOLO ROL INVENTARIO)
+    @Transactional
+    public void despacharPresupuesto(Long idPresupuesto, Integer idUsuarioEjecutor) {
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+
+        if (!"APROBADO".equals(presupuesto.getEstado()) && !"DESPACHO PARCIAL".equals(presupuesto.getEstado())) {
+            throw new RuntimeException("Solo se pueden despachar presupuestos en estado APROBADO o en DESPACHO PARCIAL.");
+        }
+
+        List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+
+        boolean seDespachoAlgo = false;
+        boolean todoCompletado = true;
+
+        for(PresupuestoDetalle item : detalles){
+            int despachadoAnteriormente = item.getCantidad_despachada() != null ? item.getCantidad_despachada() : 0;
+            int pendiente = item.getCantidad_solicitada() - despachadoAnteriormente;
+
+            if(pendiente > 0){
+                InventarioId invId = new InventarioId();
+                invId.setIdBodega(ID_BODEGA_DESPACHO.intValue());
+                invId.setIdProducto(item.getProducto().getIdProducto());
+
+                Inventario inventario = inventarioRepository.findById(invId).orElse(null);
+                int stockDisponible = inventario != null ? inventario.getCantidad_actual() : 0 ;
+
+                if(stockDisponible > 0 ){
+                    int aDespachar = Math.min(stockDisponible, pendiente);
+
+                    inventarioService.registrarMovimiento(
+                        item.getProducto().getIdProducto(), 
+                        ID_BODEGA_DESPACHO.intValue(), 
+                        "DESPACHO", 
+                        aDespachar, 
+                        idUsuarioEjecutor, 
+                        "Despacho Aut. Presupuesto #" + idPresupuesto);
+
+                    item.setCantidad_despachada(despachadoAnteriormente + aDespachar);
+                    presupuestoDetalleRepository.save(item);
+                    seDespachoAlgo = true;
+
+                    if(item.getCantidad_despachada() < item.getCantidad_solicitada()){
+                        todoCompletado = false;
+                    }
+                }else{
+                    todoCompletado = false;
+                }
+            }
+        }
+
+        if (!seDespachoAlgo) {
+            throw new RuntimeException("No hay existencias en Bodega de Despacho para los materiales pendientes.");
+        }
+
+        // Evaluar estado final
+        if (todoCompletado) {
+            presupuesto.setEstado("DESPACHADO");
+        } else {
+            presupuesto.setEstado("DESPACHO PARCIAL");
+        }
+
+        presupuesto.setFecha_modificacion(Instant.now());
+        presupuestoRepository.save(presupuesto);
+    }
+
+    @Transactional(readOnly = true)
+    public DespachoReporteDTO generarDatosDespacho(Long idPresupuesto) {
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+        
+        DespachoReporteDTO reporte = new DespachoReporteDTO();
+        reporte.setIdPresupuesto(presupuesto.getIdPresupuesto());
+        reporte.setNombreProyecto(presupuesto.getNombre_presupuesto());
+        reporte.setSolicitante(presupuesto.getIdusuariopresupuesto().getNombreusuario());
+        reporte.setFechaAprobacion(presupuesto.getFecha_modificacion());
+        reporte.setEstado(presupuesto.getEstado());
+        reporte.setUbicacionDestino(presupuesto.getUbicacion().getSiglasubicacion());
+        reporte.setObservaciones(presupuesto.getObservaciones());
+
+        // A. OBTENER USUARIO DESPACHADOR
+        // Buscamos el movimiento que generamos en despacharPresupuesto
+        String refDespacho = "Despacho Aut. Presupuesto #" + idPresupuesto;
+        List<MovimientoStock> movsDespacho = movimientoStockRepository.findMovimientosDeDespacho(refDespacho);
+
+        if (!movsDespacho.isEmpty()) {
+            // Tomamos el usuario del primer movimiento encontrado
+            reporte.setUsuarioDespachado(movsDespacho.get(0).getUsuario().getNombreusuario());
+            //System.out.println(movsDespacho.get(0).getUsuario().getNombreusuario());
+        } else {
+            reporte.setUsuarioDespachado("Sistema");
+        }
+
+        //OBTENER ORIGEN FÍSICO DE LOS MATERIALES
+        //Buscamos transferencias previas con "Solicitud #ID"
+        String refOrigen = "para Presupuesto: " + idPresupuesto; 
+        List<MovimientoStock> movimientosOrigen = movimientoStockRepository.findMovimientosDeOrigen(refOrigen);
+        List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+
+        List<DespachoReporteDTO.DetalleDespachoItem> itemsDTO = detalles.stream().map(d -> {
+            DespachoReporteDTO.DetalleDespachoItem item = new DespachoReporteDTO.DetalleDespachoItem();
+            item.setSku(d.getProducto().getSkuproducto());
+            item.setNombreProducto(d.getProducto().getNombreproducto());
+            item.setUnidadMedida(d.getProducto().getUnidadMedida() != null ? d.getProducto().getUnidadMedida().getNombreunidadmedida() : "Unid");
+
+            int solicitada = d.getCantidad_solicitada() != null ? d.getCantidad_solicitada() : 0;
+            int despachada = d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0;
+
+            item.setCantidadSolicitada(solicitada);
+            item.setCantidadDespachada(despachada);
+
+            if(solicitada == despachada){
+                item.setEstadoItem("ENTREGADO");
+            }else{
+                item.setEstadoItem("PENDIENTE");
+            }
+
+            // Cruzar datos para encontrar origen
+            MovimientoStock movEncontrado = movimientosOrigen.stream()
+                    .filter(m -> m.getProducto().getIdProducto().equals(d.getProducto().getIdProducto()))
+                    .findFirst().orElse(null);
+
+            if (movEncontrado != null) {
+                item.setBodegaOrigen(movEncontrado.getBodega().getNombrebodega());
+            } else {
+                item.setBodegaOrigen("Bodega Despacho");
+            }
+            return item;
+        }).collect(Collectors.toList());
+
+        reporte.setItems(itemsDTO);
+        return reporte;
+    }
+}

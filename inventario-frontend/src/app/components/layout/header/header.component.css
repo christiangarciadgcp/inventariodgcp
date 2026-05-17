@@ -1,0 +1,119 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.app-header {
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    line-height: 1.1;
+}
+
+.user-role {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.user-pill {
+    padding: 4px 8px 4px 12px;
+    border-radius: 50px;
+    transition: background-color 0.2s;
+}
+
+.user-pill:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.no-arrow::after {
+    display: none;
+}
+
+.btn-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.btn-icon:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-small {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+/* --- DROPDOWN MENU VERTICAL Y ALINEADO A LA DERECHA --- */
+.dropdown-menu {
+    display: block !important;
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    margin-top: 0px !important; 
+    transform: translateY(-10px); 
+    transition: all 0.2s ease-in;
+    min-width: 240px;
+    background-color: white;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+    padding: 8px;
+}
+
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    margin-top: 15px !important; 
+    transform: translateY(0);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+.dropdown-item {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4a5568;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f4f6;
+    color: #1a202c;
+    transform: translateX(5px); 
+}
+
+.dropdown-item mat-icon {
+    vertical-align: middle;
+    margin-bottom: 2px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border-top: 1px solid #f0f0f0;
+}

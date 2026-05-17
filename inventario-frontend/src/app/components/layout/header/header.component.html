@@ -1,0 +1,55 @@
+<header class="app-header d-flex justify-content-between align-items-center py-2 px-4 mb-4 shadow-sm w-100">
+    
+    <div class="d-flex align-items-center">
+        <app-breadcrumb></app-breadcrumb>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+        
+        <button class="btn btn-icon btn-light rounded-circle position-relative" type="button">
+            <mat-icon class="text-secondary icon-small">notifications</mat-icon>
+            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                <span class="visually-hidden">New alerts</span>
+            </span>
+        </button>
+
+        <div class="vr h-50 my-auto text-secondary opacity-25"></div>
+
+        <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-decoration-none user-pill dropdown-toggle no-arrow" 
+               id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            
+                <div class="text-end me-2 d-none d-md-block">
+                    <div class="fw-bold text-dark user-name">{{ nombreUsuario }}</div>
+                    <div class="text-muted user-role">{{ rolUsuario }}</div>
+                </div>
+
+                <img [src]="avatarUrl" alt="Avatar" width="40" height="40" class="rounded-circle border border-2 border-white shadow-sm">
+            </a>
+            
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-2 fade-in" aria-labelledby="dropdownUser1">
+                <li class="d-md-none px-3 py-2 border-bottom mb-2">
+                    <span class="fw-bold d-block">{{ nombreUsuario }}</span>
+                    <small class="text-muted">{{ rolUsuario }}</small>
+                </li>
+                <li>
+                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center" href="#">
+                        <mat-icon class="me-2 icon-small text-muted">person</mat-icon> Mi Perfil
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center" href="#" (click)="abrirCambiarPassword($event)">
+                        <mat-icon class="me-2 icon-small text-muted">vpn_key</mat-icon> Cambiar Contraseña
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li>
+                    <a class="dropdown-item rounded-2 py-2 d-flex align-items-center text-danger logout-item" href="#" (click)="cerrarSesion($event)">
+                        <mat-icon class="me-2 icon-small">logout</mat-icon> Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</header>

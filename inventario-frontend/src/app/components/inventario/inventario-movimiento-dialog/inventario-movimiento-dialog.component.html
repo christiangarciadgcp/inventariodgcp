@@ -1,0 +1,58 @@
+<h2 mat-dialog-title class="fw-bold text-dark">
+    <mat-icon class="align-middle me-2">swap_horiz</mat-icon>
+    Mover a Bodega Despacho
+</h2>
+
+<mat-dialog-content>
+    
+    <div class="alert alert-light border mb-3">
+        <strong>Material: </strong> {{ data.nombreProducto }} <br>
+        <small class="text-muted">Cantidad necesaria: <strong>{{ data.cantidadFaltante }}</strong></small>
+    </div>
+
+    <form [formGroup]="form" class="d-flex flex-column gap-2">
+        
+        <mat-form-field appearance="outline">
+            <mat-label>Bodegas con Stock</mat-label>
+            <mat-select formControlName="bodegaOrigen">
+                @for (inv of bodegasOrigen(); track inv.bodega.idBodega) {
+                    <mat-option [value]="inv">
+                        {{ inv.bodega.nombrebodega }} (Disp: {{ inv.cantidad_actual }})
+                    </mat-option>
+                }
+                @if (bodegasOrigen().length === 0) {
+                    <mat-option disabled>No hay stock en otras bodegas</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <div class="d-flex gap-2">
+            <mat-form-field appearance="outline" class="w-50">
+                <mat-label>Cantidad a Mover</mat-label>
+                <input matInput type="number" formControlName="cantidad" (keypress)="sn.soloNumeros($event)">
+                @if (form.get('cantidad')?.hasError('max')) {
+                    <mat-error>Excede disponible en bodega</mat-error>
+                }
+            </mat-form-field>
+
+            <div class="w-50 d-flex align-items-center text-muted small px-2 border rounded bg-light" style="height: 56px;">
+                Destino: <strong> &nbsp;Bodega Despacho </strong>
+            </div>
+        </div>
+
+
+
+<!--         <mat-form-field appearance="outline">
+            <mat-label>Motivo</mat-label>
+            <input matInput formControlName="motivo" readonly>
+        </mat-form-field> -->
+
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-stroked-button class="btn-cancelar" mat-dialog-close>Cancelar</button>
+    <button mat-flat-button color="primary" class="btn-confirmar" (click)="guardarMovimiento()" [disabled]="form.invalid">
+        CONFIRMAR MOVIMIENTO
+    </button>
+</mat-dialog-actions>

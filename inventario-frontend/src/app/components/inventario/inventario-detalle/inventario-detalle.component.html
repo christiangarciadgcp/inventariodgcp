@@ -1,0 +1,138 @@
+<div class="container-wide px-5 mt-4">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/inventario">
+            <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+        </button>
+        
+        <div>
+            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Detalle de Existencias</h6>
+            <h2 class="fw-bold text-dark m-0">
+                {{ nombreBodega ? nombreBodega : 'Bodega #' + idBodega }}
+            </h2>
+        </div>
+
+
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+
+            <button mat-raised-button class="btn-confirmar rounded-pill px-4" style="height: 48px;" (click)="imprimirReporte()">
+                <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon> Reporte Existencias
+            </button>
+            
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact bg-white rounded" style="width: 300px;">
+                <mat-label>Buscar SKU o Producto...</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Monitor" #input autocomplete="off">
+                <mat-icon matSuffix class="text-secondary">search</mat-icon>
+            </mat-form-field>
+        </div>
+    </div>
+
+<!--     <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 d-flex flex-row align-items-center gap-3 bg-white" style="border-radius: 12px;">
+                <div class="icon-box bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <mat-icon>monetization_on</mat-icon>
+                </div>
+                <div>
+                    <h6 class="text-muted m-0 small text-uppercase fw-bold">Valor Total Inventario</h6>
+                    <h3 class="m-0 fw-bold text-dark">${{ totalValorizado | number:'1.2-2' }}</h3>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <mat-card class="custom-card">
+        
+        @if (cargando) {
+            <div class="d-flex justify-content-center align-items-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        } @else {
+            <table mat-table [dataSource]="dataSource" matSort class="w-100">
+
+                <ng-container matColumnDef="sku">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="ps-4"> SKU </th>
+                    <td mat-cell *matCellDef="let element" class="ps-4">
+                        <span class="badge-soft badge-sku">{{ element.producto.skuproducto }}</span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="producto">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> PRODUCTO </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="d-flex flex-column py-2">
+                            <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="categoria">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> CATEGORÍA </th>
+                    <td mat-cell *matCellDef="let element">
+                        <div class="d-flex align-items-center text-muted">
+                            <mat-icon style="font-size: 16px; width: 16px; height: 16px;" class="me-1">category</mat-icon>
+                            <small>{{ element.producto.categoria?.nombrecategoria || 'N/A' }}</small>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cantidad">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> STOCK ACTUAL </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                        <span class="badge-soft" 
+                              [ngClass]="{
+                                'stock-high': element.cantidad_actual > 10,
+                                'stock-low': element.cantidad_actual <= 10 && element.cantidad_actual >=3,
+                                'stock-empty': element.cantidad_actual < 3 
+                              }">
+                            {{ element.cantidad_actual }} {{ element.producto.unidadMedida?.abreviaturaunidadmedida | lowercase }}
+                        </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="costo">
+                    <th mat-header-cell *matHeaderCellDef class="text-end"> COSTO UNIT. </th>
+                    <td mat-cell *matCellDef="let element" class="text-end text-muted">
+                        ${{ element.producto.preciocostoproducto | number:'1.2-2' }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="total">
+                    <th mat-header-cell *matHeaderCellDef class="text-end pe-4"> VALOR TOTAL </th>
+                    <td mat-cell *matCellDef="let element" class="text-end fw-bold text-dark pe-4">
+                        ${{ (element.cantidad_actual * element.producto.preciocostoproducto) | number:'1.2-2' }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="acciones">
+                    <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> ACCIONES </th>
+                    <td mat-cell *matCellDef="let element" class="text-center pe-4">
+                        <button mat-icon-button color="primary text-primary " 
+                                matTooltip="Ajustar Stock Manualmente"
+                                (click)="abrirAjuste(element)">
+                            <mat-icon>edit_note</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell text-center py-5" colspan="6">
+                        <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+                            <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">folder_off</mat-icon>
+                            <span>No se encontraron materiales</span>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        }
+        <mat-paginator [pageSizeOptions]="[10, 25, 50]"
+                showFirstLastButtons
+                aria-label="Seleccionar página">
+        </mat-paginator>
+    </mat-card>
+</div>

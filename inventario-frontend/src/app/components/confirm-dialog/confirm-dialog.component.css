@@ -1,0 +1,47 @@
+/* --- BOTÓN CANCELAR --- */
+.btn-cancelar {
+    background: #ffffff;
+    color: #f72828;
+    border: 1px solid #d3d3d3;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+}
+
+/* Efecto al pasar el mouse */
+.btn-cancelar:hover {
+    background-color: #f72828;
+    /* border-color: #000000; */
+    color: #ffffff;
+}
+
+
+/* --- BOTÓN CONFIRMAR --- */
+.btn-confirmar {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Efecto Hover */
+.btn-confirmar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(105%);
+}
+
+/* ESTILO APROBAR / RECEPCIONAR  */
+button[mat-flat-button][color="primary"] {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+}
+
+/* ESTILO ELIMINAR / RECHAZAR */
+button[mat-flat-button][color="warn"] {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
+}

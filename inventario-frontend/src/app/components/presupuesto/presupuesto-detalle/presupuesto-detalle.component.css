@@ -1,0 +1,159 @@
+.mat-mdc-header-row {
+    background-color: #ffffff;
+    border-bottom: 2px solid #f1f3f5;
+    height: 50px;
+}
+
+.mat-mdc-header-cell {
+    color: #8898aa;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hover-row:hover {
+    background-color: #f8faff !important;
+}
+
+.mat-mdc-row {
+    height: 50px;
+    transition: all 0.2s ease-in-out;
+}
+
+.mat-mdc-cell {
+    font-size: 0.9rem;
+    color: #344767;
+    font-weight: 500;
+    border-bottom: 1px solid #ebebeb !important;
+}
+
+.btn-confirmar {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Efecto Hover */
+.btn-confirmar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(105%);
+}
+
+.badge-soft {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.status-pendiente {
+    background-color: #fff8dd;
+    color: #d6a800;
+    border-color: #ffedb8;
+}
+
+.status-aprobada {
+    background-color: #e8fff3;
+    color: #19cb69;
+    border-color: #d1fbe4;
+}
+
+.status-despachado {
+    background-color: #e1f0ff;
+    color: #009ef7;
+    border-color: #cce9ff;
+}
+
+.status-recepcion-parcial {
+  background-color: #fef1ed; 
+  color: #f36739; 
+  border-color: #ffd9cb;
+}
+
+.status-rechazada {
+    background-color: #fff5f8;
+    color: #f1416c;
+    border-color: #ffe1e9;
+}
+
+.btn-cancelar {
+    background: #ffffff;
+    color: #f72828;
+    border: 1px solid #d3d3d3;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+}
+
+/* Efecto al pasar el mouse */
+.btn-cancelar:hover {
+    background-color: #f72828;
+    /* border-color: #000000; */
+    color: #ffffff;
+}
+
+/* --- LÍNEA DE TIEMPO (TIMELINE) --- */
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item:last-child .timeline-connector {
+  display: none;
+}
+
+.timeline-line {
+  width: 20px;
+  padding-top: 10px;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+.timeline-connector {
+  width: 2px;
+  background-color: #e2e8f0 !important;
+}
+
+.badge-accion {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-creacion-subtle { background-color: #91e47e; }
+.text-creacion { color: #ffffff !important; }
+
+.bg-warning-subtle { background-color: #fff8dd; }
+.text-warning { color: #d6a800 !important; }
+
+.bg-info-subtle { background-color: #e1f0ff; }
+.text-info { color: #009ef7 !important; }
+
+.bg-success-subtle { background-color: #e8fff3; }
+.text-success { color: #19cb69 !important; }
+
+.bg-danger-subtle { background-color: #fff5f8; }
+.text-danger { color: #f1416c !important; }
+
+.text-custom { color: #9b9797 !important; }
+
+.border-dashed {
+  border: 1px dashed #cbd5e1 !important;
+}
+

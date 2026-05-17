@@ -1,0 +1,144 @@
+import { Component, OnInit, OnDestroy, inject, effect } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from './services/auth.service';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App implements OnDestroy { // Ya no necesitamos OnInit necesariamente
+
+  private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+  
+  private warningTimer: any;
+  private logoutTimer: any;
+  private isDialogResultPending = false;
+
+  constructor() {
+    effect(() => {
+      const estaLogueado = this.authService.isAuthenticated();
+
+      if (estaLogueado) {
+        console.log('⚡ Detectado inicio de sesión: Iniciando contadores...');
+        this.iniciarContadorSesion();
+      } else {
+        console.log('⚡ Detectado cierre de sesión: Limpiando contadores...');
+        this.limpiarTimers();
+        this.dialog.closeAll();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.limpiarTimers();
+  }
+
+  iniciarContadorSesion() {
+    this.limpiarTimers();
+
+    const expDate = this.authService.getTokenExpirationDate();
+    
+    if (!expDate) {
+      console.warn('No se pudo obtener fecha de expiración del token');
+      return;
+    }
+
+    const ahora = new Date().getTime();
+    const expiracion = expDate.getTime();
+    const tiempoRestante = expiracion - ahora;
+
+    console.log(`🕒 Hora actual: ${new Date(ahora).toLocaleTimeString()}`);
+    console.log(`🏁 Hora expiración: ${expDate.toLocaleTimeString()}`);
+
+    if (tiempoRestante <= 0) {
+      console.error('❌ El token ya expiró. Cerrando sesión.');
+      this.cerrarSesionForzada();
+      return;
+    }
+
+    //const notificacionAlerta = 60000; // 1 minutos
+    //const notificacionAlerta = 300000; // 5 minutos
+    const notificacionAlerta = 600000; // 10 minutos
+    //const notificacionAlerta = 1800000; // 30 minutos
+    
+    const tiempoParaAlerta = tiempoRestante - notificacionAlerta; 
+
+    console.log(`Sesión expira en: ${(tiempoRestante / 1000 / 60).toFixed(0)} minutos`);
+    console.log(`Alerta aparecerá en: ${(tiempoParaAlerta / 1000 / 60).toFixed(0)} minutos`);
+
+    if (tiempoParaAlerta > 0) {
+      this.warningTimer = setTimeout(() => {
+        console.log('🔔 ¡Ejecutando notificacion de extender Sesion');
+        this.mostrarAlertaRenovacion();
+      }, tiempoParaAlerta);
+    } else {
+      // Si entramos y ya falta menos de 5 minuto, mostrar de una vez
+      console.log('🔔 Tiempo crítico, mostrando alerta inmediatamente.');
+      this.mostrarAlertaRenovacion();
+    }
+
+    this.logoutTimer = setTimeout(() => {
+      console.log('💀 Se acabó el tiempo total.');
+        this.dialog.closeAll();
+        this.cerrarSesionForzada(true);
+    }, tiempoRestante);
+  }
+
+  mostrarAlertaRenovacion() {
+    this.isDialogResultPending = true;
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      disableClose: true,
+      data: {
+        titulo: 'Tu sesión está por expirar',
+        mensaje: 'Tu sesión terminará en 10 minutos. ¿Deseas extenderla?',
+        textoBoton: 'Extender Sesión',
+        colorBoton: 'primary'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmado: boolean) => {
+      this.isDialogResultPending = false;
+
+      if (confirmado) {
+        console.log('✅ Usuario eligió extender sesión.');
+        this.authService.refreshToken().subscribe({
+          next: () => {
+            console.log('🔄 Token renovado con éxito. Reiniciando contadores.');
+            this.iniciarContadorSesion();
+          },
+          error: (err) => {
+            console.error('❌ Error al renovar token:', err);
+            this.cerrarSesionForzada(true);
+          }
+        });
+      } else {
+        console.log('⛔ Sesión Cerrada.');
+        this.cerrarSesionForzada(true);
+      }
+    });
+  }
+
+  cerrarSesionForzada(reloadPage: boolean = false) {
+    this.limpiarTimers();
+    this.authService.logout();
+
+    if (reloadPage){
+      setTimeout(()=>{
+        window.location.reload();
+      }, 300);
+    }
+
+  }
+
+  limpiarTimers() {
+    if (this.warningTimer) clearTimeout(this.warningTimer);
+    if (this.logoutTimer) clearTimeout(this.logoutTimer);
+  }
+}

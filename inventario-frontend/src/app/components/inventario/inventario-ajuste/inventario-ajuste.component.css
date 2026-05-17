@@ -1,0 +1,203 @@
+/* Header Compacto */
+.modal-header-custom {
+    background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
+}
+
+.icon-circle-white {
+    width: 32px;
+    height: 32px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-sm { font-size: 18px; width: 18px; height: 18px; }
+.scale-sm { transform: scale(0.8); }
+.x-small { font-size: 0.7rem; letter-spacing: 0.5px; }
+
+/* Botones de Acción Pequeños (Estilo Toggle) */
+.action-btn-small {
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+    color: #6c757d;
+    height: 36px;
+    border: 1px solid transparent;
+}
+
+.action-btn-small:hover {
+    background-color: #e9ecef;
+}
+
+/* Activo: Entrada (Verde) */
+.btn-active-entrada {
+    background-color: white !important;
+    color: #0f5132 !important;
+    border-color: #d1e7dd !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Activo: Salida (Rojo) */
+.btn-active-salida {
+    background-color: white !important;
+    color: #842029 !important;
+    border-color: #f8d7da !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Cuadros de Stock */
+.stock-display {
+    height: 45px; /* Más compacto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* Inputs Compactos */
+.custom-input ::ng-deep .mat-mdc-form-field-flex {
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+.no-subscript ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}
+
+/* Ajuste de altura para inputs */
+.density-compact ::ng-deep .mat-mdc-form-field-flex {
+    height: 45px;
+    align-items: center;
+}
+
+.density-compact ::ng-deep .mat-mdc-text-field-wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Colores de fondo */
+.bg-success-subtle { background-color: #d1e7dd; }
+.bg-danger-subtle { background-color: #f8d7da; }
+.transition-bg { transition: background-color 0.3s ease; }
+
+.action-card {
+    /* CAMBIO CLAVE: Controlamos el padding manualmente para hacerlo pequeño */
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    background-color: #fff;
+    transition: all 0.2s;
+    color: #666;
+    opacity: 0.8;
+}
+
+.action-card:hover {
+    background-color: #f8f9fa;
+    opacity: 1;
+}
+
+/* CAMBIO CLAVE: Nuevo estilo para el icono más pequeño */
+.icon-compact {
+    /* Reducimos la escala de 1.5 anterior a 1.2 */
+    transform: scale(1.2);
+    /* Reducimos el espacio debajo del icono */
+    margin-bottom: 2px;
+}
+
+/* CAMBIO CLAVE: Ajustamos tamaños de fuente */
+.card-title {
+    font-weight: 700;
+    font-size: 0.9rem; /* Un poco más pequeño */
+    line-height: 1.2;
+}
+
+.card-helper {
+    font-size: 0.75rem; /* Texto de ayuda muy pequeño */
+    color: #999;
+}
+
+
+/* --- Estilos de Selección (Igual que antes pero ajustando colores de texto) --- */
+
+/* Seleccionado Verde */
+.selected-entrada {
+    border-color: #2e7d32;
+    background-color: #e8f5e9;
+    color: #2e7d32; /* Hereda el color al título */
+    opacity: 1;
+}
+
+/* Seleccionado Rojo */
+.selected-salida {
+    border-color: #c62828;
+    background-color: #ffebee;
+    color: #c62828; /* Hereda el color al título */
+    opacity: 1;
+}
+
+/* Aseguramos que el texto de ayuda cambie de color al seleccionarse */
+.selected-entrada .card-helper,
+.selected-salida .card-helper {
+    color: currentColor;
+    opacity: 0.8;
+}
+
+/* --- ESTILOS DEL BOTÓN CONFIRMAR (AZUL / ENTRADA) --- */
+.btn-confirmar {
+    /* Tu gradiente azul original */
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+    border: none;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: white !important; /* Aseguramos texto blanco */
+    transition: all 0.3s ease; /* Suaviza el hover */
+}
+
+/* Efecto Hover Azul */
+.btn-confirmar:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    filter: brightness(115%); /* Un poco más brillante para que se note */
+}
+
+/* --- VARIACIÓN PARA SALIDA (ROJO) --- */
+/* Esta clase se activa automáticamente cuando es 'SALIDA' gracias al HTML */
+.btn-salida {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+
+/* --- ESTILOS DEL BOTÓN CANCELAR --- */
+.btn-cancelar {
+    background: #ffffff;
+    color: #f72828 !important;
+    border-color: #e1e1e1 !important;
+    height: 45px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+/* Efecto Hover Cancelar */
+.btn-cancelar:hover {
+    background-color: #f72828;
+    border-color: #000000;
+    color: #ffffff !important;
+}
+
+.btn-confirmar:disabled {
+    background: #e0e0e0;
+    color: #a6a6a6;     
+    box-shadow: none;    
+    border: 1px solid #dcdcdc; 
+    
+    transform: none;
+    filter: none;
+    cursor: not-allowed;
+    pointer-events: none; 
+}

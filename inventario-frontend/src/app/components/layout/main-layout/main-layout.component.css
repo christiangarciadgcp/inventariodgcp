@@ -1,0 +1,17 @@
+.transition-margin {
+    transition: margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.layout-wrapper {
+    /* Si la pantalla es menor a 1024px, aparece barra de scroll abajo.
+       Esto evita que tu diseño se rompa o se aplaste. */
+    min-width: 1024px; 
+    position: relative;
+}
+
+app-sidebar {
+    /* Asegura que el sidebar tenga transición si su ancho cambia internamente */
+    transition: width 0.3s ease-in-out;
+    background-color: #fff; /* Asegurar fondo blanco */
+    box-shadow: 1px 0 10px rgba(0,0,0,0.05); /* Sombra sutil para separar del contenido */
+}

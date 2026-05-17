@@ -1,0 +1,117 @@
+<div class="custom-modal-container">
+
+    <div class="modal-header d-flex justify-content-between align-items-start p-4 text-white" 
+         style="background: linear-gradient(#031e3f 0%, #153863 100%);">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <mat-icon style="font-size: 20px; width: 20px; height: 20px;">local_shipping</mat-icon>
+                <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">
+                    Ingreso a Bodega | Solicitud #{{ data.solicitud.idSolicitudCompra }}
+                </h6>
+            </div>
+            <h3 class="fw-bold text-white m-0">{{ data.solicitud.nombresolicitud }}</h3>
+            <div class="mt-2 text-white small">
+                Bodega Destino: <strong>{{ data.solicitud.idbodegadestino.nombrebodega }}</strong>
+            </div>
+        </div>
+        
+        <button mat-icon-button (click)="cerrar()" class="text-white">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+
+    <div class="modal-body p-0">
+        <mat-dialog-content class="mat-typography p-0 m-0">
+        
+            @if (cargando) {
+                <div class="d-flex justify-content-center py-5">
+                    <div class="spinner-border text-success" role="status"></div>
+                </div>
+            } @else {
+                <div class="alert alert-info m-3 p-2 d-flex align-items-center small rounded-2">
+                    <mat-icon class="me-2" style="font-size: 18px; width: 18px; height: 18px;">info</mat-icon>
+                    Ingrese la cantidad exacta de productos que el proveedor acaba de entregar.
+                </div>
+
+                <table mat-table [dataSource]="dataSource" class="w-100">
+
+                    <ng-container matColumnDef="producto">
+                        <th mat-header-cell *matHeaderCellDef class="ps-4"> PRODUCTO </th>
+                        <td mat-cell *matCellDef="let element" class="ps-4"> 
+                            <div class="fw-bold text-dark">{{ element.nombreProducto }}</div>
+                            <small class="text-muted">{{ element.sku }}</small>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="proveedor">
+                        <th mat-header-cell *matHeaderCellDef class="ps-4"> PROVEEDOR </th>
+                        <td mat-cell *matCellDef="let element" class="ps-4"> 
+                            <div class="fw-medium text-dark">{{ element.proveedor }}</div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="solicitado">
+                        <th mat-header-cell *matHeaderCellDef class="text-center"> REQUERIDO </th>
+                        <td mat-cell *matCellDef="let element" class="text-center text-secondary"> 
+                            {{ element.solicitado }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="recibido">
+                        <th mat-header-cell *matHeaderCellDef class="text-center"> RECIBIDO </th>
+                        <td mat-cell *matCellDef="let element" class="text-center text-success fw-medium"> 
+                            {{ element.yaRecibido }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="faltante">
+                        <th mat-header-cell *matHeaderCellDef class="text-center"> FALTANTE </th>
+                        <td mat-cell *matCellDef="let element" class="text-center text-danger fw-bold"> 
+                            @if (element.faltante === 0) {
+                                <mat-icon class="text-success align-middle" style="font-size: 18px;">check_circle</mat-icon>
+                            } @else {
+                                {{ element.faltante }}
+                            }
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ingreso">
+                        <th mat-header-cell *matHeaderCellDef class="text-center pe-4" style="width: 130px;"> RECIBIR </th>
+                        <td mat-cell *matCellDef="let element" class="text-center pe-4 py-2"> 
+                            @if (element.faltante > 0) {
+                                <input type="number" 
+                                       class="form-control form-control-sm text-center fw-bold text-primary" 
+                                       [(ngModel)]="element.aRecibirHoy"
+                                       (input)="validarCantidad(element)"
+                                       (keypress)="sn.soloNumeros($event)"
+                                       min="0" [max]="element.faltante"
+                                       style="width: 80px; margin: 0 auto;">
+                            } @else {
+                                <span class="badge status-aprobada">Completo</span>
+                            }
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns" class="bg-light"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="border-bottom"></tr>
+                </table>
+            }
+
+        </mat-dialog-content>
+    </div>
+
+    <div class="modal-footer p-3 bg-light border-top d-flex justify-content-between align-items-center">
+        <div class="text-muted small ms-2">
+            Total a ingresar: <strong class="text-dark fs-6">{{ totalARecibirHoyCalculado }}</strong> unidades
+        </div>
+        <div class="d-flex gap-2">
+            <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cancelar</button>
+            <button mat-flat-button color="primary" class="btn-confirmar" 
+                    (click)="confirmarRecepcion()" 
+                    [disabled]="totalARecibirHoyCalculado === 0 || cargando">
+                <mat-icon class="me-2">inventory_2</mat-icon> PROCESAR RECEPCIÓN
+            </button>
+        </div>
+    </div>
+
+</div>

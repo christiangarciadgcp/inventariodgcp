@@ -1,0 +1,105 @@
+<div class="modal-header-custom p-4 text-white d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+        <div class="icon-circle-white">
+            <mat-icon class="text-primary">import_export</mat-icon>
+        </div>
+        <div>
+            <h5 class="m-0 fw-bold">Ajustar Inventario</h5>
+            <small class="opacity-75">{{ data.producto.nombreproducto }}</small>
+        </div>
+    </div>
+    <button mat-icon-button class="text-white" (click)="dialogRef.close()">
+        <mat-icon style="margin-bottom: 5px;">close</mat-icon>
+    </button>
+</div>
+
+<div class="p-4">
+    
+    <div class="d-flex gap-2 mb-3"> 
+        <div class="action-card flex-grow-1 text-center rounded cursor-pointer"
+                [class.selected-entrada]="tipoAccion() === 'ENTRADA'"
+                (click)="setTipo('ENTRADA')">
+                <mat-icon class="icon-compact">trending_up</mat-icon>
+            <div class="card-title">ENTRADA</div>
+            <div class="card-helper">Agregar stock</div>
+        </div>
+
+        <div class="action-card flex-grow-1 text-center rounded cursor-pointer"
+                [class.selected-salida]="tipoAccion() === 'SALIDA'"
+                (click)="setTipo('SALIDA')">
+                <mat-icon class="icon-compact">trending_down</mat-icon>
+            <div class="card-title">SALIDA</div>
+            <div class="card-helper">Quitar stock</div>
+   </div>
+
+</div>
+
+    <form [formGroup]="form">
+        
+        <div class="row g-3 align-items-center mb-4">
+            
+            <div class="col-4">
+                <label class="form-label text-muted small fw-bold text-center w-100">STOCK ACTUAL</label>
+                <div class="stock-display bg-light text-dark">
+                    {{ data.cantidadActual }}
+                </div>
+            </div>
+
+            <div class="col-1 text-center pt-4">
+                <mat-icon class="fs-4 fw-bold text-muted mt-3">
+                    {{ tipoAccion() === 'ENTRADA' ? 'add' : 'remove' }}
+                </mat-icon>
+            </div>
+
+            <div class="col-3">
+                <label class="form-label text-muted small fw-bold ms-1">CANTIDAD</label>
+                <mat-form-field appearance="outline" class="w-100 custom-input no-subscript">
+                    <input matInput type="number" formControlName="cantidad" min="1" class="text-center fw-bold fs-5" (keypress)="sn.soloNumeros($event)">
+                </mat-form-field>
+            </div>
+
+            <div class="col-1 text-center mt-5">
+                <mat-icon class="fs-4 fw-bold text-muted">arrow_forward</mat-icon>
+            </div>
+
+            <div class="col-3">
+                <label class="form-label text-muted small fw-bold text-center w-100">FINAL</label>
+                <div class="stock-display" 
+                     [ngClass]="{
+                        'bg-success-subtle text-success border-success': tipoAccion() === 'ENTRADA',
+                        'bg-danger-subtle text-danger border-danger': tipoAccion() === 'SALIDA'
+                     }">
+                    {{ nuevoStockProyectado() }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label text-muted small fw-bold ms-1">Motivo del Ajuste</label>
+            <mat-form-field appearance="outline" class="w-100 custom-input">
+                <textarea matInput formControlName="motivo" placeholder="Justificacion del ajuste" rows="2"></textarea>
+            </mat-form-field>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+    
+            <button mat-stroked-button 
+                    type="button" 
+                    class="btn-cancelar" 
+                    (click)="dialogRef.close()">
+                Cancelar
+            </button>
+        
+            <button mat-flat-button 
+                    type="button"
+                    class="btn-confirmar"
+                    [class.btn-salida]="tipoAccion() === 'SALIDA'"
+                    (click)="guardarAjuste()" 
+                    [disabled]="form.invalid || nuevoStockProyectado() < 0">
+                {{ tipoAccion() === 'ENTRADA' ? 'Registrar Entrada' : 'Registrar Salida' }}
+            </button>
+        
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,15 @@
+/* WIDGET CONTADOR DE SESIÓN */
+.test-session-timer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #153863;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: monospace;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+    pointer-events: none;
+}

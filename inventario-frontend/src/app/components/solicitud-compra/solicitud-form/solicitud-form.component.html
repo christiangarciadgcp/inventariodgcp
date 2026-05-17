@@ -1,0 +1,209 @@
+<div class="container-wide px-4 mt-5 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/solicitud_compra">
+                <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+            </button>
+            <div>
+                <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Módulo de
+                    Compras</h6>
+                @if (!esModoEdicion()) {
+                    <h3 class="fw-bold m-0 text-dark">Nueva Solicitud de Compra</h3>
+                }@else{
+                    <h3 class="fw-bold m-0 text-dark">Editar Solicitud de Compra</h3>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <div class="card-header-brand p-4 text-white d-flex align-items-center gap-3">
+            <div class="icon-circle bg-white-20">
+                <mat-icon>shopping_cart</mat-icon>
+            </div>
+            <div>
+                <h5 class="m-0 fw-bold">Detalles de la Solicitud</h5>
+                <small class="opacity-75">Ingrese los productos a comprar</small>
+            </div>
+        </div>
+        <div class="card-body p-4 bg-white">
+          <form [formGroup]="form" class="mb-4">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <mat-form-field appearance="outline" class="w-100 input-lg bg-light-input rounded-2"
+                                subscriptSizing="dynamic">
+                  <mat-label>Nombre de la Solicitud</mat-label>
+                  <input matInput formControlName="nombresolicitud"
+                         placeholder="Ej. Materiales de Limpieza Enero" autocomplete="off">
+                  <mat-icon matSuffix class="text-primary">edit</mat-icon>
+                </mat-form-field>
+                @if (form.get('nombresolicitud')?.hasError('required') && form.get('nombresolicitud')?.touched) {
+                  <mat-error class="small ms-2 mt-1">Este campo es obligatorio</mat-error>
+                }
+              </div>
+
+              <div class="col-md-4">
+                <mat-form-field appearance="outline" class="w-100 input-lg bg-light-input rounded-2" subscriptSizing="dynamic">
+                  <mat-label>Buscar Bodega</mat-label>
+                  <mat-select formControlName="idBodega">
+                    @for (b of listaBodegas; track b.idBodega) {
+                      <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
+                    }
+                  </mat-select>
+                  <mat-icon matSuffix class="text-primary">store</mat-icon>
+                </mat-form-field>
+                @if (form.get('idBodega')?.hasError('required') && form.get('idBodega')?.touched) {
+                  <mat-error class="small ms-2 mt-1">Debe seleccionar una bodega</mat-error>
+                }
+              </div>
+            </div>
+          </form>
+
+            <mat-divider class="my-4"></mat-divider>
+
+            <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+                <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1">AGREGAR ITEMS A LA LISTA</h6>
+
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label text-muted small fw-bold ms-1"> Producto</label>
+
+
+                        <mat-form-field appearance="outline" class="w-100 density-comfortable bg-white"
+                            subscriptSizing="dynamic">
+                            <mat-label>Buscar Producto</mat-label>
+
+                            <input type="text" matInput [(ngModel)]="busquedaTexto" (input)="filtrar($event)"
+                                [matAutocomplete]="auto" placeholder="Escriba nombre o código SKU">
+
+                            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn"
+                                (optionSelected)="seleccionarProducto($event)">
+
+                                @for (p of productosFiltrados; track p.idProducto) {
+                                <mat-option [value]="p">
+                                    <span class="text-muted">{{ p.nombreproducto }}</span>
+                                    <small class="fw-bold ms-2">{{ p.skuproducto }}</small>
+                                </mat-option>
+                                }
+
+                                @if (productosFiltrados.length === 0) {
+                                <mat-option disabled>No hay resultados</mat-option>
+                                }
+
+                            </mat-autocomplete>
+
+                            @if (busquedaTexto) {
+                            <button matSuffix mat-icon-button aria-label="Limpiar" (click)="limpiarInputsProducto()">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                            }
+
+                            <mat-icon matSuffix class="text-primary icon-small">search</mat-icon>
+
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold ms-1">Cantidad</label>
+                        <mat-form-field appearance="outline" class="w-100 density-comfortable bg-white"
+                            subscriptSizing="dynamic">
+                            <input matInput type="number" min="1" [(ngModel)]="cantidadSeleccionada"
+                                [ngModelOptions]="{standalone: true}" (keypress)="sn.soloNumeros($event)">
+                        </mat-form-field>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label d-block text-transparent small fw-bold mb-2 text-center">Acción</label>
+                        <button type="button" class="btn-add-custom w-100" (click)="agregarProducto()"
+                            [disabled]="!productoSeleccionado">
+                            <mat-icon class="me-2 icon-small">add_shopping_cart</mat-icon> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container border rounded-3 overflow-hidden">
+                <table mat-table [dataSource]="dataSource" class="w-100 table-hover">
+
+                    <ng-container matColumnDef="producto">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="bg-light ps-4 py-3 text-secondary text-uppercase small fw-bold">PRODUCTO</th>
+                        <td mat-cell *matCellDef="let element" class="ps-4">
+                            <div class="d-flex align-items-center gap-3 py-2">
+                                <div class="avatar-item">
+                                    {{ element.producto.nombreproducto.charAt(0) }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
+                                    <div class="small text-muted">{{ element.producto.skuproducto || 'GEN' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="cantidad">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="bg-light text-center text-secondary text-uppercase small fw-bold">CANT.</th>
+                        <td mat-cell *matCellDef="let element" class="text-center">
+                            <span class="badge-pill-qty">
+                                {{ element.cantidad }}
+                            </span>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="precio">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="bg-light text-end text-secondary text-uppercase small fw-bold">PRECIO REF.</th>
+                        <td mat-cell *matCellDef="let element" class="text-end text-muted">
+                            ${{ element.producto.preciocostoproducto | number:'1.2-2' }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="subtotal">
+                        <th mat-header-cell *matHeaderCellDef
+                            class="bg-light text-end pe-4 text-secondary text-uppercase small fw-bold">SUBTOTAL</th>
+                        <td mat-cell *matCellDef="let element" class="text-end pe-4 fw-bold text-dark">
+                            ${{ element.subtotal | number:'1.2-2' }}
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="acciones">
+                        <th mat-header-cell *matHeaderCellDef class="bg-light text-center"></th>
+                        <td mat-cell *matCellDef="let element; let i = index" class="text-center">
+                            <button mat-icon-button color="warn" class="btn-sm opacity-75 hover-opacity-100 action-btn delete"
+                                (click)="eliminarDetalle(i)">
+                                <mat-icon>delete_outline</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell text-center py-5 text-muted" colspan="5">
+                            <mat-icon class="mb-2 opacity-50"
+                                style="font-size: 32px; width: 32px; height: 32px;">shopping_basket</mat-icon>
+                            <p class="m-0 small">No hay items en la solicitud.</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <div class="text-muted small">
+              <mat-icon class="icon-tiny align-middle me-1">info</mat-icon>
+              Esta solicitud pasará a estado <strong>PENDIENTE</strong>
+            </div>
+
+            <button mat-raised-button class="btn-guardar px-5 py-2 rounded-pill" (click)="guardarSolicitud()">
+              <mat-icon class="me-2">save</mat-icon> GUARDAR SOLICITUD
+            </button>
+          </div>
+
+        </div>
+    </div>
+</div>

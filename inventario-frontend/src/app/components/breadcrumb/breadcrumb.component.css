@@ -1,0 +1,23 @@
+.breadcrumb {
+    background-color: transparent;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-item a {
+    color: var(--mat-sys-primary);
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.breadcrumb-item a:hover {
+    color: #fd0d0d; 
+    text-decoration: underline !important;
+}
+
+.breadcrumb-item.active {
+    font-weight: 400; 
+}
+
+.mat-icon {
+    vertical-align: text-bottom;
+}

@@ -1,0 +1,57 @@
+<div class="container-wide px-5 mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
+                <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+            </button>
+            <div>
+                <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Gestión de Stock</h6>
+                <h3 class="fw-bold m-0 text-dark">Inventarios</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        @for (bodega of bodegas(); track bodega.idBodega) {
+
+        <div class="col-12 col-md-6 col-lg-4"> <mat-card class="bodega-card h-100 cursor-pointer"
+                [routerLink]="['/inventario/bodega', bodega.idBodega]">
+                <mat-card-content class="p-4 d-flex flex-column align-items-center text-center">
+
+                    <div class="icon-circle mb-3 shadow-sm">
+                        <mat-icon>warehouse</mat-icon>
+                    </div>
+
+                    <h3 class="fw-bold text-dark mb-1">{{ bodega.nombrebodega }}</h3>
+
+                    <span class="text-dark small d-flex align-items-center justify-content-center gap-1 w-100">
+                        <mat-icon style="font-size: 14px; height: 14px;">location_on</mat-icon>
+                        {{ bodega.direccionbodega }}
+                    </span>
+
+                    <mat-divider class="w-100 my-4"></mat-divider>
+
+                    <span class="text-primary fw-bold small d-flex align-items-center action-text">
+                        VER INVENTARIO <mat-icon class="ms-1 icon-arrow">arrow_forward</mat-icon>
+                    </span>
+
+                </mat-card-content>
+            </mat-card>
+
+        </div>
+
+        } @empty {
+        <div class="col-12">
+            <div
+                class="d-flex flex-column align-items-center justify-content-center py-5 text-muted bg-white rounded-4 shadow-sm border">
+                <mat-icon style="font-size: 100px; width: 100px; height: 100px;"
+                    class="mb-3 text-light-emphasis">domain_disabled</mat-icon>
+                <h4 class="fw-bold">No hay bodegas disponibles</h4>
+                <p class="m-0">Parece que aún no se han registrado bodegas en el sistema.</p>
+            </div>
+        </div>
+        }
+    </div>
+</div>

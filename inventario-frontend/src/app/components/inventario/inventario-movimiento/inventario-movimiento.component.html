@@ -1,0 +1,158 @@
+<div class="container-wide px-4 mt-5 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
+                <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+            </button>
+            <div>
+                <h6 class="text-uppercase text-muted mb-0 fw-bold ls-1" style="font-size: 0.75rem;">Gestión de
+                    Inventario</h6>
+                <h3 class="fw-bold m-0 text-dark">Movimiento entre Bodegas</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <div class="card-header-brand p-4 text-white d-flex align-items-center gap-3">
+            <div class="icon-circle bg-white-20">
+                <mat-icon>swap_horiz</mat-icon>
+            </div>
+            <div>
+                <h5 class="m-0 fw-bold">Nuevo Movimiento</h5>
+                <small class="opacity-75">Mover existencias de una ubicación a otra</small>
+            </div>
+        </div>
+
+        <div class="card-body p-4 bg-white">
+
+            <form [formGroup]="form">
+                <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+                    <h6 class="text-muted fw-bold mb-3 small text-uppercase ls-1">Ubicaciones</h6>
+
+                    <div class="row g-4 align-items-center mb-2">
+                        <div class="col-md-5">
+                            <label class="form-label text-muted small fw-bold ms-1">Bodega de Origen (Salida)</label>
+                            <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable"
+                                subscriptSizing="dynamic">
+                                <mat-label>Bodegas</mat-label>
+                                <mat-select formControlName="bodegaOrigen" placeholder="Seleccione origen">
+                                    @for (b of listaBodegas(); track b.idBodega) {
+                                    <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
+                                    }
+                                </mat-select>
+                                <mat-icon matSuffix class="text-secondary">outbound</mat-icon>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col-md-2 text-center d-none d-md-block pt-3">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px;">
+                                <mat-icon class="text-muted">arrow_forward</mat-icon>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label text-muted small fw-bold ms-1">Bodega de Destino (Entrada)</label>
+                            <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable"
+                                subscriptSizing="dynamic">
+                                <mat-label>Bodegas</mat-label>
+                                <mat-select formControlName="bodegaDestino" placeholder="Seleccione destino">
+                                    @for (b of listaBodegas(); track b.idBodega) {
+                                    <mat-option [value]="b.idBodega"
+                                        [disabled]="b.idBodega === form.value.bodegaOrigen">
+                                        {{ b.nombrebodega }}
+                                    </mat-option>
+                                    }
+                                </mat-select>
+                                <mat-icon matSuffix class="text-secondary">inbox</mat-icon>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <mat-divider class="my-4"></mat-divider>
+
+                <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+                    <h6 class="text-uppercase text-muted fw-bold small mb-3 ls-1">DETALLE DEL MOVIMIENTO</h6>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold ms-1">Producto</label>
+                            <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+                                <mat-label>Producto</mat-label>
+                                <mat-select formControlName="producto" [disabled]="!form.value.bodegaOrigen"
+                                    placeholder="Seleccione producto...">
+                                    <mat-select-trigger>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <mat-icon class="text-primary icon-small">inventory_2</mat-icon>
+                                            <span class="fw-bold text-dark">{{
+                                                productoSeleccionado?.producto?.nombreproducto }}</span>
+                                        </div>
+                                    </mat-select-trigger>
+                                    @for (item of productosOrigen(); track item.producto.idProducto) {
+                                    <mat-option [value]="item">
+                                        <div class="d-flex justify-content-between w-100 align-items-center">
+                                            <span>{{ item.producto.nombreproducto }}</span>
+                                            <span class="badge bg-dark text-white border ms-2">Cant.: {{
+                                                item.cantidad_actual }}</span>
+                                        </div>
+                                    </mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+
+                            @if (!form.value.bodegaOrigen) {
+                            <div class="text-muted small">
+                                <mat-icon class="icon-tiny align-middle me-1">info</mat-icon>
+                                Seleccione la Bodega de Origen
+                            </div>
+                            }
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-muted small fw-bold ms-1 text-center w-100">Disponible</label>
+                            <div class="form-control-plaintext text-center border rounded bg-white fw-bold text-dark"
+                                style="height: 55px; line-height: 45px;">
+                                {{ stockDisponible }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label text-muted small fw-bold ms-1">Cantidad a Mover</label>
+                            <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+                                <mat-label>Cantidad</mat-label>
+                                <input matInput type="number" formControlName="cantidad" min="1"
+                                    [max]="stockDisponible">
+                            </mat-form-field>
+                            @if (form.get('cantidad')?.hasError('max')) {
+                            <mat-error class="small mt-1">Excede la cantidad para movimiento</mat-error>
+                            }
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <label class="form-label text-muted small fw-bold ms-1">Motivo del Movimiento</label>
+                            <mat-form-field appearance="outline" class="w-100 custom-input">
+                                <mat-label>Motivo</mat-label>
+                                <textarea matInput formControlName="motivo" rows="2"
+                                    placeholder="Ej. Reabastecimiento de bodega">
+                                </textarea>
+                            </mat-form-field>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 pt-2">
+                    <button mat-raised-button class="btn-guardar px-5 py-2 rounded-pill"
+                        (click)="guardarTransferencia()" [disabled]="form.invalid">
+                        <mat-icon class="me-2">swap_horiz</mat-icon> REALIZAR MOVIMIENTO
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

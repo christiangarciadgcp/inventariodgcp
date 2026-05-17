@@ -1,0 +1,14 @@
+.card-hover {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+}
+
+.bg-custom {
+    background: linear-gradient(#031e3f 0%, #153863 100%);
+    width: 60px;
+    height: 60px;
+}

@@ -1,0 +1,148 @@
+<h2 mat-dialog-title>{{esEdicion ? 'Modificar Producto' : 'Registro de Producto'}}</h2>
+
+<mat-dialog-content>
+  <p class="text-secondary small mb-3">
+    {{esEdicion ? 'Modificar los datos de este producto' : 'Ingrese los datos para registrar un Nuevo Producto en el
+    sistema'}}</p>
+  <form [formGroup]="form" class="row g-3">
+
+    <div class="col-md-5">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>SKU / Código</mat-label>
+        <input matInput formControlName="skuproducto" (input)="onInputMayusculas($event, 'skuproducto')">
+        @if (form.get('skuproducto')?.hasError('required')) {
+        <mat-error>El sku es obligatorio</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-7">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Nombre del Producto</mat-label>
+        <input matInput formControlName="nombreproducto" (input)="onInputMayusculas($event, 'nombreproducto')">
+        @if (form.get('nombreproducto')?.hasError('required')) {
+        <mat-error>El nombre es obligatorio</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-12">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Categoría</mat-label>
+        <mat-select formControlName="idCategoria">
+          @for (c of listaCategorias; track c.idCategoria) {
+          <mat-option [value]="c.idCategoria">{{c.nombrecategoria}}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('idCategoria')?.hasError('required')) {
+        <mat-error>Categoria requerida</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Marca</mat-label>
+        <mat-select formControlName="idMarca">
+          @for (u of listaMarcas; track u.idMarca) {
+          <mat-option [value]="u.idMarca">{{u.nombremarca}}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('idMarca')?.hasError('required')) {
+        <mat-error>Marca requerida</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Modelo</mat-label>
+        <mat-select formControlName="idModelo">
+          @for (u of listaModelos; track u.idModelo) {
+          <mat-option [value]="u.idModelo">{{u.nombremodelo}}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('idModelo')?.hasError('required')) {
+        <mat-error>Modelo requerido</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Proveedor</mat-label>
+        <mat-select formControlName="idProveedor">
+          @for (p of listaProveedores; track p.idProveedor) {
+          <mat-option [value]="p.idProveedor">{{p.nombreproveedor}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>U. Medida</mat-label>
+        <mat-select formControlName="idUnidadMedida">
+          @for (u of listaUnidades; track u.idUnidadMedida) {
+          <mat-option [value]="u.idUnidadMedida">{{u.nombreunidadmedida}}</mat-option>
+          }
+        </mat-select>
+        @if (form.get('idUnidadMedida')?.hasError('required')) {
+        <mat-error>U. Medida requerida</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Serie</mat-label>
+        <input matInput formControlName="serieproducto" (input)="onInputMayusculas($event, 'serieproducto')">
+      </mat-form-field>
+    </div>
+
+    <div class="col-md-6">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Inventario</mat-label>
+        <input matInput formControlName="inventarioproducto" (input)="onInputMayusculas($event, 'inventarioproducto')">
+      </mat-form-field>
+    </div>
+
+    <div class="col-12">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput formControlName="descripcionproducto" rows="2"></textarea>
+      </mat-form-field>
+    </div>
+
+    @if(mostrarPrecioVenta){
+    <div class="col-md-4">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Costo</mat-label>
+        <input type="number" matInput formControlName="preciocostoproducto" prefix="$"
+          (keypress)="sn.soloNumeros($event)">
+      </mat-form-field>
+    </div>
+    }
+
+    @if(mostrarPrecioVenta){
+    <div class="col-md-4">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Precio Venta</mat-label>
+        <input type="number" matInput formControlName="precioventaproducto" prefix="$"
+          (keypress)="sn.soloNumeros($event)">
+      </mat-form-field>
+    </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
+  <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
+
+  <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="form.invalid || guardando"
+    (click)="guardar()">
+
+    {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}
+  </button>
+</mat-dialog-actions>
