@@ -55,7 +55,7 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-            "https://10.11.20.47", "http://localhost:4200"
+            "https://10.11.20.47", "http://localhost:4200", "https://bodegas_utdi.dgcp.gob.sv"
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));

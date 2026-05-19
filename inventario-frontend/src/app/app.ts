@@ -24,10 +24,10 @@ export class App implements OnDestroy {
     private isDialogResultPending = false;
     private isLoggingOut = false;
     private actividadSub!: Subscription;
-    
-    private syncChannel = new BroadcastChannel('session-sync'); 
 
-    //  TIEMPOS 
+    private syncChannel = new BroadcastChannel('session-sync');
+
+    //  TIEMPOS
     private readonly MAX_INACTIVIDAD = 60 * 60 * 1000; // 1 Hora
     private readonly TIEMPO_AVISO = 45 * 60 * 1000;    // Aviso a los 45 minutos
     private readonly REFRESH_TOKEN = 5 * 60 * 1000;    // Revisa el JWT cada 5 mins despues del mensaje de inactividad
@@ -35,7 +35,7 @@ export class App implements OnDestroy {
     // --- NUEVO: VARIABLES DEL CONTADOR DE PRUEBA ---
     private countdownInterval: any;
     private tiempoRestanteSegundos = 0;
-    tiempoFormateado = signal<string>('00:00'); 
+    tiempoFormateado = signal<string>('00:00');
     // -----------------------------------------------
 
     constructor() {
@@ -59,7 +59,7 @@ export class App implements OnDestroy {
                 }
 
                 if (isLoginRoute) {
-                    return; 
+                    return;
                 }
 
                 console.log('Sesión cerrada:...');
@@ -113,7 +113,7 @@ export class App implements OnDestroy {
         const ahora = new Date().getTime();
         const expiracion = expDate.getTime();
         const tiempoRestante = expiracion - ahora;
-    
+
         if (tiempoRestante <= 0) {
             console.error('El token ya expiró. Cerrando sesión');
             return;
@@ -122,7 +122,7 @@ export class App implements OnDestroy {
         this.actividadSub = this.authService.actividad$.subscribe(() => {
             if (!this.isDialogResultPending) {
                 this.resetearTimers();
-                this.syncChannel.postMessage('ACTIVITY'); 
+                this.syncChannel.postMessage('ACTIVITY');
             }
         });
     } */
@@ -138,7 +138,7 @@ export class App implements OnDestroy {
 
         // --- INICIO DE CÁLCULO DE TIEMPOS PARA CONSOLA ---
         const ahora = new Date();
-        
+
         // Sumamos los milisegundos a la hora actual para saber los tiempos exactos
         const horaAviso = new Date(ahora.getTime() + this.TIEMPO_AVISO);
         const horaCierre = new Date(ahora.getTime() + this.MAX_INACTIVIDAD);
@@ -153,7 +153,7 @@ export class App implements OnDestroy {
 
         const expiracion = expDate.getTime();
         const tiempoRestante = expiracion - ahora.getTime();
-    
+
         if (tiempoRestante <= 0) {
             console.error('El token ya expiró. Cerrando sesión');
             return;
@@ -162,7 +162,7 @@ export class App implements OnDestroy {
         this.actividadSub = this.authService.actividad$.subscribe(() => {
             if (!this.isDialogResultPending) {
                 this.resetearTimers();
-                this.syncChannel.postMessage('ACTIVITY'); 
+                this.syncChannel.postMessage('ACTIVITY');
             }
         });
     }
@@ -172,7 +172,7 @@ export class App implements OnDestroy {
 
         // --- NUEVO: LÓGICA DEL CONTADOR DE PRUEBA ---
         if (this.countdownInterval) clearInterval(this.countdownInterval);
-        
+
         // Convertimos el tiempo de inactividad máximo a segundos
         this.tiempoRestanteSegundos = Math.floor(this.MAX_INACTIVIDAD / 1000);
         this.actualizarTextoContador();
@@ -180,7 +180,7 @@ export class App implements OnDestroy {
         this.countdownInterval = setInterval(() => {
             this.tiempoRestanteSegundos--;
             this.actualizarTextoContador();
-            
+
             if (this.tiempoRestanteSegundos <= 0) {
                 clearInterval(this.countdownInterval);
             }
@@ -213,7 +213,7 @@ export class App implements OnDestroy {
 
 
     // =========================================================
-    // RENOVACIÓN DEL TOKEN 
+    // RENOVACIÓN DEL TOKEN
     // =========================================================
 
     iniciarAutoRenovacionToken() {
@@ -279,8 +279,8 @@ export class App implements OnDestroy {
 
     cerrarSesionForzada(reloadPage: boolean = false) {
         // Validación crucial: Si ya estamos en proceso de cerrar, no hacemos nada más
-        if (this.isLoggingOut) return; 
-        
+        if (this.isLoggingOut) return;
+
         this.isLoggingOut = true;
 
         this.limpiarTodo();

@@ -1,17 +1,17 @@
-<div class="d-flex min-vh-100 bg-light layout-wrapper">
-  
+<div class="min-vh-100 w-100 bg-light layout-wrapper overflow-x-hidden">
+
   <app-sidebar class="h-100 position-fixed start-0 top-0 bottom-0" style="z-index: 1030;"></app-sidebar>
-  
-  <main class="flex-grow-1 d-flex flex-column transition-margin" 
+
+  <main class="d-flex flex-column transition-margin"
         [style.margin-left]="layoutService.sidebarCollapsed() ? '75px' : '260px'"
         style="min-height: 100vh;">
-    
-    <div class="container-fluid px-5 mt-4"> 
-        <app-header></app-header>
+
+    <div class="container-fluid px-5 mt-4">
+      <app-header></app-header>
     </div>
-  
+
     <router-outlet></router-outlet>
-    
+
   </main>
 
 </div>
