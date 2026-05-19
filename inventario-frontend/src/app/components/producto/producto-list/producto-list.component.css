@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -12,6 +12,11 @@
     background: transparent;
     width: 100%; /* Intenta llenar la pantalla */
     min-width: 1100px; /* <--- AQUÍ ESTÁ EL TRUCO */
+    table-layout: auto !important;
+}
+
+.mat-column-nombre {
+  width: 100%;
 }
 
 .mat-mdc-header-row {
@@ -35,7 +40,7 @@
 }
 
 .hover-row:hover {
-    background-color: #f8faff !important; 
+    background-color: #f8faff !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     z-index: 1;
@@ -82,7 +87,7 @@
 /* --- BOTÓN NUEVO USUARIO --- */
 .btn-nuevo {
     background: linear-gradient(#031e3f 0%, #153863 100%);
-    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3); 
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     border: none;
     height: 45px;
     font-weight: 500;
@@ -149,7 +154,7 @@ button[mat-icon-button][color="warn"] {
     color: #2e7d32 !important;
 }
 .icon-danger {
-    color: #ff0000 !important; 
+    color: #ff0000 !important;
 }
 
 .badge {
