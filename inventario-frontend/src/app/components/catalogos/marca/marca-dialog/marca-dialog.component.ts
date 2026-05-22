@@ -6,6 +6,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {Utils} from '../../../../core/utils';
+import {Mensaje} from '../../../../core/mensaje';
 
 @Component({
   selector: 'app-marca-dialog',
@@ -20,6 +21,7 @@ export class MarcaDialogComponent implements OnInit{
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<MarcaDialogComponent>);
   private ft = Inject(Utils);
+  private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public marcaData : any) {}
 
@@ -39,9 +41,12 @@ export class MarcaDialogComponent implements OnInit{
   }
 
   guardar(){
-    if(this.form.valid){
-      this.dialogRef.close(this.form.value);
+    if(this.form.get('nombre')?.invalid){
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete los campos requeridos', 'warning');
+      return;
     }
+      this.dialogRef.close(this.form.value);
   }
 
   cancelar(){

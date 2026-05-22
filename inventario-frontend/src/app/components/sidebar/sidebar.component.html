@@ -38,6 +38,96 @@
                 }
             </a>
 
+
+          @if (permiso(['administrador', 'inventario utdi'])) {
+            @if (!layoutService.sidebarCollapsed()) {
+              <div class="nav-header">ADMINISTRACIÓN</div>
+            } @else {
+              <div class="nav-divider"></div>
+            }
+          }
+
+          <!--             <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
+                          [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
+                          <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
+
+                          @if (!layoutService.sidebarCollapsed()) {
+                          <span class="nav-text">Catálogos</span>
+                          }
+                      </a> -->
+
+          @if (permiso(['administrador'])) {
+            <a routerLink="/usuarios" routerLinkActive="active" class="nav-link"
+               [matTooltip]="layoutService.sidebarCollapsed() ? 'Usuarios' : '' " matTooltipPosition="right">
+              <div class="nav-icon"><mat-icon>group</mat-icon></div>
+
+              @if (!layoutService.sidebarCollapsed()) {
+                <span class="nav-text">Usuarios</span>
+              }
+            </a>
+          }
+
+          @if (permiso(['administrador', 'inventario utdi'])) {
+            <div class="nav-item-group" routerLinkActive="active-group" [routerLinkActiveOptions]="{exact: false}">
+
+              <a class="nav-link cursor-pointer" (click)="acoplarCatalogo()" [class.active]="rla.isActive"
+                 #rla="routerLinkActive" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}"
+                 [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
+
+                <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
+
+                @if (!layoutService.sidebarCollapsed()) {
+                  <span class="nav-text flex-grow-1">Catálogos</span>
+
+                  <mat-icon class="menu-arrow" [class.rotated]="opcionesCatalogo()">
+                    expand_more
+                  </mat-icon>
+                }
+              </a>
+
+              @if (!layoutService.sidebarCollapsed() && opcionesCatalogo()) {
+                <div class="nav-children">
+
+                  <a routerLink="/catalogos/bodegas" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-building"></i></div>
+                    <span class="nav-text">Bodegas</span>
+                  </a>
+
+                  <a routerLink="/catalogos/productos" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-box"></i></div>
+                    <span class="nav-text">Productos</span>
+                  </a>
+
+                  <a routerLink="/catalogos/categorias" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-tags"></i></div>
+                    <span class="nav-text">Categorías</span>
+                  </a>
+
+                  <a routerLink="/catalogos/proveedores" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-truck"></i></div>
+                    <span class="nav-text">Proveedores</span>
+                  </a>
+
+                  <a routerLink="/catalogos/unidades" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-rulers"></i></div>
+                    <span class="nav-text">Unidades de Medida</span>
+                  </a>
+
+                  <a routerLink="/catalogos/marcas" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-substack"></i></div>
+                    <span class="nav-text">Marcas</span>
+                  </a>
+
+                  <a routerLink="/catalogos/modelos" routerLinkActive="active" class="nav-link child-link">
+                    <div class="nav-icon small-icon"><i class="bi bi-ui-checks-grid"></i></div>
+                    <span class="nav-text">Modelos</span>
+                  </a>
+
+                </div>
+              }
+            </div>
+          }
+
             @if (!layoutService.sidebarCollapsed()) {
             <div class="nav-header">UTDI</div>
             } @else {
@@ -115,94 +205,7 @@
                 </a>
             }
 
-            @if (permiso(['administrador', 'inventario utdi'])) {
-                @if (!layoutService.sidebarCollapsed()) {
-                    <div class="nav-header">ADMINISTRACIÓN</div>
-                } @else {
-                    <div class="nav-divider"></div>
-                }
-            }
 
-<!--             <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
-                [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
-                <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
-
-                @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Catálogos</span>
-                }
-            </a> -->
-
-            @if (permiso(['administrador'])) {
-                <a routerLink="/usuarios" routerLinkActive="active" class="nav-link"
-                    [matTooltip]="layoutService.sidebarCollapsed() ? 'Usuarios' : '' " matTooltipPosition="right">
-                    <div class="nav-icon"><mat-icon>group</mat-icon></div>
-
-                    @if (!layoutService.sidebarCollapsed()) {
-                    <span class="nav-text">Usuarios</span>
-                    }
-                </a>
-            }
-
-            @if (permiso(['administrador', 'inventario utdi'])) {
-                <div class="nav-item-group" routerLinkActive="active-group" [routerLinkActiveOptions]="{exact: false}">
-
-                    <a class="nav-link cursor-pointer" (click)="acoplarCatalogo()" [class.active]="rla.isActive"
-                        #rla="routerLinkActive" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}"
-                        [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
-
-                        <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
-
-                        @if (!layoutService.sidebarCollapsed()) {
-                        <span class="nav-text flex-grow-1">Catálogos</span>
-
-                        <mat-icon class="menu-arrow" [class.rotated]="opcionesCatalogo()">
-                            expand_more
-                        </mat-icon>
-                        }
-                    </a>
-
-                    @if (!layoutService.sidebarCollapsed() && opcionesCatalogo()) {
-                    <div class="nav-children">
-
-                        <a routerLink="/catalogos/bodegas" routerLinkActive="active" class="nav-link child-link">
-                            <div class="nav-icon small-icon"><i class="bi bi-building"></i></div>
-                            <span class="nav-text">Bodegas</span>
-                        </a>
-
-                        <a routerLink="/catalogos/productos" routerLinkActive="active" class="nav-link child-link">
-                            <div class="nav-icon small-icon"><i class="bi bi-box"></i></div>
-                            <span class="nav-text">Productos</span>
-                        </a>
-
-                        <a routerLink="/catalogos/categorias" routerLinkActive="active" class="nav-link child-link">
-                            <div class="nav-icon small-icon"><i class="bi bi-tags"></i></div>
-                            <span class="nav-text">Categorías</span>
-                        </a>
-
-                        <a routerLink="/catalogos/proveedores" routerLinkActive="active" class="nav-link child-link">
-                            <div class="nav-icon small-icon"><i class="bi bi-truck"></i></div>
-                            <span class="nav-text">Proveedores</span>
-                        </a>
-
-                        <a routerLink="/catalogos/unidades" routerLinkActive="active" class="nav-link child-link">
-                            <div class="nav-icon small-icon"><i class="bi bi-rulers"></i></div>
-                            <span class="nav-text">Unidades de Medida</span>
-                        </a>
-
-                      <a routerLink="/catalogos/marcas" routerLinkActive="active" class="nav-link child-link">
-                        <div class="nav-icon small-icon"><i class="bi bi-substack"></i></div>
-                        <span class="nav-text">Marcas</span>
-                      </a>
-
-                      <a routerLink="/catalogos/modelos" routerLinkActive="active" class="nav-link child-link">
-                        <div class="nav-icon small-icon"><i class="bi bi-ui-checks-grid"></i></div>
-                        <span class="nav-text">Modelos</span>
-                      </a>
-
-                    </div>
-                    }
-                </div>
-            }
 
         </div>
     </div>

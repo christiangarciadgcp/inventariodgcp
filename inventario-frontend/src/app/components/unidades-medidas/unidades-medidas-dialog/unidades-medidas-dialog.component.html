@@ -3,13 +3,13 @@
 <mat-dialog-content>
     <p class="text-secondary small mb-3">
         {{esEdicion ? 'Modificar Unidad de Medida' : 'Ingrese los datos para registrar una nueva Unidad de Medida en el sistema'}}</p>
-    
+
     <form [formGroup]="form" (ngSubmit)="guardar()">
 
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Unidad de Medida</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej. Metro" autocomplete="off">
-            @if (form.get('nombre')?.hasError('required')) {
+            @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }
         </mat-form-field>
@@ -17,7 +17,7 @@
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Abreviatura</mat-label>
             <input matInput formControlName="abreviatura" placeholder="Ej. m" autocomplete="off">
-            @if (form.get('abreviatura')?.hasError('required')) {
+            @if (form.get('abreviatura')?.hasError('required') && form.get('abreviatura')?.touched) {
                 <mat-error>La abreviatura es obligatoria</mat-error>
             }
         </mat-form-field>
@@ -28,7 +28,7 @@
 
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
     <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
         {{esEdicion ? 'Guardar Cambios' : 'Guardar'}}
     </button>
 </mat-dialog-actions>

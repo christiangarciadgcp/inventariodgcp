@@ -28,7 +28,7 @@ import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.com
 })
 export class ModeloListComponent {
 
-  displayedColumns: string[] = ['id', 'nombre', 'acciones'];
+  displayedColumns: string[] = ['id', 'marca', 'nombre', 'acciones'];
   dataSource = new MatTableDataSource<Modelo>([]);
   modelos = signal<Modelo[]>([]);
 
@@ -52,7 +52,10 @@ export class ModeloListComponent {
 
   private cargarModelos() {
     this.modeloService.getModelos().subscribe({
-      next: (data) => this.modelos.set(data),
+      next: (data) => {
+        const modelosL = data.filter(m => m.nombremodelo !== 'SIN ESPECIFICAR');
+        this.modelos.set(modelosL)
+      },
       error: (err) => {
         const msg = err.error?.mensaje || err.error?.message || 'Error al cargar los modelos';
         this.mensaje.open(msg, 'warning');
@@ -78,13 +81,9 @@ export class ModeloListComponent {
     });
   }
 
-  actualizarModelo(id : number, data : any){
-    const modeloActualizado : Modelo = {
-      nombremodelo: data.nombre,
-        activo : true
-    };
+  actualizarModelo(id : number, datos : any){
 
-    this.modeloService.updateModelo(id, modeloActualizado).subscribe({
+    this.modeloService.updateModelo(id, datos).subscribe({
       next : () => {
         this.cargarModelos();
         this.mensaje.open('Modelo actualizado correctamente', 'exito');
@@ -97,12 +96,8 @@ export class ModeloListComponent {
   }
 
   registrarModelo(datos : any){
-    const nuevoModelo : Modelo = {
-      nombremodelo : datos.nombre,
-      activo : datos.activo
-    };
 
-    this.modeloService.createModelo(nuevoModelo).subscribe({
+    this.modeloService.createModelo(datos).subscribe({
       next : () => {
         this.cargarModelos();
         this.mensaje.open('Modelo registrado exitosamente', 'exito');

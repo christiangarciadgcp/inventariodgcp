@@ -5,11 +5,12 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {Mensaje} from '../../../core/mensaje';
 
 @Component({
   selector: 'app-unidades-medidas-dialog',
   imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule, 
+    CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule
   ],
   templateUrl: './unidades-medidas-dialog.component.html',
@@ -19,6 +20,7 @@ export class UnidadesMedidasDialogComponent implements OnInit{
 
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<UnidadesMedidasDialogComponent>);
+  private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public unidadMedidaData : any) {}
 
@@ -40,9 +42,12 @@ export class UnidadesMedidasDialogComponent implements OnInit{
   }
 
   guardar(){
-    if(this.form.valid){
-      this.dialogRef.close(this.form.value);
+    if (this.form.get('nombre')?.invalid || this.form.get('abreviatura')?.invalid) {
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete los campos requeridos', 'warning');
+      return;
     }
+    this.dialogRef.close(this.form.value);
   }
 
   cancelar(){

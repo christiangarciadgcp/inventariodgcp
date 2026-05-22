@@ -8,24 +8,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sistemainventario.inventario.model.Marca;
+import com.sistemainventario.inventario.model.Modelo;
 import com.sistemainventario.inventario.repository.MarcaRepository;
+import com.sistemainventario.inventario.repository.ModeloRepository;
 
 @Service
 public class MarcaService {
 
     private final MarcaRepository marcaRepository;
+    private final ModeloRepository modeloRepository;
 
     //CONSTRUCTOR
-    public MarcaService(MarcaRepository marcaRepository){
+    public MarcaService(MarcaRepository marcaRepository,
+        ModeloRepository modeloRepository){
         this.marcaRepository = marcaRepository;
+        this.modeloRepository = modeloRepository;
     }
 
     public List<Marca> listarMarcas(){
-        return marcaRepository.findAll(Sort.by(Sort.Direction.ASC,"idMarca"));
+        return marcaRepository.findAll(Sort.by(Sort.Direction.ASC,"nombremarca"));
     }
 
     public List<Marca> listarMarcasActivas(){
-        return marcaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"idMarca"));
+        return marcaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"nombremarca"));
     }
 
     public Optional<Marca> obtenerMarcaPorId(Integer id){
@@ -34,7 +39,25 @@ public class MarcaService {
 
     @Transactional
     public Marca guardarMarca(Marca marca){
-        return marcaRepository.save(marca);
+
+        boolean esNuevaMarca = (marca.getIdMarca() == null);
+
+        if (esNuevaMarca) {
+            marca.setActivo(true);
+        }
+
+        Marca marcaGuardada = marcaRepository.save(marca);
+
+        if (esNuevaMarca) {
+            Modelo modeloSinEspecificar = new Modelo();
+            modeloSinEspecificar.setNombremodelo("SIN ESPECIFICAR");
+            modeloSinEspecificar.setMarca(marcaGuardada);
+            modeloSinEspecificar.setActivo(true);
+            
+            modeloRepository.save(modeloSinEspecificar);
+        }
+
+        return marcaGuardada;
     }
 
     @Transactional

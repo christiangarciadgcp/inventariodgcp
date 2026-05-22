@@ -8,10 +8,23 @@
   <form [formGroup]="form" (ngSubmit)="guardar()">
 
     <mat-form-field appearance="outline" class="w-100 mb-2">
-      <mat-label>Nombre del Modelo</mat-label>
+      <mat-label>Marca</mat-label>
+      <mat-select formControlName="idMarca">
+        @for (m of listaMarcas; track m.idMarca) {
+          <mat-option [value]="m.idMarca">{{m.nombremarca}}</mat-option>
+        }
+      </mat-select>
+      @if (form.get('idMarca')?.hasError('required') && form.get('idMarca')?.touched) {
+        <mat-error>Debe seleccionar una marca</mat-error>
+      }
+    </mat-form-field>
+
+
+    <mat-form-field appearance="outline" class="w-100 mb-2">
+      <mat-label>Modelo</mat-label>
       <input matInput formControlName="nombre" placeholder="Ej. Envy , Pavilion Desktop" autocomplete="off">
-      @if (form.get('nombre')?.hasError('required')) {
-        <mat-error>El nombre es obligatorio</mat-error>
+      @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
+        <mat-error>Ingrese un Modelo</mat-error>
       }
     </mat-form-field>
 
@@ -21,7 +34,7 @@
 
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
   <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
-  <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+  <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
     {{esEdicion ? 'Guardar cambios' : 'Guardar'}}
 
   </button>

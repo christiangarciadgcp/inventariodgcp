@@ -11,4 +11,7 @@ public interface ModeloRepository extends JpaRepository<Modelo, Integer>{
 
     List<Modelo> findByActivoTrue(Sort sort);
 
+    //BUSQUEDA DE MODELOS ACTIVOS POR ID_MARCA  q
+    List<Modelo> findByMarca_IdMarcaAndActivoTrue(Integer idMarca, Sort sort);
+
 }

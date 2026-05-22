@@ -20,11 +20,15 @@ export class ModeloService {
     return this.http.get<Modelo[]>(`${this.apiUrl}/activas`);
   }
 
-  createModelo(modelo : Modelo) : Observable<Modelo>{
+  getModelosPorMarca(idMarca: number): Observable<Modelo[]> {
+    return this.http.get<Modelo[]>(`${this.apiUrl}/por-marca/${idMarca}`);
+  }
+
+  createModelo(modelo : any) : Observable<Modelo>{
     return this.http.post<Modelo>(this.apiUrl, modelo);
   }
 
-  updateModelo(id:number, modelo:Modelo) : Observable<Modelo>{
+  updateModelo(id:number, modelo: any) : Observable<Modelo>{
     return this.http.put<Modelo>(`${this.apiUrl}/${id}`, modelo);
   }
 
@@ -35,5 +39,5 @@ export class ModeloService {
   activarModelo(id:number) : Observable<void>{
     return this.http.put<void>(`${this.apiUrl}/${id}/activar`, {});
   }
-  
+
 }

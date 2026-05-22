@@ -7,6 +7,9 @@ import com.sistemainventario.inventario.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,24 +20,9 @@ import java.util.Optional;
 public class ProductoController {
 
     private final ProductoService productoService;
-    private final CategoriaService categoriaService;
-    private final ProveedorService proveedorService;
-    private final UnidadMedidaService unidadMedidaService;
-    private final MarcaService marcaService;
-    private final ModeloService modeloService;
 
-    public ProductoController(ProductoService productoService,
-                              CategoriaService categoriaService,
-                              ProveedorService proveedorService,
-                              UnidadMedidaService unidadMedidaService,
-                              MarcaService marcaService,
-                              ModeloService modeloService) {
+    public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
-        this.categoriaService = categoriaService;
-        this.proveedorService = proveedorService;
-        this.unidadMedidaService = unidadMedidaService;
-        this.marcaService = marcaService;
-        this.modeloService = modeloService;
     }
 
     @GetMapping
@@ -57,76 +45,19 @@ public class ProductoController {
         return productoService.buscarPorNombre(nombre);
     }
 
-    @PostMapping
-    public Producto guardarProducto(@RequestBody ProductoRegistroDTO productoDTO){
-
-        Categoria categoria = categoriaService.obtenerCategoriaPorId(productoDTO.idCategoria)
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-
-/*         Proveedor proveedor = proveedorService.obtenerProveedorPorId(productoDTO.idProveedor)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado")); */
-
-        Proveedor proveedor = null;
-        if (productoDTO.getIdProveedor() != null) {
-            proveedor = proveedorService.obtenerProveedorPorId(productoDTO.getIdProveedor())
-                    .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
-        }
-
-        UnidadMedida unidadMedida = unidadMedidaService.obtenerUnidadMedidaPorId(productoDTO.idUnidadMedida)
-                .orElseThrow(() -> new RuntimeException("Unidad medida no encontrada"));
-
-        Marca marca = marcaService.obtenerMarcaPorId(productoDTO.idMarca)
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-
-        Modelo modelo = modeloService.obtenerModeloPorId(productoDTO.idModelo)
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
-
-        //SE CREA EL OBJETO PRODUCTO
-        Producto producto = new Producto();
-        producto.setIdProducto(productoDTO.idProducto);
-        producto.setNombreproducto(productoDTO.nombreproducto);
-        producto.setSkuproducto(productoDTO.skuproducto);
-        producto.setDescripcionproducto(productoDTO.descripcionproducto);
-        producto.setSerieproducto(productoDTO.serieproducto);
-        producto.setInventarioproducto(productoDTO.inventarioproducto);
-        producto.setPreciocostoproducto(productoDTO.preciocostoproducto);
-        producto.setPrecioventaproducto(productoDTO.precioventaproducto);
-
-        producto.setCategoria(categoria);
-        producto.setProveedor(proveedor);
-        producto.setUnidadMedida(unidadMedida);
-        producto.setMarca(marca);
-        producto.setModelo(modelo);
-
-        return productoService.guardarProducto(producto);
+    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public Producto guardarProducto(
+            @RequestPart("producto") ProductoRegistroDTO productoDTO,
+            @RequestPart(value = "imagenes", required = false) MultipartFile[] imagenes) {
+        return productoService.guardarProducto(productoDTO, imagenes);
     }
 
-    @PutMapping("/{id}")
-    public Producto actualizaProducto(@PathVariable Integer id, @RequestBody ProductoRegistroDTO productoDTO) {
-
-        Categoria categoria = categoriaService.obtenerCategoriaPorId(productoDTO.idCategoria)
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-
-/*         Proveedor proveedor = proveedorService.obtenerProveedorPorId(productoDTO.idProveedor)
-                .orElseThrow(() -> new RuntimeException("Proveedor no encontrado")); */
-
-        Proveedor proveedor = null;
-        if (productoDTO.getIdProveedor() != null) {
-            proveedor = proveedorService.obtenerProveedorPorId(productoDTO.getIdProveedor())
-                    .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
-        }
-
-        UnidadMedida unidadMedida = unidadMedidaService.obtenerUnidadMedidaPorId(productoDTO.idUnidadMedida)
-                .orElseThrow(() -> new RuntimeException("Unidad medida no encontrada"));
-
-        Marca marca = marcaService.obtenerMarcaPorId(productoDTO.idMarca)
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-
-        Modelo modelo = modeloService.obtenerModeloPorId(productoDTO.idModelo)
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
-
-        
-        return productoService.actualizarProducto(id, productoDTO, categoria, proveedor, unidadMedida, marca, modelo);
+    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public Producto actualizaProducto(
+            @PathVariable Integer id, 
+            @RequestPart("producto") ProductoRegistroDTO productoDTO,
+            @RequestPart(value = "imagenes", required = false) MultipartFile[] imagenes) {
+        return productoService.actualizarProducto(id, productoDTO, imagenes);
     }
 
     @DeleteMapping("/{id}")

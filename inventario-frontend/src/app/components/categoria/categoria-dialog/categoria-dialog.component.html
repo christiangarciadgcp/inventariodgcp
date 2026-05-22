@@ -4,13 +4,13 @@
     <p class="text-secondary small mb-3">
         {{ !esEdicion ? 'Ingrese los datos para registrar una nueva categoría en el sistema.' : 'Modifique el nombre de la Categoría'}}
     </p>
-    
+
     <form [formGroup]="form" (ngSubmit)="guardar()">
-        
+
         <mat-form-field appearance="outline">
             <mat-label>Nombre de la Categoría</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej. Electrónica" autocomplete="off">
-            @if (form.get('nombre')?.hasError('required')) {
+            @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }
         </mat-form-field>
@@ -19,8 +19,8 @@
 
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
     <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
         {{ esEdicion ? 'Guardar cambios' : 'Guardar'}}
-        
+
     </button>
 </mat-dialog-actions>

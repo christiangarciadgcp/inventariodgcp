@@ -2,9 +2,9 @@ package com.sistemainventario.inventario.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.sistemainventario.inventario.dto.modeloDTO.ModeloDTO;
 import com.sistemainventario.inventario.model.Modelo;
 import com.sistemainventario.inventario.service.ModeloService;
-
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
@@ -29,14 +29,19 @@ public class ModeloController {
         return modeloService.listarModelosActivos();
     }
 
+    @GetMapping("/por-marca/{idMarca}")
+    public List<Modelo> listarModelosPorMarca(@PathVariable Integer idMarca){
+        return modeloService.listarModelosPorMarca(idMarca);
+    }
+
     @PostMapping
-    public Modelo guardarModelo(@RequestBody Modelo modelo){
-        return modeloService.guardarModelo(modelo);
+    public Modelo guardarModelo(@RequestBody ModeloDTO modeloDTO){
+        return modeloService.guardarModelo(modeloDTO);
     }
 
     @PutMapping("/{id}")
-    public Modelo actualizarModelo(@PathVariable Integer id, @RequestBody Modelo modelo){
-        return modeloService.actualizarModelo(id, modelo);
+    public Modelo actualizarModelo(@PathVariable Integer id, @RequestBody ModeloDTO modeloDTO){
+        return modeloService.actualizarModelo(id, modeloDTO);
     }
 
     @PutMapping("/{id}/desactivar")
@@ -50,8 +55,5 @@ public class ModeloController {
         modeloService.activarModelo(id);
         return ResponseEntity.ok().build();
     }
-
-
-
 
 }

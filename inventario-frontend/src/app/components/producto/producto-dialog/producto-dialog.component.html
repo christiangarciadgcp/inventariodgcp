@@ -2,17 +2,20 @@
 
 <mat-dialog-content>
   <p class="text-secondary small mb-3">
-    {{esEdicion ? 'Modificar los datos de este producto' : 'Ingrese los datos para registrar un Nuevo Producto en el
-    sistema'}}</p>
+    {{esEdicion ? 'Modificar los datos de este producto' : 'Ingrese los datos para registrar un Nuevo Producto en el sistema'}}</p>
   <form [formGroup]="form" class="row g-3">
 
     <div class="col-md-5">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>SKU / Código</mat-label>
-        <input matInput formControlName="skuproducto" (input)="onInputMayusculas($event, 'skuproducto')">
-        @if (form.get('skuproducto')?.hasError('required')) {
-        <mat-error>El sku es obligatorio</mat-error>
+
+        @if (!esEdicion) {
+          <input matInput [value]="skuPreview" readonly class="text-primary fw-bolder"
+                 matTooltip="El código final reemplazará las X por el ID correlativo">
+        }@else {
+          <input matInput formControlName="skuproducto" readonly class="text-dark fw-bolder">
         }
+
       </mat-form-field>
     </div>
 
@@ -20,7 +23,7 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Nombre del Producto</mat-label>
         <input matInput formControlName="nombreproducto" (input)="onInputMayusculas($event, 'nombreproducto')">
-        @if (form.get('nombreproducto')?.hasError('required')) {
+        @if (form.get('nombreproducto')?.hasError('required') && form.get('nombreproducto')?.touched) {
         <mat-error>El nombre es obligatorio</mat-error>
         }
       </mat-form-field>
@@ -34,7 +37,7 @@
           <mat-option [value]="c.idCategoria">{{c.nombrecategoria}}</mat-option>
           }
         </mat-select>
-        @if (form.get('idCategoria')?.hasError('required')) {
+        @if (form.get('idCategoria')?.hasError('required') && form.get('idCategoria')?.touched) {
         <mat-error>Categoria requerida</mat-error>
         }
       </mat-form-field>
@@ -48,7 +51,7 @@
           <mat-option [value]="u.idMarca">{{u.nombremarca}}</mat-option>
           }
         </mat-select>
-        @if (form.get('idMarca')?.hasError('required')) {
+        @if (form.get('idMarca')?.hasError('required') && form.get('idMarca')?.touched) {
         <mat-error>Marca requerida</mat-error>
         }
       </mat-form-field>
@@ -62,7 +65,7 @@
           <mat-option [value]="u.idModelo">{{u.nombremodelo}}</mat-option>
           }
         </mat-select>
-        @if (form.get('idModelo')?.hasError('required')) {
+        @if (form.get('idModelo')?.hasError('required') && form.get('idModelo')?.touched) {
         <mat-error>Modelo requerido</mat-error>
         }
       </mat-form-field>
@@ -87,7 +90,7 @@
           <mat-option [value]="u.idUnidadMedida">{{u.nombreunidadmedida}}</mat-option>
           }
         </mat-select>
-        @if (form.get('idUnidadMedida')?.hasError('required')) {
+        @if (form.get('idUnidadMedida')?.hasError('required') && form.get('idUnidadMedida')?.touched) {
         <mat-error>U. Medida requerida</mat-error>
         }
       </mat-form-field>
@@ -113,6 +116,32 @@
         <textarea matInput formControlName="descripcionproducto" rows="2"></textarea>
       </mat-form-field>
     </div>
+
+    <div class="col-12 mt-1 mb-2">
+      <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>
+
+      <input type="file" #fileInput hidden multiple accept="image/png, image/jpeg, image/webp" (change)="onFilesSelected($event)">
+
+      <button mat-stroked-button color="primary" type="button" class="rounded-pill px-4 mb-3" (click)="fileInput.click()">
+        <mat-icon class="me-2">add_a_photo</mat-icon> Seleccionar Fotos
+      </button>
+
+      <div class="d-flex flex-wrap gap-3">
+        @for (img of previsualizaciones; track $index) {
+          <div class="position-relative shadow-sm" style="border-radius: 8px;">
+            <img [src]="img" class="img-thumbnail bg-white border" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
+            <button mat-mini-fab color="warn" type="button"
+                    class="position-absolute shadow-sm"
+                    style="top: -10px; right: -10px; transform: scale(0.65);"
+                    matTooltip="Quitar foto"
+                    (click)="removerImagenNueva($index)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
 
     @if(mostrarPrecioVenta){
     <div class="col-md-4">
@@ -140,7 +169,7 @@
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
   <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
 
-  <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="form.invalid || guardando"
+  <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="guardando"
     (click)="guardar()">
 
     {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}

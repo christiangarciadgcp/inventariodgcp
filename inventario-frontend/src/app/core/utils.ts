@@ -38,15 +38,12 @@ import {AbstractControl} from '@angular/forms';
     formatearTelefono(valorActual: string): string {
       if (!valorActual) return '';
 
-      // 1. Quitamos todo lo que no sea número
       let soloNumeros = valorActual.replace(/\D/g, '');
 
-      // 2. Si ya escribieron más de 4 números, le insertamos el guion en medio
       if (soloNumeros.length > 4) {
         return soloNumeros.substring(0, 4) + '-' + soloNumeros.substring(4, 8);
       }
 
-      // 3. Devolvemos el valor limpio
       return soloNumeros;
     }
 

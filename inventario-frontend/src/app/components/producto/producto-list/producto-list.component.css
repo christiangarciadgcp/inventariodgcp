@@ -86,10 +86,19 @@
   background-color: rgba(0,0,0,0.04);
 }
 
+.mat-column-marca {
+  width: 200px;
+  min-width: 180px;
+  max-width: 200px;
+  text-align: center;
+  padding-right: 24px !important;
+  overflow: visible !important;
+}
+
 .mat-column-acciones {
-  width: 140px;
-  min-width: 140px;
-  max-width: 140px;
+  width: 200px;
+  min-width: 160px;
+  max-width: 200px;
   text-align: center;
   padding-right: 24px !important;
   overflow: visible !important;

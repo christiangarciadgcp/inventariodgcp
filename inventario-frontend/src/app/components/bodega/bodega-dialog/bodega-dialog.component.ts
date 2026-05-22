@@ -6,11 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Utils } from '../../../core/utils';
+import {Mensaje} from '../../../core/mensaje';
 
 @Component({
   selector: 'app-bodega-dialog',
   imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule, 
+    CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule
   ],
   templateUrl: './bodega-dialog.component.html',
@@ -20,7 +21,8 @@ export class BodegaDialogComponent implements OnInit{
 
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<BodegaDialogComponent>);
-  private ft = Inject(Utils);
+  private ft = inject(Utils);
+  private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public bodegaData : any) {}
 
@@ -28,7 +30,7 @@ export class BodegaDialogComponent implements OnInit{
 
   form : FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    direccion: ['', [Validators.required]], // Dirección obligatoria
+    direccion: [''],
     telefono: ['', [Validators.pattern('^[0-9]{4}-[0-9]{4}$')]]
   });
 
@@ -44,16 +46,21 @@ export class BodegaDialogComponent implements OnInit{
   }
 
   mascaraTelefono(event: any) {
-    const valorFormateado = this.ft.formatearTelefono(event.target.value);
+    const input = event.target as HTMLInputElement;
+    const valorFormateado = this.ft.formatearTelefono(input.value);
 
     this.form.get('telefono')?.setValue(valorFormateado, { emitEvent: false });
+    input.value = valorFormateado;
   }
 
 
   guardar(){
-    if(this.form.valid){
-      this.dialogRef.close(this.form.value);
+    if(this.form.get('nombre')?.invalid){
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete los campos requeridos', 'warning');
+      return;
     }
+      this.dialogRef.close(this.form.value);
   }
 
   cancelar(){

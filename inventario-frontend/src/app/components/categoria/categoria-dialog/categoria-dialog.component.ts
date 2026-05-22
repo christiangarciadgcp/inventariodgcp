@@ -7,6 +7,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {Mensaje} from '../../../core/mensaje';
 
 @Component({
   selector: 'app-categoria-dialog',
@@ -28,6 +29,7 @@ export class CategoriaDialogComponent implements OnInit{
 
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<CategoriaDialogComponent>);
+  private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public categoriaData:any){}
 
@@ -48,10 +50,12 @@ export class CategoriaDialogComponent implements OnInit{
   }
 
   guardar() {
-    if (this.form.valid) {
-      // Cerramos el diálogo y enviamos el valor del formulario a la lista
-      this.dialogRef.close(this.form.value);
+    if (this.form.get('nombre')?.invalid) {
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete los campos requeridos', 'warning');
+      return;
     }
+      this.dialogRef.close(this.form.value);
   }
 
   cancelar() {

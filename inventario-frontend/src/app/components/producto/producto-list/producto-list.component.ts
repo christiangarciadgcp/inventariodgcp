@@ -19,6 +19,7 @@ import { ProductoDialogComponent } from '../producto-dialog/producto-dialog.comp
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
+import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/producto-galeria-dialog.component';
 
 @Component({
   selector: 'app-producto-list',
@@ -64,12 +65,14 @@ export class ProductoListComponent implements OnInit {
       switch(property){
         case 'id':
           return item.idProducto;
+        case 'sku':
+          return item.skuproducto;
         case 'nombre':
           return item.nombreproducto;
         case 'categoria':
           return item.categoria?.nombrecategoria;
         case 'marca':
-          return item.marca?.nombremarca;
+          return item.modelo?.marca?.nombremarca;
         case 'proveedor':
           return item.proveedor?.nombreproveedor;
         case 'estado':
@@ -100,6 +103,21 @@ export class ProductoListComponent implements OnInit {
       error: (err) => {
         const msg = err.error?.mensaje || err.error?.message || 'Error al cargar productos';
         this.mensaje.open(msg, 'warning');
+      }
+    });
+  }
+
+  verGaleria(producto: any) {
+    if (!producto.imagenes || producto.imagenes.length === 0) {
+      this.mensaje.open('Este producto no tiene fotografías asignadas.', 'info');
+      return;
+    }
+
+    this.dialog.open(ProductoGaleriaDialogComponent, {
+      width: '800px',
+      data: {
+        nombre: producto.nombreproducto,
+        imagenes: producto.imagenes
       }
     });
   }

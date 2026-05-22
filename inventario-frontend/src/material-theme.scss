@@ -20,37 +20,37 @@ html {
 
 .snack-exito {
   @include mat.snack-bar-overrides((
-    container-shape: 10px,  
+    container-shape: 10px,
     supporting-text-weight: 500,
     supporting-text-size: 17px,
     supporting-text-line-height: 35px,
-    container-color: #e1ffe3, 
-    supporting-text-color: #00a413, 
+    container-color: #e1ffe3,
+    supporting-text-color: #00a413,
     button-color: #2e7d32
   ));
 }
 
 .snack-error {
   @include mat.snack-bar-overrides((
-    container-shape: 10px,  
+    container-shape: 10px,
     supporting-text-weight: 500,
     supporting-text-size: 17px,
     supporting-text-line-height: 35px,
-    container-color: #ffd1d8,       
-    supporting-text-color: #b70000, 
-    button-color: #c62828          
+    container-color: #ffd1d8,
+    supporting-text-color: #b70000,
+    button-color: #c62828
   ));
 }
 
 .snack-warning {
   @include mat.snack-bar-overrides((
-    container-shape: 10px,  
+    container-shape: 10px,
     supporting-text-weight: 600,
     supporting-text-size: 17px,
     supporting-text-line-height: 35px,
     container-color: #ffeac3,
-    supporting-text-color: #bb6700, 
-    button-color: #ef6c00        
+    supporting-text-color: #bb6700,
+    button-color: #ef6c00
   ));
 }
 

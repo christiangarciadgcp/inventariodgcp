@@ -10,6 +10,7 @@ import { CustomPaginatorIntl } from './core/custom-paginator';
 import { authInterceptor } from './interceptors/auth-interceptor';
 import { actividadInterceptor } from './interceptors/actividad-interceptor';
 import { provideHotToastConfig } from '@ngxpert/hot-toast';
+import {MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideHotToastConfig(),
     provideHttpClient(withInterceptors([authInterceptor,actividadInterceptor])),
 
-    { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }, provideHotToastConfig()
+    { provide: MatPaginatorIntl, useClass: CustomPaginatorIntl },
+
   ]
 };

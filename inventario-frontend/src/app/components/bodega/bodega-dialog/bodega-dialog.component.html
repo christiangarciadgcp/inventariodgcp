@@ -5,13 +5,13 @@
         {{esEdicion ? 'Modificar los datos de la Bodega' : 'Ingrese los datos para registrar una nueva Bodega en el sistema.'}}
 
     </p>
-    
+
     <form [formGroup]="form" (ngSubmit)="guardar()">
 
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Nombre de la Bodega</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej. Bodega Central" autocomplete="off">
-            @if (form.get('nombre')?.hasError('required')) {
+            @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }
         </mat-form-field>
@@ -19,9 +19,6 @@
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Dirección Física</mat-label>
             <input matInput formControlName="direccion" placeholder="Ej. Calle Principal #123" autocomplete="off">
-            @if (form.get('direccion')?.hasError('required')) {
-                <mat-error>La dirección es obligatoria</mat-error>
-            }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
@@ -31,15 +28,14 @@
                 <mat-error>El formato debe ser ####-####</mat-error>
             }
         </mat-form-field>
-
     </form>
 
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
     <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
         {{esEdicion ? 'Guardar cambios' : 'Guardar'}}
-        
+
     </button>
 </mat-dialog-actions>

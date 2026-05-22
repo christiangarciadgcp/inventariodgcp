@@ -17,7 +17,6 @@ public class ProductoRegistroDTO {
         public Integer idCategoria; 
         public Integer idProveedor;
         public Integer idUnidadMedida;
-        public Integer idMarca;
         public Integer idModelo;
 
 }

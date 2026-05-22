@@ -3,13 +3,13 @@
 <mat-dialog-content>
     <p class="text-secondary small mb-3">
         {{esEdicion ? 'Modificar los datos del proveedor' : 'Ingrese los datos para registrar un nuevo Proveedor en el sistema.' }}</p>
-    
+
     <form [formGroup]="form" (ngSubmit)="guardar()">
 
         <mat-form-field appearance="outline">
             <mat-label>Nombre del Proveedor</mat-label>
             <input matInput formControlName="nombre" placeholder="Ej. Distribuidora S.A." autocomplete="off">
-            @if (form.get('nombre')?.hasError('required')) {
+            @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }
         </mat-form-field>
@@ -17,7 +17,7 @@
         <mat-form-field appearance="outline">
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefono" placeholder="Ej. 7000-8000" autocomplete="off" maxlength="9" (input)="mascaraTelefono($event)">
-            @if (form.get('telefono')?.hasError('required')) {
+            @if (form.get('telefono')?.hasError('required') && form.get('telefono')?.touched) {
                 <mat-error>El telefono es obligatorio</mat-error>
             }
             @if (form.get('telefono')?.hasError('pattern')) {
@@ -30,7 +30,7 @@
 
 <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
     <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
-    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()" [disabled]="form.invalid">
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
         {{esEdicion ? 'Guardar cambios' : 'Guardar'}}
     </button>
 </mat-dialog-actions>

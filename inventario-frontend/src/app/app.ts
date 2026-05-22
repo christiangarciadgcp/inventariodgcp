@@ -143,12 +143,12 @@ export class App implements OnDestroy {
         const horaAviso = new Date(ahora.getTime() + this.TIEMPO_AVISO);
         const horaCierre = new Date(ahora.getTime() + this.MAX_INACTIVIDAD);
 
-        console.log(`=================================================`);
+/*        console.log(`=================================================`);
         console.log(`✅ Sesión iniciada a las: ${ahora.toLocaleTimeString()}`);
         console.log(`⚠️ Primer aviso programado para: ${horaAviso.toLocaleTimeString()}`);
         console.log(`🛑 Cierre por inactividad a las: ${horaCierre.toLocaleTimeString()}`);
         console.log(`📌 Nota: Estos tiempos se renuevan con cada acción que realizas.`);
-        console.log(`=================================================`);
+        console.log(`=================================================`);*/
         // --- FIN DE CÁLCULO DE TIEMPOS ---
 
         const expiracion = expDate.getTime();
@@ -156,6 +156,8 @@ export class App implements OnDestroy {
 
         if (tiempoRestante <= 0) {
             console.error('El token ya expiró. Cerrando sesión');
+            this.syncChannel.postMessage('LOGOUT_SESSION');
+            this.cerrarSesionForzada(true);
             return;
         }
 
@@ -224,6 +226,13 @@ export class App implements OnDestroy {
             if (!expDate) return;
 
             const tiempoRestante = expDate.getTime() - Date.now();
+
+            if (tiempoRestante <= 0) {
+              console.error('El token expiró.');
+              this.syncChannel.postMessage('LOGOUT_SESSION');
+              this.cerrarSesionForzada(true);
+              return;
+            }
 
             if (tiempoRestante < (15 * 60 * 1000) && !this.isDialogResultPending) {
                 console.log('Renovando token...');

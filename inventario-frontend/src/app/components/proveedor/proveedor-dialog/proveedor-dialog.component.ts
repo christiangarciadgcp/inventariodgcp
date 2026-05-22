@@ -6,12 +6,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Utils } from '../../../core/utils';
+import {Mensaje} from '../../../core/mensaje';
 
 @Component({
   selector: 'app-proveedor-dialog',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule, 
+    CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule
   ],
   templateUrl: './proveedor-dialog.component.html',
@@ -21,6 +22,7 @@ export class ProveedorDialogComponent implements OnInit{
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<ProveedorDialogComponent>);
   private ft = inject(Utils);
+  private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public proveedorData : any) {}
 
@@ -28,7 +30,7 @@ export class ProveedorDialogComponent implements OnInit{
 
   form : FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
-    telefono: ['', [Validators.required, Validators.pattern('^[0-9]{4}-[0-9]{4}$')]]
+    telefono: ['', [Validators.pattern('^[0-9]{4}-[0-9]{4}$')]]
   });
 
   ngOnInit(): void {
@@ -44,15 +46,18 @@ export class ProveedorDialogComponent implements OnInit{
   mascaraTelefono(event: any) {
     // Enviamos el valor al servicio Utils y recibimos la máscara
     const valorFormateado = this.ft.formatearTelefono(event.target.value);
-    
+
     // Actualizamos el formulario de este componente
     this.form.get('telefono')?.setValue(valorFormateado, { emitEvent: false });
   }
 
   guardar(){
-    if(this.form.valid){
-      this.dialogRef.close(this.form.value);
+    if(this.form.get('nombre')?.invalid || this.form.get('telefono')?.invalid){
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete la información', 'warning');
+      return;
     }
+      this.dialogRef.close(this.form.value);
   }
 
   cancelar(){

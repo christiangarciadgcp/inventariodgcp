@@ -22,9 +22,29 @@
 
 
       <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> N°</th>
+        <td mat-cell *matCellDef="let element; let i = index" class="ps-4 text-secondary">
+          {{ i + 1 }}
+        </td>
+      </ng-container>
+
+<!--      <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
         <td mat-cell *matCellDef="let element" class="ps-4 text-secondary">
           {{ element.idModelo }}
+        </td>
+      </ng-container>-->
+
+      <ng-container matColumnDef="marca">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Marca </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="d-flex align-items-center">
+            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                 style="width: 35px; height: 35px; color: #5c6bc0;">
+              <mat-icon style="font-size: 13px; width: 15px; height: 15px;"><i class="bi bi-substack"></i></mat-icon>
+            </div>
+            <span class="fw-bold">{{element.marca.nombremarca}}</span>
+          </div>
         </td>
       </ng-container>
 

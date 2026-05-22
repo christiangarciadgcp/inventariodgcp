@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -29,15 +31,14 @@ public class Producto {
     @JoinColumn(name = "idunidadmedida")
     private UnidadMedida unidadMedida;
 
-    // --- Relación con Marca ---
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "idmarca")
-    private Marca marca;
 
     // --- Relación con Modelo ---
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idmodelo")
     private Modelo modelo;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ProductoImagen> imagenes = new ArrayList<>();
 
     @Column(name = "nombreproducto", nullable = false, length = 255)
     private String nombreproducto;
@@ -111,12 +112,12 @@ public class Producto {
         return this.unidadMedida;
     }
 
-    public Marca getMarca(){
-        return this.marca;
-    }
-
     public Modelo getModelo(){
         return this.modelo;
+    }
+
+    public List<ProductoImagen> getImagenes() {
+        return this.imagenes;
     }
 
     public void setIdProducto(Integer idProducto) {
@@ -163,16 +164,16 @@ public class Producto {
         this.unidadMedida = unidadMedida;
     }
 
-    public void setMarca(Marca marca){
-        this.marca = marca;
-    }
-
     public void setModelo(Modelo modelo){
         this.modelo = modelo;
     }
 
+    public void setImagenes(List<ProductoImagen> imagenes) {
+        this.imagenes = imagenes;
+    }
+
 
     public String toString() {
-        return "Producto(idProducto=" + this.getIdProducto() + ", nombreproducto=" + this.getNombreproducto() + ", skuproducto=" + this.getSkuproducto() + ", descripcionproducto=" + this.getDescripcionproducto() + ", preciocostoproducto=" + this.getPreciocostoproducto() + ", precioventaproducto=" + this.getPrecioventaproducto() + ", categoria=" + this.getCategoria() + ", proveedor=" + this.getProveedor() + ", unidadMedida=" + this.getUnidadMedida() + ", marca=" + this.getMarca() + ", modelo=" + this.getModelo() + ")";
+        return "Producto(idProducto=" + this.getIdProducto() + ", nombreproducto=" + this.getNombreproducto() + ", skuproducto=" + this.getSkuproducto() + ", descripcionproducto=" + this.getDescripcionproducto() + ", preciocostoproducto=" + this.getPreciocostoproducto() + ", precioventaproducto=" + this.getPrecioventaproducto() + ", categoria=" + this.getCategoria() + ", proveedor=" + this.getProveedor() + ", unidadMedida=" + ", modelo=" + this.getModelo() + ")";
     }
 }

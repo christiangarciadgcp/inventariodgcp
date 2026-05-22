@@ -19,7 +19,6 @@ export interface Producto {
     categoria?: Categoria;
     proveedor?: Proveedor;
     unidadMedida?: UnidadMedida;
-    marca?: Marca;
     modelo?: Modelo;
 }
 
@@ -36,7 +35,6 @@ export interface ProductoRegistroDTO {
     idCategoria: number;
     idProveedor: number;
     idUnidadMedida: number;
-    idMarca : number;
     idModelo : number;
 }
 
