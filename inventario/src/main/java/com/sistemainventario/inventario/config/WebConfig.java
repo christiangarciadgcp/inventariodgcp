@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
         // Obtiene la ruta absoluta de la carpeta configurada (sea relativa en desarrollo o absoluta en Debian)
         String uploadPath = Paths.get(storageLocation).toFile().getAbsolutePath();
         
-        registry.addResourceHandler("/uploads/**")
+        registry.addResourceHandler("../uploads/**")
                 .addResourceLocations("file:" + uploadPath + "/");
     }
 }
