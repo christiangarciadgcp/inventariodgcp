@@ -56,15 +56,6 @@
   border: 1px solid transparent;
 }
 
-
-.action-btn {
-  transition: transform 0.2s;
-}
-.action-btn:hover {
-  transform: scale(1.1);
-  background-color: rgba(0,0,0,0.04);
-}
-
 .mat-column-acciones {
   width: 140px;
   min-width: 140px;

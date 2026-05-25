@@ -75,17 +75,36 @@
     padding-right: 24px !important;
 }
 
-/* Botones de Acción */
+
+/* --- BOTONES DE ACCIÓN --- */
 .action-btn {
-    transition: transform 0.2s;
-    color: #5c6bc0;
+  transition: transform 0.2s;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
+
 .action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(0,0,0,0.04);
+  transform: scale(1.1);
+  background-color: rgba(0,0,0,0.04);
 }
+
+.action-btn mat-icon {
+  margin: 0 !important;
+}
+
+.edit-icon{
+  color: rgb(232 120 38) !important;
+}
+
 .action-btn.delete {
     color: #e63757 !important;
+}
+
+.icon-acciones {
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
 }
 
 /* Botón "Nuevo" Global */

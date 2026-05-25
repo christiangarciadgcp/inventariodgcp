@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -17,16 +17,16 @@
 }
 
 .mat-mdc-header-cell {
-    color: #ffffff; 
+    color: #ffffff;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px; 
+    letter-spacing: 1px;
 }
 
 
 .mat-mdc-row {
-    height: 70px; 
+    height: 70px;
     transition: all 0.2s ease-in-out;
 }
 
@@ -40,7 +40,7 @@
 
 .mat-mdc-cell {
     font-size: 0.9rem;
-    color: #344767; 
+    color: #344767;
     font-weight: 500;
     border-bottom: 1px solid #ebebeb !important;
 }
@@ -48,21 +48,12 @@
 
 .badge-soft {
     padding: 8px 12px;
-    border-radius: 8px; 
+    border-radius: 8px;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     border: 1px solid transparent;
-}
-
-
-.action-btn {
-    transition: transform 0.2s;
-}
-.action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(0,0,0,0.04);
 }
 
 .mat-column-acciones {
@@ -110,7 +101,7 @@ button[mat-icon-button][color="warn"] {
     color: #2e7d32 !important;
 }
 .icon-danger {
-    color: #ff0000 !important; 
+    color: #ff0000 !important;
 }
 
 .badge {

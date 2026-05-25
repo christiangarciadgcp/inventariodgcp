@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -13,12 +13,12 @@
 
 .mat-mdc-header-row {
     background: linear-gradient(#031e3f 0%, #153863 100%);
-    border-bottom: 2px solid #f1f3f5; 
+    border-bottom: 2px solid #f1f3f5;
     height: 60px;
 }
 
 .mat-mdc-header-cell {
-    color: #ffffff; 
+    color: #ffffff;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -32,7 +32,7 @@
 }
 
 .hover-row:hover {
-    background-color: #f8faff !important; 
+    background-color: #f8faff !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     z-index: 1;
@@ -56,14 +56,6 @@
     border: 1px solid transparent;
 }
 
-.action-btn {
-    transition: transform 0.2s;
-}
-.action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(0,0,0,0.04);
-}
-
 .mat-column-acciones {
     width: 140px;
     min-width: 140px;
@@ -75,7 +67,7 @@
 
 .btn-nuevo {
     background: linear-gradient(#031e3f 0%, #153863 100%);
-    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3); 
+    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     border: none;
     height: 45px;
     font-weight: 500;

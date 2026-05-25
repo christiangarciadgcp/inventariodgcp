@@ -25,13 +25,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-
-.mat-mdc-table {
-  background: transparent;
-  min-width: 1000px; /* Obligamos a que mantenga un buen tamaño para las 9 columnas */
-}
-
-
 .mat-mdc-table {
   background: transparent;
   min-width: 1000px;
@@ -77,18 +70,10 @@
   border-bottom: 1px solid #ebebeb !important;
 }
 
-/* --- BOTONES DE ACCIÓN --- */
-.action-btn {
-  transition: transform 0.2s;
-}
-.action-btn:hover {
-  transform: scale(1.1);
-  background-color: rgba(0,0,0,0.04);
-}
 
 .mat-column-marca {
   width: 200px;
-  min-width: 180px;
+  min-width: 200px;
   max-width: 200px;
   text-align: center;
   padding-right: 24px !important;
@@ -141,6 +126,10 @@
   font-size: 32px;
   width: 32px;
   height: 32px;
+}
+
+.eyes {
+  color: #0554a3 !important;
 }
 
 .icon-success { color: #2e7d32 !important; }

@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
   template : `
     <div class="d-flex justify-content-center align-items-center p-3 border-bottom position-relative">
       <h3 class="m-0 fw-bold text-dark">{{data.nombre}}</h3>
-      <button mat-icon-button mat-dialog-close class="position-absolute end-0 me-3">
+      <button mat-icon-button mat-dialog-close class="position-absolute end-0 me-3 mb-2">
         <mat-icon>close</mat-icon>
       </button>
     </div>
