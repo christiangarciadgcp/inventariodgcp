@@ -3,14 +3,14 @@
     <div class="sidebar-header">
 
         <a routerLink="/" class="logo-area">
-            <img src="assets/images/inventario.png" alt="Logo" class="sidebar-logo">
+            <img src="assets/images/bodegas.png" alt="Logo" class="sidebar-logo">
 
-            @if (!layoutService.sidebarCollapsed()) {
+<!--            @if (!layoutService.sidebarCollapsed()) {
             <div class="logo-text fade-in-text">
                 <span class="fw-bold fs-5 lh-1">UTDI</span>
                 <span class="small text-muted">Inventory</span>
             </div>
-            }
+            }-->
         </a>
 
         <button mat-icon-button class="toggle-btn ms-auto" (click)="layoutService.toggleSidebar()">
@@ -135,11 +135,20 @@
             }
 
           <a routerLink="/diccionario-materiales" routerLinkActive="active" class="nav-link"
-             [matTooltip]="layoutService.sidebarCollapsed() ? 'Diccionario' : ''" matTooltipPosition="right">
+             [matTooltip]="layoutService.sidebarCollapsed() ? 'Diccionario de Materiales' : ''" matTooltipPosition="right">
             <div class="nav-icon"><mat-icon>menu_book</mat-icon></div>
 
             @if (!layoutService.sidebarCollapsed()) {
               <span class="nav-text">Diccionario de Materiales</span>
+            }
+          </a>
+
+          <a routerLink="/sugerencia-materiales" routerLinkActive="active" class="nav-link"
+             [matTooltip]="layoutService.sidebarCollapsed() ? 'Sugerencia de Materiales' : ''" matTooltipPosition="right">
+            <div class="nav-icon"><mat-icon>lightbulb_2</mat-icon></div>
+
+            @if (!layoutService.sidebarCollapsed()) {
+              <span class="nav-text">Sugerencia de Materiales</span>
             }
           </a>
 

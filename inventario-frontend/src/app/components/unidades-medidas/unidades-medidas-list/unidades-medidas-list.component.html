@@ -15,7 +15,7 @@
 
     <div class="d-flex flex-wrap align-items-center gap-3">
 
-      <div class="search-elegant m-0" style="width: 450px;">
+      <div class="search-elegant m-0" style="width: 300px;">
         <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
 
         <div class="search-btn-circle">
@@ -112,10 +112,14 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
 
             <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell text-center py-5" colspan="4">
+                <td class="mat-cell text-center py-5" colspan="5">
                     <div class="d-flex flex-column align-items-center justify-content-center text-muted">
                         <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">square_foot</mat-icon>
-                        <span>No hay unidades de medida registradas</span>
+                        <span class="fw-medium">No se encontraron Unidades de medida</span>
+                        @if (input.value){
+                          <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
+                        }
+
                     </div>
                 </td>
             </tr>

@@ -6,11 +6,10 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
 import { UsuarioService } from '../../../services/usuario.service';
@@ -23,7 +22,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 @Component({
   selector: 'app-usuario-list',
   imports: [
-    CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule, 
+    CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
     MatIconModule, MatDialogModule, MatSnackBarModule, MatCardModule,MatTooltipModule, RouterLink,
     MatSlideToggleModule, MatFormFieldModule, MatSortModule
   ],
@@ -50,6 +49,11 @@ export class UsuarioListComponent implements OnInit {
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data : Usuario, filter : string) => {
+      const searchStr = (data.nombreusuario + data.rol.nombrerol).toLowerCase();
+      return searchStr.includes(filter);
+    }
+
     this.dataSource.sortingDataAccessor = (item : Usuario, property : string) => {
       switch(property){
         case 'id':
@@ -67,11 +71,6 @@ export class UsuarioListComponent implements OnInit {
   ngOnInit(): void {
     this.cargarUsuarios();
 
-    this.dataSource.filterPredicate = (data: Usuario, filter: string) => {
-      // Filtrar por nombre, id o IP
-      const searchStr = (data.nombreusuario + data.idUsuario + (data.ultimaIp || '')).toLowerCase();
-      return searchStr.includes(filter);
-    };
   }
 
   cargarUsuarios() {
@@ -105,12 +104,12 @@ export class UsuarioListComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
 
       width: '450px',
-      data: { 
-        titulo: `¿Deseas ${accionTexto} este usuario?`, 
-        mensaje: `El usuario pasará a estado ${estadoTexto}.`, 
+      data: {
+        titulo: `¿Deseas ${accionTexto} este usuario?`,
+        mensaje: `El usuario pasará a estado ${estadoTexto}.`,
         textoBoton: 'Aceptar',
         colorBoton: colorAccion
-      } 
+      }
     });
 
     dialogRef.afterClosed().subscribe(confirmado => {
@@ -118,7 +117,7 @@ export class UsuarioListComponent implements OnInit {
 
         this.usuarioService.cambiarEstado(usuario.idUsuario!, nuevoEstado).subscribe({
           next: () => {
-            usuario.estado = nuevoEstado; 
+            usuario.estado = nuevoEstado;
             event.source.checked = nuevoEstado;
             const texto = nuevoEstado ? 'Activado' : 'Desactivado';
             this.mensaje.open(`Usuario ${texto} correctamente`, 'exito');
@@ -144,12 +143,12 @@ export class UsuarioListComponent implements OnInit {
   restablecerPassword(usuario: Usuario ){
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '450px',
-      data: { 
-        titulo: `¿Deseas restablecer la contraseña del usuario ${usuario.nombreusuario}?`, 
-        mensaje: ' ', 
+      data: {
+        titulo: `¿Deseas restablecer la contraseña del usuario ${usuario.nombreusuario}?`,
+        mensaje: ' ',
         textoBoton: 'Restablecer',
         colorBoton: 'primary'
-      } 
+      }
     });
 
     dialogRef.afterClosed().subscribe(confirmado => {
@@ -170,16 +169,16 @@ export class UsuarioListComponent implements OnInit {
   obtenerIniciales(nombre: string): string {
     if (!nombre) return 'U';
     const partes = nombre.split('.');
-    return partes.length > 1 
-      ? (partes[0].charAt(0) + partes[1].charAt(0)).toUpperCase() 
+    return partes.length > 1
+      ? (partes[0].charAt(0) + partes[1].charAt(0)).toUpperCase()
       : nombre.substring(0, 2).toUpperCase();
   }
 
   usuarioForm(usuario? : Usuario) {
-    const dialogRef = this.dialog.open(UsuarioDialogComponent, { 
+    const dialogRef = this.dialog.open(UsuarioDialogComponent, {
       width: '400px',
       // Pasamos el usuario completo si existe
-      data: usuario ? { usuario: usuario } : null 
+      data: usuario ? { usuario: usuario } : null
     });
 
     dialogRef.afterClosed().subscribe(result => {

@@ -16,6 +16,7 @@ import { BodegaDialogComponent } from '../bodega-dialog/bodega-dialog.component'
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
+import {Marca} from '../../../models/marca';
 
 @Component({
   selector: 'app-bodega-list',
@@ -49,6 +50,11 @@ export class BodegaListComponent {
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data: Bodega, filter: string) => {
+      const searchStr = (data.nombrebodega + data.direccionbodega + data.telefonobodega).toLowerCase();
+      return searchStr.includes(filter);
+    };
+
     this.dataSource.sortingDataAccessor = (item : Bodega, property : string) => {
       switch(property){
         case 'id':
@@ -65,6 +71,15 @@ export class BodegaListComponent {
 
   ngOnInit(): void {
     this.cargarBodegas();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   ngAfterViewInit() {

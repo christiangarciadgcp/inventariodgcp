@@ -110,6 +110,12 @@ export const routes: Routes = [
               data: { breadcrumb: 'Diccionario de Materiales y equipos' }
 
           },
+          {
+            path: 'sugerencia-materiales',
+            component: UnderConstructionComponent,
+            data: { breadcrumb: 'Sugerencia de Materiales' }
+
+          },
 
             /*********************************
                 Solicitudes de Compra

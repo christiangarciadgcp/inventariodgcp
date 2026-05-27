@@ -24,7 +24,7 @@ import {MatFormField, MatInput, MatLabel, MatSuffix} from '@angular/material/inp
   selector: 'app-unidades-medidas-list',
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink, MatSortModule, MatFormField, MatInput, MatLabel, MatSuffix
+    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink, MatSortModule
   ],
   templateUrl: './unidades-medidas-list.component.html',
   styleUrl: './unidades-medidas-list.component.css',

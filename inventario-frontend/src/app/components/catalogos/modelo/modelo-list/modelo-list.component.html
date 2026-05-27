@@ -1,25 +1,33 @@
 <div class="container px-5 mt-4">
 
-  <div class="d-flex align-items-center gap-3 mb-4">
-    <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/catalogos">
-      <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
-    </button>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3 px-2">
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/catalogos">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
 
-    <div>
-      <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Módulo de Productos</h6>
-      <h2 class="fw-bold text-dark m-0">Gestión de Modelos</h2>
+      <div>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Configuración</h6>
+        <h2 class="fw-bold text-dark m-0">Gestión de Modelos</h2>
+      </div>
     </div>
 
-    <div class="d-flex align-items-end ms-auto">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo" (click)="abrirFormulario()">
-        <mat-icon class="me-2">add_business</mat-icon> Nuevo Modelo
+        <mat-icon class="me-2">library_add</mat-icon> Nuevo Modelo
       </button>
     </div>
   </div>
 
   <mat-card class="custom-card">
     <table mat-table [dataSource]="dataSource" matSort class="w-100">
-
 
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> N°</th>
@@ -103,11 +111,14 @@
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell text-center py-5" colspan="5">
           <div class="d-flex flex-column align-items-center justify-content-center text-muted">
-            <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">domain_disabled</mat-icon>
-            <span>No hay modelos registrados</span>
+            <mat-icon style="font-size: 35px; width: 40px; height: 40px;" class="mb-2"><i class="bi bi-ui-checks-grid"></i></mat-icon>
+            <span class="fw-medium">No se encontraron Modelos</span>
+            @if (input.value){
+              <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
+            }
           </div>
         </td>
-      </tr>
+      </tr>2
     </table>
 
     <mat-paginator [pageSizeOptions]="[10, 25, 50]"

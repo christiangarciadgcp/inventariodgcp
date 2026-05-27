@@ -18,6 +18,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import {Bodega} from '../../../models/bodega';
+import {Marca} from '../../../models/marca';
 
 @Component({
   selector: 'app-categoria',
@@ -62,6 +63,11 @@ export class CategoriaComponent implements OnInit{
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data: Categoria, filter: string) => {
+      const searchStr = (data.nombrecategoria + data.activo).toLowerCase();
+      return searchStr.includes(filter);
+    };
+
     this.dataSource.sortingDataAccessor = (item : Categoria, property : string) => {
       switch(property){
         case 'id':
@@ -83,6 +89,15 @@ export class CategoriaComponent implements OnInit{
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   cargarCategorias(): void {

@@ -55,7 +55,7 @@ export class ProductoListComponent implements OnInit {
 
     // CONFIGURACIÓN DE BÚSQUEDA LOCAL
     this.dataSource.filterPredicate = (data: Producto, filter: string) => {
-      const searchStr = (data.nombreproducto + data.skuproducto + data.categoria?.nombrecategoria + data.proveedor?.nombreproveedor + data.serieproducto + data.inventarioproducto).toLowerCase();
+      const searchStr = (data.skuproducto + data.serieproducto + data.inventarioproducto + data.nombreproducto + data.categoria?.nombrecategoria + data.modelo?.marca?.nombremarca + data.modelo?.nombremodelo + data.proveedor?.nombreproveedor ).toLowerCase();
       //const nombre = data.nombreproducto ? data.nombreproducto.toLowerCase() : '';
       //const term = filter.trim().toLowerCase();
       return searchStr.includes(filter); // Retorna true si el nombre contiene el texto buscado

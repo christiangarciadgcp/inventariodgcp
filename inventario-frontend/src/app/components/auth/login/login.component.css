@@ -33,7 +33,7 @@
 .shape-right {
     width: 500px;
     height: 500px;
-    background-color: #fff8e1;
+    background-color: #e8efff;
     border-radius: 50%;
     bottom: -100px;
     right: -150px;
@@ -46,7 +46,7 @@
     width: 100%;
     max-width: 420px;
     padding: 2rem;
-    background: transparent; 
+    background: transparent;
 }
 
 /* Logo Animado */
@@ -156,8 +156,8 @@
 
 .btn-login:disabled {
     background: rgba(0, 0, 0, 0.12) !important;
-    color: rgba(0, 0, 0, 0.38) !important;     
-    box-shadow: none !important;              
+    color: rgba(0, 0, 0, 0.38) !important;
+    box-shadow: none !important;
     cursor: default;
 }
 
@@ -180,4 +180,48 @@
     }
     .shape-left { left: -200px; }
     .shape-right { right: -200px; }
+}
+
+/* =====================================================================
+   CAMBIO A: TARJETA CENTRAL (.login-container)
+   Buscamos la clase existente y le añadimos un margen superior alto
+   ===================================================================== */
+.login-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  background: transparent;
+
+  /* === AÑADE ESTA LÍNEA === */
+  /* Crea espacio arriba de la tarjeta para que el logo flote */
+  margin-top: 120px;
+}
+
+
+/* =====================================================================
+   CAMBIO B: LOGO DEL LOGIN (.login-logo)
+   Borra tu .login-logo anterior y pega este nuevo bloque profesional
+   ===================================================================== */
+.login-logo {
+  width: 370px;
+  height: 370px;
+  object-fit: contain;
+
+  position: absolute;
+  top: -125px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  transition: all 0.3s ease; /* Transición suave */
+  z-index: 15; /* Asegura que esté por encima de todo */
+}
+
+.login-title {
+  margin-top: 100px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
 }

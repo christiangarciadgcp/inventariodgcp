@@ -54,6 +54,7 @@ export class ProductoDiccionarioComponent implements OnInit {
       return searchStr.includes(filter);
     };
 
+
     this.dataSource.sortingDataAccessor = (item: Producto, property: string) => {
       switch (property) {
         case 'sku': return item.skuproducto;

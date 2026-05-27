@@ -101,7 +101,7 @@ export class PresupuestoListComponent implements OnInit {
 
     // Filtro personalizado: Busca por ID, Nombre de Presupuesto o Estado
     this.dataSource.filterPredicate = (data: Presupuesto, filter: string) => {
-      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.estado).toLowerCase();
+      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.idusuariopresupuesto.nombreusuario).toLowerCase();
       return searchStr.includes(filter);
     };
 

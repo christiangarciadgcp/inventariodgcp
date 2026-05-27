@@ -16,6 +16,7 @@ import {ModeloService} from '../../../../services/modelo.service';
 import {ModeloDialogComponent} from '../modelo-dialog/modelo-dialog.component';
 import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.component';
 import {Bodega} from '../../../../models/bodega';
+import {Marca} from '../../../../models/marca';
 
 @Component({
   selector: 'app-modelo-list',
@@ -47,6 +48,11 @@ export class ModeloListComponent {
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data: Modelo, filter: string) => {
+      const searchStr = (data.marca?.nombremarca + data.nombremodelo).toLowerCase();
+      return searchStr.includes(filter);
+    };
+
     this.dataSource.sortingDataAccessor = (item : Modelo, property : string) => {
       switch(property){
         case 'id':
@@ -67,6 +73,14 @@ export class ModeloListComponent {
     this.cargarModelos();
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
 
   private cargarModelos() {
     this.modeloService.getModelos().subscribe({

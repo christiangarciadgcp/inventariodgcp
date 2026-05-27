@@ -16,6 +16,7 @@ import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.com
 import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {MarcaDialogComponent} from '../marca-dialog/marca-dialog.component';
 import {Bodega} from '../../../../models/bodega';
+import {UnidadMedida} from '../../../../models/unidades-medidas';
 
 @Component({
   selector: 'app-marca-list',
@@ -47,6 +48,11 @@ export class MarcaListComponent {
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data: Marca, filter: string) => {
+      const searchStr = (data.nombremarca).toLowerCase();
+      return searchStr.includes(filter);
+    };
+
     this.dataSource.sortingDataAccessor = (item : Marca, property : string) => {
       switch(property){
         case 'id':
@@ -63,6 +69,15 @@ export class MarcaListComponent {
 
   ngOnInit(): void {
     this.cargarMarcas();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   cargarMarcas() {

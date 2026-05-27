@@ -1,27 +1,38 @@
 <div class="container px-5 mt-5">
 
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
-            <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
-        </button>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3 px-2">
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
 
-        <div>
-            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Módulo de Administración</h6>
-            <h2 class="fw-bold text-dark m-0">Gestión de Usuarios</h2>
-        </div>
-
-<!--         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact" style="width: 400px;">
-            <mat-label>Buscar por nombre o IP...</mat-label>
-            <input matInput (keyup)="applyFilter($event)" placeholder="Ej. nombre.apellido o 192.168..." autocomplete="off">
-            <mat-icon matSuffix class="text-secondary">search</mat-icon>
-        </mat-form-field> -->
-
-        <div class="d-flex align-items-end ms-auto">
-            <button mat-raised-button color="primary" class="rounded-pill px-4 btn-nuevo" (click)="usuarioForm()">
-                <mat-icon class="me-2">library_add</mat-icon> Nuevo Usuario
-            </button>
-        </div>
+      <div>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Módulo de Administración</h6>
+        <h2 class="fw-bold text-dark m-0">Gestión de Usuarios</h2>
+      </div>
     </div>
+
+    <!--         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact" style="width: 400px;">
+                <mat-label>Buscar por nombre o IP...</mat-label>
+                <input matInput (keyup)="applyFilter($event)" placeholder="Ej. nombre.apellido o 192.168..." autocomplete="off">
+                <mat-icon matSuffix class="text-secondary">search</mat-icon>
+            </mat-form-field> -->
+
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input
+               autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
+      <button mat-raised-button color="primary" class="rounded-pill px-4 btn-nuevo" (click)="usuarioForm()">
+        <mat-icon class="me-2">library_add</mat-icon>
+        Nuevo Usuario
+      </button>
+    </div>
+  </div>
 
     <mat-card class="custom-card">
         <table mat-table [dataSource]="dataSource" matSort class="w-100">
@@ -104,7 +115,10 @@
                 <td class="mat-cell text-center py-5" colspan="6">
                     <div class="d-flex flex-column align-items-center justify-content-center text-muted">
                         <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">search_off</mat-icon>
-                        <span>No se encontraron usuarios</span>
+                        <span class="fw-medium">No se encontraron usuarios</span>
+                        @if (input.value){
+                          <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
+                        }
                     </div>
                 </td>
             </tr>

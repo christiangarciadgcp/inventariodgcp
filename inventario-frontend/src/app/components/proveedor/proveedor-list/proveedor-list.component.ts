@@ -16,6 +16,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
 import {Bodega} from '../../../models/bodega';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-proveedor-list',
@@ -51,6 +52,11 @@ export class ProveedorListComponent {
       if(this.sort) this.dataSource.sort = this.sort;
     });
 
+    this.dataSource.filterPredicate = (data: Proveedor, filter : string)  => {
+      const searchStr = (data.nombreproveedor + data.telefonoproveedor).toLowerCase();
+      return searchStr.includes(filter);
+    }
+
     this.dataSource.sortingDataAccessor = (item : Proveedor, property : string) => {
       switch(property){
         case 'id':
@@ -71,6 +77,15 @@ export class ProveedorListComponent {
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+  }
+
+  applyFilter(event : Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if(this.dataSource.paginator){
+      this.dataSource.paginator.firstPage()
+    }
   }
 
   cargarProveedores() {

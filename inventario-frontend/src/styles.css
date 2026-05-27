@@ -244,7 +244,7 @@
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.75); /* "Search..." en blanco semi-transparente */
+  color: #ffffff; /* "Search..." en blanco semi-transparente */
   font-weight: 400;
 }
 

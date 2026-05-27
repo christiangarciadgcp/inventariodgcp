@@ -13,11 +13,12 @@
       </div>
     </div>
 
-    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact m-0" style="width: 100%; max-width: 500px; font-size: 0.9rem;">
-      <mat-label>Buscar producto...</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Laptop, SKU , Categoria o Modelo" #input autocomplete="off">
-      <mat-icon matSuffix class="text-primary">search</mat-icon>
-    </mat-form-field>
+    <div class="search-elegant m-0" style="width: 300px;">
+      <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
+      <div class="search-btn-circle">
+        <mat-icon>search</mat-icon>
+      </div>
+    </div>
 
   </div>
 
