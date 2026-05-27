@@ -2,12 +2,12 @@ package com.sistemainventario.inventario.controller;
 
 import com.sistemainventario.inventario.model.Proveedor;
 import com.sistemainventario.inventario.service.ProveedorService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -26,6 +26,11 @@ public class ProveedorController {
         return proveedorService.listarProveedores();
     }
 
+    @GetMapping("/activos")
+    public List<Proveedor> ListarProveedoresActivos() {
+        return proveedorService.listaProveedoresActivos();
+    }
+    
     @PostMapping
     public Proveedor guardarProveedor(@RequestBody Proveedor proveedor) {
         return  proveedorService.guardarProveedor(proveedor);
@@ -40,6 +45,19 @@ public class ProveedorController {
     @DeleteMapping("/{id}")
     public void eliminarProveedor(@PathVariable Integer id) {
         proveedorService.eliminarProveedor(id);
+    }
+
+    
+    @PutMapping("/{id}/desactivar")
+    public ResponseEntity<Void> desactivarProveedor(@PathVariable Integer id){
+        proveedorService.desactivarProveedor(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/activar")
+    public ResponseEntity<Void> activarProveedor(@PathVariable Integer id){
+        proveedorService.activarProveedor(id);
+        return ResponseEntity.ok().build();
     }
 
 }

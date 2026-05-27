@@ -19,7 +19,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
   selector: 'app-inventario-ajuste',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, FormsModule, MatDialogModule, 
+    CommonModule, ReactiveFormsModule, FormsModule, MatDialogModule,
     MatButtonModule, MatInputModule, MatFormFieldModule, MatIconModule
   ],
   templateUrl: './inventario-ajuste.component.html',
@@ -40,7 +40,7 @@ export class InventarioAjusteComponent {
 
   // Control del Tipo de Acción
   tipoAccion = signal<'ENTRADA' | 'SALIDA'>('ENTRADA');
-  
+
   // Formulario
   form = this.fb.group({
     cantidad: [null, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
@@ -52,7 +52,7 @@ export class InventarioAjusteComponent {
   cantidadSignal = toSignal(
     this.form.get('cantidad')!.valueChanges.pipe(
       map(valor => Number(valor) || 0) // Si es null/undefined, devuelve 0
-    ), 
+    ),
     { initialValue: 0 }
   );
 
@@ -61,7 +61,7 @@ export class InventarioAjusteComponent {
     // Ahora dependemos de cantidadSignal() en lugar de this.form.value
     const cant = Number(this.cantidadSignal()) || 0;
     const actual = this.data.cantidadActual;
-    
+
     if (this.tipoAccion() === 'ENTRADA') {
       return actual + cant;
     } else {
@@ -70,7 +70,11 @@ export class InventarioAjusteComponent {
   });
 
   guardarAjuste() {
-    if (this.form.invalid) return;
+    if (this.form.get('cantidad')?.invalid || this.form.get('motivo')?.invalid) {
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete los campos requeridos', 'warning');
+      return;
+    }
 
     const cantidad = this.form.value.cantidad;
     const nuevoStock = this.nuevoStockProyectado();
@@ -91,12 +95,12 @@ export class InventarioAjusteComponent {
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
-      data: { 
-        titulo: '¿Está seguro de realizar este ajuste?', 
-        mensaje: 'Esta acción no se puede deshacer', 
+      data: {
+        titulo: '¿Está seguro de realizar este ajuste?',
+        mensaje: 'Esta acción no se puede deshacer',
         textoBoton: 'Aceptar',
         colorBoton: 'primary'
-      } 
+      }
     });
     dialogRef.afterClosed().subscribe(confirmado => {
       if(confirmado){

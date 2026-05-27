@@ -1,12 +1,12 @@
 import { Component, OnInit,inject, signal, ViewChild, effect} from '@angular/core';
 //import { RouterLink } from '@angular/router';
-//import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { CategoriaService } from '../../../services/categoria.service';
 import { Categoria } from '../../../models/categoria';
 import { CategoriaDialogComponent } from '../categoria-dialog/categoria-dialog.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { Mensaje } from '../../../core/mensaje';
-
+import {MatSort, MatSortModule} from '@angular/material/sort';
 // --- Imports de Material ---
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -17,6 +17,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import {Bodega} from '../../../models/bodega';
 
 @Component({
   selector: 'app-categoria',
@@ -30,20 +31,21 @@ import { RouterLink } from '@angular/router';
     MatCardModule,
     MatTooltipModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSortModule
   ],
   templateUrl: './categoria.component.html',
   styleUrl: './categoria.component.css',
 })
 export class CategoriaComponent implements OnInit{
 
-  displayedColumns: string[] = ['id', 'nombre', 'acciones'];
-
+  displayedColumns: string[] = ['id', 'nombre', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Categoria>([]);
+  categorias = signal<Categoria[]>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
-  categorias = signal<Categoria[]>([]);
 
   //INYECCIONES
   private categoriaService = inject(CategoriaService);
@@ -57,8 +59,23 @@ export class CategoriaComponent implements OnInit{
       if (this.paginator) {
         this.dataSource.paginator = this.paginator;
       }
+      if(this.sort) this.dataSource.sort = this.sort;
     });
+
+    this.dataSource.sortingDataAccessor = (item : Categoria, property : string) => {
+      switch(property){
+        case 'id':
+          return item.idCategoria;
+        case 'nombre':
+          return item.nombrecategoria;
+        case 'estado':
+          return item.activo;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
+
 
   ngOnInit(): void {
     this.cargarCategorias();
@@ -103,7 +120,8 @@ export class CategoriaComponent implements OnInit{
 
   actualizarCategoria(id : number, data: any){
     const categoriaActualizada : Categoria = {
-      nombrecategoria : data.nombre
+      nombrecategoria : data.nombre,
+      activo: false
     };
 
     this.categoriaService.actualizarCategoria(id, categoriaActualizada).subscribe({
@@ -121,7 +139,8 @@ export class CategoriaComponent implements OnInit{
   registrarCategoria(datosFormulario: any) {
     // Armamos el objeto (el ID es autogenerado, no lo mandamos)
     const nuevaCategoria: Categoria = {
-      nombrecategoria: datosFormulario.nombre
+      nombrecategoria: datosFormulario.nombre,
+      activo : datosFormulario.activo
     };
 
     //console.log('Enviando JSON:', nuevaCategoria);
@@ -140,7 +159,7 @@ export class CategoriaComponent implements OnInit{
 
   }
 
-  eliminar(id: number): void {
+/*  eliminar(id: number): void {
     //Abrimos el dialog de confirmación
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px'
@@ -157,6 +176,58 @@ export class CategoriaComponent implements OnInit{
           error: (e) => {
             console.error(e);
             this.mensaje.open('No se pudo eliminar la categoría', 'error');
+          }
+        });
+      }
+    });
+  }*/
+
+  desactivarCategoria(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Desactivar Categoria?',
+        mensaje: 'La Categoria dejará de estar visible.',
+        textoBoton: 'Desactivar',
+        colorBoton: 'primary'
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.categoriaService.desactivarCategoria(id).subscribe({
+          next: () => {
+            this.cargarCategorias();
+            this.mensaje.open('Categoria desactivada correctamente','exito');
+          },
+          error: (err) => {
+            const msg = err.error?.mensaje || 'No se pudo desactivar la Categoria';
+            this.mensaje.open(msg, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  reactivarCategoria(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Reactivar Categoria?',
+        mensaje: 'La Categoria volverá a estar visible.',
+        textoBoton: 'Reactivar',
+        colorBoton: 'primary'
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.categoriaService.activarCategoria(id).subscribe({
+          next: () => {
+            this.cargarCategorias();
+            this.mensaje.open('Categoria reactivada correctamente','exito');
+          },
+          error: (err) => {
+            const msg = err.error?.mensaje || 'No se pudo activar la Categoria';
+            this.mensaje.open(msg, 'error');
           }
         });
       }

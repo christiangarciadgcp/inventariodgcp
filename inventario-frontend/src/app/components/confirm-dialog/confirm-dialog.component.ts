@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,14 +16,16 @@ export interface ConfirmDialogData {
   standalone:true,
   imports: [
     CommonModule,
-    MatDialogModule, 
-    MatButtonModule, 
+    MatDialogModule,
+    MatButtonModule,
     MatIconModule
   ],
   templateUrl: './confirm-dialog.component.html',
   styleUrl: './confirm-dialog.component.css',
 })
 export class ConfirmDialogComponent {
+
+  public cdr = inject(ChangeDetectorRef);
 
   titulo: string = 'Confirmar Eliminación';
   mensaje: string = '¿Estás seguro de que deseas eliminar este registro?';
@@ -35,7 +37,6 @@ export class ConfirmDialogComponent {
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ConfirmDialogData
   ) {
-    // Si viene data, sobrescribimos los valores por defecto
     if (data) {
       this.titulo = data.titulo || this.titulo;
       this.mensaje = data.mensaje || this.mensaje;

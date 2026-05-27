@@ -211,3 +211,68 @@
 .cdk-overlay-connected-position-bounding-box:has(hot-toast-container) {
   z-index: 999999 !important;
 }
+
+/* =====================================================================
+   BARRA DE BÚSQUEDA (Estilo Pastilla Azul con Botón Blanco)
+   ===================================================================== */
+.search-elegant {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-radius: 50px; /* Forma de pastilla completa */
+  padding: 6px 6px 6px 20px; /* Padding asimétrico: poco a la derecha para abrazar el círculo */
+  max-width: 450px;
+  box-shadow: 0 4px 10px rgba(122, 140, 218, 0.2);
+  transition: all 0.3s ease;
+}
+
+/* Efecto sutil al hacer clic para escribir */
+.search-elegant:focus-within {
+  box-shadow: 0 4px 15px rgba(122, 140, 218, 0.4);
+  transform: translateY(-1px);
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 1rem;
+  color: #ffffff; /* Texto de búsqueda en blanco */
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.75); /* "Search..." en blanco semi-transparente */
+  font-weight: 400;
+}
+
+/* ==================================
+   EL CÍRCULO BLANCO DE LA DERECHA
+   ================================== */
+.search-btn-circle {
+  background-color: #ffffff; /* Fondo blanco sólido */
+  border-radius: 50%; /* Círculo perfecto */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.search-btn-circle:hover {
+  transform: scale(1.05); /* Crece un poquito al pasar el mouse */
+}
+
+/* Lupa dentro del círculo */
+.search-btn-circle mat-icon {
+  color: #0d36e4; /* La lupa toma el mismo color azul del fondo de la barra */
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}

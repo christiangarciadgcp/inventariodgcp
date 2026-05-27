@@ -8,12 +8,16 @@ import { environment } from '../../environments/environment.development';
   providedIn: 'root',
 })
 export class ProveedorService {
-  
+
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/proveedores`;
 
   getProveedores(): Observable<Proveedor[]> {
     return this.http.get<Proveedor[]>(this.apiUrl);
+  }
+
+  getProveedoresActivos() : Observable<Proveedor[]>{
+    return this.http.get<Proveedor[]>(`${this.apiUrl}/activos`);
   }
 
   createProveedor(proveedor: Proveedor): Observable<Proveedor> {
@@ -26,6 +30,14 @@ export class ProveedorService {
 
   deleteProveedor(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  desactivarProveedor(id:number) : Observable<void>{
+    return this.http.put<void>(`${this.apiUrl}/${id}/desactivar`, {});
+  }
+
+  activarProveedor(id:number){
+    return this.http.put<void>(`${this.apiUrl}/${id}/activar`, {});
   }
 
 }

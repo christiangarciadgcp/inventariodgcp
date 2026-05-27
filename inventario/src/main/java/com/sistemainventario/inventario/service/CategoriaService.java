@@ -22,6 +22,10 @@ public class CategoriaService {
         return categoriaRepository.findAll(Sort.by(Sort.Direction.ASC,"idCategoria"));
     }
 
+    public List<Categoria> listarCategoriasActivas(){
+        return categoriaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"idCategoria"));
+    }
+
     public Optional<Categoria> obtenerCategoriaPorId(Integer id) {
         return categoriaRepository.findById(id);
     }
@@ -46,6 +50,24 @@ public class CategoriaService {
 
         return categoriaRepository.save(categoriaActual);
 
+    }
+
+    @Transactional
+    public void desactivarCategoria( Integer id){
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+
+        categoria.setActivo(false);
+        categoriaRepository.save(categoria);
+    }
+
+    @Transactional
+    public void activarCategoria(Integer id){
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+
+        categoria.setActivo(true);
+        categoriaRepository.save(categoria);
     }
 
 }

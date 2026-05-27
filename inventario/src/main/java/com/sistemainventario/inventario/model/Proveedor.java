@@ -16,4 +16,7 @@ public class Proveedor {
 
     @Column(name = "telefonoproveedor", length = 20)
     private String telefonoproveedor;
+
+    @Column(name = "activo")
+    private Boolean activo = true;
 }

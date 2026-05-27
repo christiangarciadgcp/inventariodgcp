@@ -1,5 +1,6 @@
 export interface Proveedor {
     idProveedor?: number;
     nombreproveedor: string;
-    telefonoproveedor: string; 
+    telefonoproveedor: string;
+    activo : boolean;
 }

@@ -93,7 +93,7 @@ export class ProductoListComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage(); // Reinicia a la página 1 al filtrar
+      this.dataSource.paginator.firstPage();
     }
   }
 
@@ -124,7 +124,8 @@ export class ProductoListComponent implements OnInit {
 
   abrirFormulario(producto?: Producto) {
     const dialogRef = this.dialog.open(ProductoDialogComponent, {
-      width: '800px',
+      width: '900px',
+      maxHeight: '95vh',
       disableClose: false,
       data: producto ? { producto: producto } : null
     });

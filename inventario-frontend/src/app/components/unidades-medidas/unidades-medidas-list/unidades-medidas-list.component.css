@@ -81,3 +81,54 @@ button[mat-icon-button][color="primary"] {
 button[mat-icon-button][color="warn"] {
     color: var(--mat-sys-error) !important;
 }
+
+.icon-tiny {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.icon-acciones {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.icon-success {
+  color: #2e7d32 !important;
+}
+.icon-danger {
+  color: #ff0000 !important;
+}
+
+.badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Efecto hover suave para el botón de restaurar */
+.restore:hover {
+  background-color: #e8f5e9; /* Fondo verde muy claro */
+}
+
+.bg-success-subtle { background-color: #d1e7dd; }
+.text-success { color: #0f5132; }
+.border-success-subtle { border-color: #badbcc; }
+
+.bg-danger-subtle { background-color: #f8d7da; }
+.text-danger { color: #842029; }
+.border-danger-subtle { border-color: #f5c2c7; }
+
+
+::ng-deep .mat-sort-header-arrow {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
+  opacity: 0.9 !important;
+}
+
+

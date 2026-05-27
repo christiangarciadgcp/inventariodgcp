@@ -22,6 +22,10 @@ public class UnidadMedidaService {
         return unidadMedidaRepository.findAll(Sort.by(Sort.Direction.ASC,"idUnidadMedida"));
     }
 
+    public List<UnidadMedida> listarUnidadMedidasActivas(){
+        return unidadMedidaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"idUnidadMedida"));
+    }
+
     public Optional<UnidadMedida> obtenerUnidadMedidaPorId(Integer id) {
         return unidadMedidaRepository.findById(id);
     }
@@ -45,5 +49,23 @@ public class UnidadMedidaService {
     @Transactional
     public void eliminarUnidadMedida(Integer id) {
         unidadMedidaRepository.deleteById(id);
+    }
+    
+    @Transactional
+    public void desactivarUnidadMedida(Integer id){
+        UnidadMedida unidadMedida = unidadMedidaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
+
+        unidadMedida.setActivo(false);
+        unidadMedidaRepository.save(unidadMedida);
+    }
+
+    @Transactional
+    public void activarUnidadMedida(Integer id){
+        UnidadMedida unidadMedida = unidadMedidaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
+
+        unidadMedida.setActivo(true);
+        unidadMedidaRepository.save(unidadMedida);
     }
 }

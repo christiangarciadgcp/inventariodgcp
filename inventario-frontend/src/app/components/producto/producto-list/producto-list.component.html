@@ -16,7 +16,7 @@
   <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 px-2 gap-3">
 
     <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact flex-grow-1" style="width: 100%; max-width: 600px; font-size: 0.9rem;">
-      <mat-label>Buscar producto...</mat-label>
+      <mat-label>Buscar...</mat-label>
       <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Laptop, SKU o proveedor" #input autocomplete="off">
       <mat-icon matSuffix class="text-secondary">search</mat-icon>
     </mat-form-field>
@@ -161,9 +161,15 @@
 
                   <div class="d-flex justify-content-center align-items-center gap-1">
 
-                    <button mat-icon-button class="action-btn eyes" matTooltip="Ver Galería" (click)="verGaleria(element)">
-                      <mat-icon class="icon-acciones align-middle">visibility</mat-icon>
-                    </button>
+                      @if (element.imagenes && element.imagenes.length > 0) {
+                        <button mat-icon-button class="action-btn eyes" matTooltip="Ver Galería" (click)="verGaleria(element)">
+                          <mat-icon class="icon-accion align-middle">visibility</mat-icon>
+                        </button>
+                      } @else {
+                        <button mat-icon-button disabled class="action-btn text-muted" matTooltip="Sin Fotos">
+                          <mat-icon class="icon-accion align-middle opacity-25">visibility_off</mat-icon>
+                        </button>
+                      }
 
                     <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Producto" (click)="abrirFormulario(element)">
                       <mat-icon class="icon-acciones align-middle">edit_note</mat-icon>

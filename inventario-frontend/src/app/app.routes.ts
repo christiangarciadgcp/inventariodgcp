@@ -25,6 +25,7 @@ import { MarcaListComponent } from './components/catalogos/marca/marca-list/marc
 import { ModeloListComponent } from './components/catalogos/modelo/modelo-list/modelo-list.component';
 import { permisosGuard } from './guards/permisos-guard';
 import { authGuard } from './guards/auth-guard';
+import {ProductoDiccionarioComponent} from './components/producto/producto-diccionario/producto-diccionario.component';
 
 
 const ADMIN = 'administrador';
@@ -98,6 +99,17 @@ export const routes: Routes = [
                 component: UnderConstructionComponent,
                 data: { breadcrumb: 'Proyectos' }
             },
+
+            /**********************************
+                  Diccionario de Productos
+             ***********************************/
+
+          {
+              path: 'diccionario-materiales',
+              component: ProductoDiccionarioComponent,
+              data: { breadcrumb: 'Diccionario de Materiales y equipos' }
+
+          },
 
             /*********************************
                 Solicitudes de Compra

@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.custom-card {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  background: white;
+  width: 100%;
+  overflow: hidden;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+::ng-deep .mat-mdc-table {
+  background: transparent !important;
+  min-width: 1000px;
+  width: 100% !important;
+}
+
+::ng-deep .mat-mdc-header-row {
+  background: linear-gradient(#031e3f 0%, #153863 100%) !important;
+  border-bottom: 2px solid #f1f3f5 !important;
+  height: 60px !important;
+}
+
+::ng-deep .mat-mdc-header-cell {
+  color: #ffffff !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+::ng-deep .mat-mdc-row {
+  height: 70px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+::ng-deep .mat-mdc-row:hover {
+  background-color: #f8faff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  z-index: 1;
+  position: relative;
+}
+
+::ng-deep .mat-mdc-cell {
+  font-size: 0.9rem !important;
+  color: #344767 !important;
+  font-weight: 500 !important;
+  border-bottom: 1px solid #ebebeb !important;
+}
+
+::ng-deep .mat-sort-header-arrow { color: #ffffff !important; }
+::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition { opacity: 0.9 !important; }
+
+
+.mat-column-nombre {
+  min-width: 300px;
+  width: auto; /* Evita que aplane a las demás columnas */
+  padding-right: 16px !important;
+}
+
+.mat-column-marca {
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  text-align: left;
+}
+
+.mat-column-acciones {
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
+  text-align: center !important;
+}
+
+.icon-accion {
+  font-size: 25px !important;
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.eyes {
+  color: #0554a3 !important;
+}

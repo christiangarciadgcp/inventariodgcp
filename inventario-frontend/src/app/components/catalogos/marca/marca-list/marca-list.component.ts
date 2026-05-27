@@ -15,6 +15,7 @@ import {Mensaje} from '../../../../core/mensaje';
 import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.component';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {MarcaDialogComponent} from '../marca-dialog/marca-dialog.component';
+import {Bodega} from '../../../../models/bodega';
 
 @Component({
   selector: 'app-marca-list',
@@ -28,11 +29,12 @@ import {MarcaDialogComponent} from '../marca-dialog/marca-dialog.component';
 })
 export class MarcaListComponent {
 
-  displayedColumns : string[] = ['id', 'nombre', 'acciones'];
+  displayedColumns : string[] = ['id', 'nombre', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Marca>([]);
   marcas = signal<Marca[]>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   private marcaService = inject(MarcaService);
   private dialog = inject(MatDialog);
@@ -42,7 +44,21 @@ export class MarcaListComponent {
     effect(() => {
       this.dataSource.data = this.marcas();
       if (this.paginator) this.dataSource.paginator = this.paginator;
+      if(this.sort) this.dataSource.sort = this.sort;
     });
+
+    this.dataSource.sortingDataAccessor = (item : Marca, property : string) => {
+      switch(property){
+        case 'id':
+          return item.idMarca;
+        case 'nombre':
+          return item.nombremarca;
+        case 'estado':
+          return item.activo;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
 
   ngOnInit(): void {

@@ -67,6 +67,10 @@ export class BodegaListComponent {
     this.cargarBodegas();
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+
   cargarBodegas() {
     this.bodegaService.getBodegas().subscribe({
       next: (data) => this.bodegas.set(data),

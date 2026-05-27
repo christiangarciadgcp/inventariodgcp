@@ -23,6 +23,10 @@ public class ProveedorService {
         return proveedorRepository.findAll(Sort.by(Sort.Direction.ASC,"idProveedor"));
     }
 
+    public List<Proveedor> listaProveedoresActivos(){
+        return proveedorRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"idProveedor"));
+    }
+
     public Optional<Proveedor> obtenerProveedorPorId(Integer id) {
         return proveedorRepository.findById(id);
     }
@@ -46,6 +50,24 @@ public class ProveedorService {
     @Transactional
     public void eliminarProveedor(Integer idProveedor){
         proveedorRepository.deleteById(idProveedor);
+    }
+
+    @Transactional
+    public void desactivarProveedor(Integer id){
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow( () -> new RuntimeException("Proveedor no encontrado"));
+
+        proveedor.setActivo(false);
+        proveedorRepository.save(proveedor);
+    }
+
+    @Transactional
+    public void activarProveedor(Integer id){
+        Proveedor proveedor = proveedorRepository.findById(id)
+                .orElseThrow( () -> new RuntimeException("Proveedor no encontrado"));
+
+        proveedor.setActivo(true);
+        proveedorRepository.save(proveedor);
     }
 
 }

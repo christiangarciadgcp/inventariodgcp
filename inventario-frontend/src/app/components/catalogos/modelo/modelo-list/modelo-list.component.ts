@@ -15,6 +15,7 @@ import {Mensaje} from '../../../../core/mensaje';
 import {ModeloService} from '../../../../services/modelo.service';
 import {ModeloDialogComponent} from '../modelo-dialog/modelo-dialog.component';
 import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.component';
+import {Bodega} from '../../../../models/bodega';
 
 @Component({
   selector: 'app-modelo-list',
@@ -28,11 +29,12 @@ import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.com
 })
 export class ModeloListComponent {
 
-  displayedColumns: string[] = ['id', 'marca', 'nombre', 'acciones'];
+  displayedColumns: string[] = ['id', 'marca', 'nombre', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Modelo>([]);
   modelos = signal<Modelo[]>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   private modeloService = inject(ModeloService);
   private dialog = inject(MatDialog);
@@ -42,7 +44,23 @@ export class ModeloListComponent {
     effect(() => {
       this.dataSource.data = this.modelos();
       if (this.paginator) this.dataSource.paginator = this.paginator;
+      if(this.sort) this.dataSource.sort = this.sort;
     });
+
+    this.dataSource.sortingDataAccessor = (item : Modelo, property : string) => {
+      switch(property){
+        case 'id':
+          return item.idModelo;
+        case 'marca':
+          return item.marca?.nombremarca;
+        case 'nombre':
+          return item.nombremodelo;
+        case 'estado':
+          return item.activo;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
 
   ngOnInit(): void {

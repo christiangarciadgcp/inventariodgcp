@@ -19,6 +19,9 @@ public class UnidadMedida {
     @Column(name = "abreviaturaunidadmedida", nullable = false, length = 10)
     private String abreviaturaunidadmedida;
 
+    @Column(name = "activo")
+    private Boolean activo = true;
+
     public Integer getIdUnidadMedida() {
         return this.idUnidadMedida;
     }

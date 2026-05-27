@@ -67,7 +67,7 @@ public class ProductoService {
     }
 
     public List<Producto> listarProductosActivos(){
-        return productoRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC, "categoria.idCategoria"));
+        return productoRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC, "idProducto"));
         // return productoRepository.findByActivoTrue();
     }
 

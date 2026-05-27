@@ -8,20 +8,21 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ProveedorService } from '../../../services/proveedor.service';
 import { Proveedor } from '../../../models/proveedor';
 import { ProveedorDialogComponent } from '../proveedor-dialog/proveedor-dialog.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
+import {Bodega} from '../../../models/bodega';
 
 @Component({
   selector: 'app-proveedor-list',
   standalone: true,
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink
+    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink,MatSortModule
   ],
   templateUrl: './proveedor-list.component.html',
   styleUrl: './proveedor-list.component.css',
@@ -30,12 +31,13 @@ import { Mensaje } from '../../../core/mensaje';
 export class ProveedorListComponent {
 
   //Columnas a mostrar en la tabla
-  displayedColumns : string[] = ['id', 'nombre', 'telefono', 'acciones'];
+  displayedColumns : string[] = ['id', 'nombre', 'telefono', 'estado', 'acciones'];
 
   dataSource = new MatTableDataSource<Proveedor>([]);
   proveedores = signal<Proveedor[]>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   //Inyecciones
   private proveedorService = inject(ProveedorService);
@@ -46,11 +48,29 @@ export class ProveedorListComponent {
     effect(() => {
       this.dataSource.data = this.proveedores();
       if (this.paginator) this.dataSource.paginator = this.paginator;
+      if(this.sort) this.dataSource.sort = this.sort;
     });
+
+    this.dataSource.sortingDataAccessor = (item : Proveedor, property : string) => {
+      switch(property){
+        case 'id':
+          return item.idProveedor;
+        case 'nombre':
+          return item.nombreproveedor;
+        case 'estado':
+          return item.activo;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
 
   ngOnInit(): void {
     this.cargarProveedores();
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
   }
 
   cargarProveedores() {
@@ -84,7 +104,8 @@ export class ProveedorListComponent {
   actualizarProveedor(id : number, data : any){
     const proveedorActualizado : Proveedor = {
       nombreproveedor : data.nombre,
-      telefonoproveedor : data.telefono
+      telefonoproveedor : data.telefono,
+      activo : false
     };
 
     this.proveedorService.updateProveedor(id, proveedorActualizado).subscribe({
@@ -102,7 +123,8 @@ export class ProveedorListComponent {
   registrarProveedor(datos:any){
     const nuevo : Proveedor = {
       nombreproveedor: datos.nombre,
-      telefonoproveedor: datos.telefono
+      telefonoproveedor: datos.telefono,
+      activo: datos.activo
     };
 
     console.log('Enviando:', nuevo);
@@ -131,6 +153,58 @@ export class ProveedorListComponent {
             this.mensaje.open('Proveedor eliminado', 'exito');
           },
           error: () => this.mensaje.open('No se pudo eliminar', 'error')
+        });
+      }
+    });
+  }
+
+  desactivarProveedor(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Desactivar Proveedor?',
+        mensaje: 'El Proveedor dejará de estar visible.',
+        textoBoton: 'Desactivar',
+        colorBoton: 'primary'
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.proveedorService.desactivarProveedor(id).subscribe({
+          next: () => {
+            this.cargarProveedores();
+            this.mensaje.open('Proveedor desactivado correctamente','exito');
+          },
+          error: (err) => {
+            const msg = err.error?.mensaje || 'No se pudo desactivar el Proveedor';
+            this.mensaje.open(msg, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  reactivarProveedor(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Reactivar Proveedor?',
+        mensaje: 'El Proveedor volverá a estar visible.',
+        textoBoton: 'Reactivar',
+        colorBoton: 'primary'
+      }
+    });
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.proveedorService.activarProveedor(id).subscribe({
+          next: () => {
+            this.cargarProveedores();
+            this.mensaje.open('Proveedor reactivado correctamente','exito');
+          },
+          error: (err) => {
+            const msg = err.error?.mensaje || 'No se pudo activar el Proveedor';
+            this.mensaje.open(msg, 'error');
+          }
         });
       }
     });

@@ -62,8 +62,7 @@ export class ProductoDialogComponent implements OnInit {
 
   archivosSeleccionados: File[] = [];
   previsualizaciones: string[] = [];
-  // Si estás editando, aquí puedes cargar las fotos que ya vienen de la BD
-  imagenesExistentes: any[] = [];
+
 
   form: FormGroup = this.fb.group({
     nombreproducto: ['', [Validators.required]],
@@ -140,9 +139,9 @@ export class ProductoDialogComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.catService.getCategorias().subscribe(data => this.listaCategorias = data);
-    this.provService.getProveedores().subscribe(data => this.listaProveedores = data);
-    this.unitService.getUnidadesMedida().subscribe(data => this.listaUnidades = data);
+    this.catService.getCategoriasActivas().subscribe(data => this.listaCategorias = data);
+    this.provService.getProveedoresActivos().subscribe(data => this.listaProveedores = data);
+    this.unitService.getUnidadesMedidaActivas().subscribe(data => this.listaUnidades = data);
     this.marcaService.getMarcasActivas().subscribe(data => this.listaMarcas = data);
 
     this.form.valueChanges.subscribe( valores => {
@@ -253,6 +252,7 @@ export class ProductoDialogComponent implements OnInit {
     this.archivosSeleccionados.splice(index, 1);
     this.previsualizaciones.splice(index, 1);
   }
+
 
   guardar() {
 
