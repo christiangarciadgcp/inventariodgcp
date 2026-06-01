@@ -6,6 +6,7 @@ import com.sistemainventario.inventario.repository.BodegaRepository;
 import com.sistemainventario.inventario.repository.CategoriaRepository;
 import com.sistemainventario.inventario.repository.InventarioRepository;
 import com.sistemainventario.inventario.repository.ModeloRepository;
+import com.sistemainventario.inventario.repository.ProductoImagenRepository;
 import com.sistemainventario.inventario.repository.ProductoRepository;
 import com.sistemainventario.inventario.repository.ProveedorRepository;
 import com.sistemainventario.inventario.repository.UnidadMedidaRepository;
@@ -42,6 +43,7 @@ public class ProductoService {
     private final ProveedorRepository proveedorRepository;
     private final UnidadMedidaRepository unidadMedidaRepository;
     private final ModeloRepository modeloRepository;
+    private final ProductoImagenRepository productoImagenRepository;
 
     //CONSTRUCTOR
     public ProductoService(ProductoRepository productoRepository, 
@@ -50,7 +52,8 @@ public class ProductoService {
                             CategoriaRepository categoriaRepository,
                             ProveedorRepository proveedorRepository,
                             UnidadMedidaRepository unidadMedidaRepository,
-                            ModeloRepository modeloRepository){
+                            ModeloRepository modeloRepository,
+                            ProductoImagenRepository productoImagenRepository){
         this.productoRepository = productoRepository;
         this.bodegaRepository = bodegaRepository;
         this.inventarioRepository = inventarioRepository;
@@ -58,6 +61,7 @@ public class ProductoService {
         this.proveedorRepository = proveedorRepository;
         this.unidadMedidaRepository = unidadMedidaRepository;
         this.modeloRepository = modeloRepository;
+        this.productoImagenRepository = productoImagenRepository;
     }
 
     public List<Producto> listarProductos(){
@@ -296,5 +300,12 @@ public class ProductoService {
         } catch (IOException e) {
             throw new RuntimeException("Error al almacenar las imágenes: " + e.getMessage());
         }
+    }
+
+    @Transactional
+    public void eliminarImagenPorId(Integer idImagen) {
+        // Opcional: Aquí también podrías agregar la lógica con java.nio.file.Files 
+        // para borrar el archivo físico del disco duro si lo deseas.
+        productoImagenRepository.deleteById(idImagen);
     }
 }

@@ -6,7 +6,7 @@
   <form [formGroup]="form" class="row g-3">
 
     <div class="col-md-5">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>SKU / Código</mat-label>
 
         @if (!esEdicion) {
@@ -20,7 +20,7 @@
     </div>
 
     <div class="col-md-7">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Nombre del Producto</mat-label>
         <input matInput formControlName="nombreproducto" (input)="onInputMayusculas($event, 'nombreproducto')">
         @if (form.get('nombreproducto')?.hasError('required') && form.get('nombreproducto')?.touched) {
@@ -30,7 +30,7 @@
     </div>
 
     <div class="col-md-12">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Categoría</mat-label>
         <mat-select formControlName="idCategoria">
           @for (c of listaCategorias; track c.idCategoria) {
@@ -44,7 +44,7 @@
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Marca</mat-label>
         <mat-select formControlName="idMarca">
           @for (u of listaMarcas; track u.idMarca) {
@@ -58,7 +58,7 @@
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Modelo</mat-label>
         <mat-select formControlName="idModelo">
           @for (u of listaModelos; track u.idModelo) {
@@ -72,7 +72,7 @@
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Proveedor</mat-label>
         <mat-select formControlName="idProveedor">
           @for (p of listaProveedores; track p.idProveedor) {
@@ -83,7 +83,7 @@
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>U. Medida</mat-label>
         <mat-select formControlName="idUnidadMedida">
           @for (u of listaUnidades; track u.idUnidadMedida) {
@@ -97,48 +97,69 @@
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Serie</mat-label>
         <input matInput formControlName="serieproducto" (input)="onInputMayusculas($event, 'serieproducto')">
       </mat-form-field>
     </div>
 
     <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Inventario</mat-label>
         <input matInput formControlName="inventarioproducto" (input)="onInputMayusculas($event, 'inventarioproducto')">
       </mat-form-field>
     </div>
 
     <div class="col-12">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Descripción</mat-label>
         <textarea matInput formControlName="descripcionproducto" rows="2"></textarea>
       </mat-form-field>
     </div>
 
-    <div class="col-12 mt-1 mb-2">
+    <div class="col-12 mt-1 mb-1">
       <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>
 
       <input type="file" #fileInput hidden multiple accept="image/png, image/jpeg, image/webp" (change)="onFilesSelected($event)">
 
-      <button mat-stroked-button color="primary" type="button" class="rounded-pill px-4 mb-3" (click)="fileInput.click()">
-        <mat-icon class="me-2">add_a_photo</mat-icon> Seleccionar Fotos
+      <button mat-stroked-button color="primary" type="button" class="rounded-pill mb-3" (click)="fileInput.click()">
+        <mat-icon class="me-2">add_a_photo</mat-icon> Agregar Fotos
       </button>
 
       <div class="d-flex flex-wrap gap-3">
-        @for (img of previsualizaciones; track $index) {
+
+        @for (img of imagenesActuales; track $index) {
           <div class="position-relative shadow-sm" style="border-radius: 8px;">
-            <img [src]="img" class="img-thumbnail bg-white border" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
+            <span class="badge bg-success position-absolute" style="bottom: 5px; left: 5px; font-size: 0.6rem;">Guardada</span>
+
+            <img [src]="img.rutaimagen" class="img-thumbnail bg-white border" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
+
             <button mat-mini-fab color="warn" type="button"
                     class="position-absolute shadow-sm"
                     style="top: -10px; right: -10px; transform: scale(0.65);"
-                    matTooltip="Quitar foto"
+                    matTooltip="Eliminar permanentemente"
+                    (click)="eliminarImagenExistente(img.idProductoImagen, $index)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+
+        @for (img of previsualizaciones; track $index) {
+          <div class="position-relative shadow-sm" style="border-radius: 8px;">
+            <span class="badge bg-warning text-dark position-absolute" style="bottom: 5px; left: 5px; font-size: 0.6rem;">Nueva</span>
+
+            <img [src]="img" class="img-thumbnail bg-white border border-warning" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
+
+            <button mat-mini-fab color="warn" type="button"
+                    class="position-absolute shadow-sm"
+                    style="top: -10px; right: -10px; transform: scale(0.65);"
+                    matTooltip="Quitar foto nueva"
                     (click)="removerImagenNueva($index)">
               <mat-icon>close</mat-icon>
             </button>
           </div>
         }
+
       </div>
     </div>
 

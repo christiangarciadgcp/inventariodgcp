@@ -13,7 +13,7 @@
 .mat-mdc-header-row {
     background: linear-gradient(#031e3f 0%, #153863 100%);
     border-bottom: 2px solid #f1f3f5;
-    height: 60px;
+    height: 48px;
 }
 
 .mat-mdc-header-cell {
@@ -26,7 +26,7 @@
 
 
 .mat-mdc-row {
-    height: 70px;
+    height: 55px;
     transition: all 0.2s ease-in-out;
 }
 
@@ -70,7 +70,7 @@
     background: linear-gradient(#031e3f 0%, #153863 100%);
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     border: none;
-    height: 45px;
+    height: 40px;
     font-weight: 500;
     letter-spacing: 0.5px;
 }

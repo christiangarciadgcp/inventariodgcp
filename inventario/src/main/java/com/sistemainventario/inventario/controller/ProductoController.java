@@ -72,4 +72,10 @@ public class ProductoController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/imagen/{idImagen}")
+    public ResponseEntity<Void> eliminarImagenProducto(@PathVariable Integer idImagen) {
+        productoService.eliminarImagenPorId(idImagen);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -76,8 +76,8 @@
 }
 
 .nav-link {
-    height: 46px;
-    margin: 4px 12px;
+    height: 40px;
+    margin: 2px 12px;
     display: flex;
     align-items: center;
     border-radius: 8px;
@@ -118,7 +118,7 @@
 .sidebar-container.collapsed .nav-link {
     justify-content: center !important;
     padding: 0 !important;
-    margin: 4px 8px !important;
+    margin: 2px 8px !important;
 }
 
 .sidebar-container.collapsed .nav-icon {
@@ -190,7 +190,7 @@
 .nav-link.child-link {
     padding-left: 2.5rem !important; /* Indentación importante */
     font-size: 0.9em; /* Texto un poco más pequeño */
-    height: 40px; /* Un poco más compactos */
+    height: 36px; /* Un poco más compactos */
 }
 
 /* Iconos de los hijos un poco más pequeños */

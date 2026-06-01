@@ -1,0 +1,201 @@
+.custom-card {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  background: white;
+  overflow: hidden;
+}
+
+.mat-mdc-table { background: transparent; }
+
+.mat-mdc-header-row {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-bottom: 2px solid #f1f3f5;
+  height: 60px;
+}
+
+.mat-mdc-header-cell {
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mat-mdc-row {
+  height: 70px;
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-row:hover {
+  background-color: #f8faff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  z-index: 1;
+  position: relative;
+}
+
+.mat-mdc-cell {
+  font-size: 0.9rem;
+  color: #344767;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb !important;
+
+}
+
+.badge-soft {
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.action-btn { transition: transform 0.2s; }
+.action-btn:hover {
+  transform: scale(1.1);
+  background-color: rgba(0,0,0,0.04);
+}
+
+.mat-column-acciones {
+  width: 200px;
+  min-width: 100px;
+  max-width: 200px;
+  text-align: center;
+
+}
+
+.mat-column-justificacion {
+  width: 250px;
+  min-width: 250px;
+  max-width: 350px;
+  padding-right: 20px !important;
+}
+
+.mat-column-estado {
+  width: 150px;
+  min-width: 100px;
+  max-width: 200px;
+}
+
+.btn-nuevo {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+  border: none;
+  height: 45px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.edit-color{
+  color: #d59809;
+}
+
+.icon-circle mat-icon {
+  font-size: 25px;
+  margin-bottom: 3px;
+}
+
+.status-pendiente {
+  background-color: #fff8dd;
+  color: #d6a800;
+  border-color: #ffedb8;
+}
+
+.status-aprobada {
+  background-color: #e8fff3;
+  color: #19cb69;
+  border-color: #d1fbe4;
+}
+
+.status-despachado {
+  background-color: #e1f0ff;
+  color: #009ef7;
+  border-color: #cce9ff;
+}
+
+.status-despacho-parcial {
+  background-color: #fef1ed;
+  color: #f36739;
+  border-color: #ffd9cb;
+}
+
+.status-cancelado {
+  background-color: #fff5f8;
+  color: #f1416c;
+  border-color: #ffe1e9;
+}
+
+.text-muted-hover:hover { color: #3f51b5 !important; cursor: pointer; }
+
+.container-wide {
+  width: 99%; /* Ocupa casi toda la pantalla */
+  max-width: 1600px; /* Pero pone un límite para que no se vea infinito en monitores 4K */
+  margin-right: auto; /* Centrado automático */
+  margin-left: auto;  /* Centrado automático */
+  padding-right: 2rem;
+  padding-left: 2rem;
+}
+
+/* Ajuste opcional para pantallas pequeñas (móviles/tablets) */
+@media (max-width: 768px) {
+  .container-wide {
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
+}
+
+
+::ng-deep .mat-sort-header-arrow {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
+  opacity: 0.9 !important;
+}
+
+/* =========================================
+   MEJORA VISUAL DE PESTAÑAS (TABS)
+   ========================================= */
+
+/* 1. Línea base sutil para anclar las pestañas al diseño */
+::ng-deep .mat-mdc-tab-header {
+  border-bottom: 2px solid #f1f3f5;
+}
+
+/* 2. Estilo del texto INACTIVO (gris suave) */
+::ng-deep .mat-mdc-tab .mdc-tab__text-label {
+  color: #7b809a;
+  font-weight: 500;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+/* 3. Estilo de la pestaña ACTIVA (Tu azul institucional) */
+::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+  color: #153863 !important;
+  font-weight: 800 !important;
+}
+
+/* 4. Línea indicadora más fina y elegante (2px en lugar de 4px) */
+::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: #153863 !important;
+  border-top-width: 2px !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+/* 5. Fondo permanente para la pestaña ACTIVA (Efecto "botón seleccionado") */
+::ng-deep .mat-mdc-tab.mdc-tab--active {
+  background-color: rgba(21, 56, 99, 0.06) !important; /* Fondo azul muy suavecito */
+  border-radius: 8px 8px 0 0;
+}
+
+/* 6. Fondo interactivo sutil al pasar el mouse por pestañas INACTIVAS */
+::ng-deep .mat-mdc-tab:hover:not(.mdc-tab--active) {
+  background-color: rgba(21, 56, 99, 0.03); /* Fondo aún más suave para el hover */
+  border-radius: 8px 8px 0 0;
+}

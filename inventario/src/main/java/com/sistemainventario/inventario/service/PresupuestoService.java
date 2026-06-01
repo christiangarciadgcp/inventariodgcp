@@ -419,6 +419,6 @@ public class PresupuestoService {
 
         reporte.setItems(itemsDTO);
         return reporte;
-        // --- FIN DE LA NUEVA LÓGICA ---
+        // --- FIN ---
     }
 }

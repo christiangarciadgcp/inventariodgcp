@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -12,8 +12,8 @@
 
 .mat-mdc-header-row {
     background: linear-gradient(#031e3f 0%, #153863 100%);
-    border-bottom: 2px solid #f1f3f5; 
-    height: 60px; 
+    border-bottom: 2px solid #f1f3f5;
+    height: 48px;
     text-align: center !important;
 }
 
@@ -22,21 +22,21 @@
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px; 
+    letter-spacing: 1px;
     text-align: center !important;
 }
 
 
 /* --- FILAS Y HOVER --- */
 .mat-mdc-row {
-    height: 55px; 
+    height: 55px;
     transition: all 0.2s ease-in-out;
     text-align: center !important;
 }
 
 .hover-row:hover {
-    background-color: #f8faff !important; 
-    transform: translateY(-2px); 
+    background-color: #f8faff !important;
+    transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     z-index: 1;
     position: relative;
@@ -44,7 +44,7 @@
 
 .mat-mdc-cell {
     font-size: 0.9rem;
-    color: #344767; 
+    color: #344767;
     font-weight: 500;
     border-bottom: 1px solid #ebebeb !important;
     text-align: center !important;
@@ -52,7 +52,7 @@
 
 .badge-soft {
     padding: 8px 12px;
-    border-radius: 15px; 
+    border-radius: 15px;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -61,23 +61,23 @@
 }
 
 .role-admin {
-    background-color: #e1ffe3; 
-    color: #00b215; 
+    background-color: #e1ffe3;
+    color: #00b215;
 }
 
 .role-jefe {
-    background-color: #ffeeee; 
-    color: #b20000; 
+    background-color: #ffeeee;
+    color: #b20000;
 }
 
 .role-inventario {
-    background-color: #e7f6f8; 
-    color: #11cdef; 
+    background-color: #e7f6f8;
+    color: #11cdef;
 }
 
 .role-tecnico {
-    background-color: #fff6e5; 
-    color: #fb8c00; 
+    background-color: #fff6e5;
+    color: #fb8c00;
 }
 
 .role-default {
@@ -105,7 +105,7 @@
     background: linear-gradient(#031e3f 0%, #153863 100%);
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     border: none;
-    height: 45px;
+    height: 40px;
     font-weight: 500;
     letter-spacing: 0.5px;
 }

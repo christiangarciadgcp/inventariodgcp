@@ -59,4 +59,8 @@ export class ProductoService {
   activarProducto(id: number) {
     return this.http.put<void>(`${this.apiUrl}/${id}/activar`, {});
   }
+
+  eliminarImagenProducto(idImagen: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/imagen/${idImagen}`);
+  }
 }

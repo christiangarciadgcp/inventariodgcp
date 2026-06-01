@@ -134,6 +134,15 @@
             <div class="nav-divider"></div>
             }
 
+          <a routerLink="/presupuesto" routerLinkActive="active" class="nav-link"
+             [matTooltip]="layoutService.sidebarCollapsed() ? 'Presupuesto' : ''" matTooltipPosition="right">
+            <div class="nav-icon"><mat-icon>post_add</mat-icon></div>
+
+            @if (!layoutService.sidebarCollapsed()) {
+              <span class="nav-text">Presupuesto</span>
+            }
+          </a>
+
           <a routerLink="/diccionario-materiales" routerLinkActive="active" class="nav-link"
              [matTooltip]="layoutService.sidebarCollapsed() ? 'Diccionario de Materiales' : ''" matTooltipPosition="right">
             <div class="nav-icon"><mat-icon>menu_book</mat-icon></div>
@@ -152,14 +161,7 @@
             }
           </a>
 
-            <a routerLink="/presupuesto" routerLinkActive="active" class="nav-link"
-                [matTooltip]="layoutService.sidebarCollapsed() ? 'Presupuesto' : ''" matTooltipPosition="right">
-                <div class="nav-icon"><mat-icon>post_add</mat-icon></div>
 
-                @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Presupuesto</span>
-                }
-            </a>
 
 
 <!--            <a routerLink="/proyecto" routerLinkActive="active" class="nav-link"

@@ -26,6 +26,9 @@ import { ModeloListComponent } from './components/catalogos/modelo/modelo-list/m
 import { permisosGuard } from './guards/permisos-guard';
 import { authGuard } from './guards/auth-guard';
 import {ProductoDiccionarioComponent} from './components/producto/producto-diccionario/producto-diccionario.component';
+import {
+  SugerenciasListComponent
+} from './components/producto/producto-sugerencia/sugerencia-list/sugerencia-list.component';
 
 
 const ADMIN = 'administrador';
@@ -112,7 +115,7 @@ export const routes: Routes = [
           },
           {
             path: 'sugerencia-materiales',
-            component: UnderConstructionComponent,
+            component: SugerenciasListComponent,
             data: { breadcrumb: 'Sugerencia de Materiales' }
 
           },

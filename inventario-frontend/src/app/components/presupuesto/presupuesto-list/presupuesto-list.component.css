@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -89,31 +89,31 @@
 }
 
 .status-pendiente {
-    background-color: #fff8dd; 
+    background-color: #fff8dd;
     color: #d6a800;
     border-color: #ffedb8;
 }
 
 .status-aprobada {
-    background-color: #e8fff3; 
-    color: #19cb69; 
+    background-color: #e8fff3;
+    color: #19cb69;
     border-color: #d1fbe4;
 }
 
 .status-despachado {
-    background-color: #e1f0ff; 
-    color: #009ef7; 
+    background-color: #e1f0ff;
+    color: #009ef7;
     border-color: #cce9ff;
 }
 
 .status-despacho-parcial {
-    background-color: #fef1ed; 
-    color: #f36739; 
+    background-color: #fef1ed;
+    color: #f36739;
     border-color: #ffd9cb;
 }
 
 .status-cancelado {
-    background-color: #fff5f8; 
+    background-color: #fff5f8;
     color: #f1416c;
     border-color: #ffe1e9;
 }
@@ -174,7 +174,7 @@
 /* 4. Línea indicadora más fina y elegante (2px en lugar de 4px) */
 ::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
     border-color: #153863 !important;
-    border-top-width: 2px !important; 
+    border-top-width: 2px !important;
     border-radius: 4px 4px 0 0 !important;
 }
 

@@ -15,8 +15,6 @@ import { ProveedorDialogComponent } from '../proveedor-dialog/proveedor-dialog.c
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
-import {Bodega} from '../../../models/bodega';
-import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-proveedor-list',

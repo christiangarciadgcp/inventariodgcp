@@ -1,0 +1,140 @@
+<div class="container-wide px-5 mt-4">
+
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 px-2">
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
+      <div>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Catálogo</h6>
+        <h2 class="fw-bold text-dark m-0">Sugerencias de Materiales</h2>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 justify-content-end">
+      <div class="search-elegant m-0" style="width: 280px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar sugerencia..." #input autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
+      @if (!this.esEncargadoInventario()) {
+        <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" (click)="abrirModalSugerir()">
+          <mat-icon class="me-2">add_comment</mat-icon> Nueva Sugerencia
+        </button>
+      }
+    </div>
+  </div>
+
+  <mat-card class="custom-card mb-5">
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" class="w-100">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef class="ps-4"> N° </th>
+          <td mat-cell *matCellDef="let element" class="ps-4 text-secondary">
+            #{{ element.idSugerencia }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef> FECHA </th>
+          <td mat-cell *matCellDef="let element">
+                    <span class="text-dark" style="font-size: 0.85rem;">
+                        {{ element.fechaSugerencia | date:'dd/MM/yyyy' }}
+                    </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef> MATERIAL / EQUIPO  </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="d-flex flex-column py-2">
+              <span class="fw-bold text-dark">{{ element.nombreSugerido }}</span>
+              <div class="d-flex align-items-center mt-1">
+                <mat-icon class="text-muted me-1" style="font-size: 14px; width: 14px; height: 14px;">category</mat-icon>
+                <small class="text-secondary"> {{ element.categoriaSugerida?.nombrecategoria || 'Sin clasificar' }}</small>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="solicitante">
+          <th mat-header-cell *matHeaderCellDef> SOLICITANTE </th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.usuarioSolicitante?.nombreusuario }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="justificacion">
+          <th mat-header-cell *matHeaderCellDef> MOTIVO </th>
+          <td mat-cell *matCellDef="let element">
+            <small class="text-muted text-truncate-custom" [matTooltip]="element.justificacion">
+              {{ element.justificacion }}
+            </small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef> ESTADO </th>
+          <td mat-cell *matCellDef="let element">
+                    <span class="badge-soft" [ngClass]="{
+                            'status-pendiente': element.estado === 'PENDIENTE',
+                            'status-aprobada': element.estado === 'APROBADO',
+                            'status-cancelado' : element.estado === 'RECHAZADO'
+                          }">
+                        {{ element.estado }}
+                    </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="comentario">
+          <th mat-header-cell *matHeaderCellDef> COMENTARIO </th>
+          <td mat-cell *matCellDef="let element">
+            <small class="text-muted">
+              {{ element.comentario }}
+            </small>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef> ACCIONES </th>
+          <td mat-cell *matCellDef="let element" class="col-acciones text-center">
+
+            @if (this.esEncargadoInventario() && element.estado === 'PENDIENTE') {
+              <button mat-icon-button class="action-btn text-success" matTooltip="Aprobar y Registrar Producto" (click)="aprobar(element)">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button class="action-btn text-danger" matTooltip="Rechazar" (click)="rechazarSugerencia(element.idSugerencia)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
+
+            @if (!this.esEncargadoInventario() && element.estado === 'PENDIENTE') {
+              <button mat-icon-button class="action-btn text-danger" matTooltip="Eliminar Sugerencia" (click)="eliminarSugerencia(element.idSugerencia)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-5" colspan="7">
+            <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+              <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">lightbulb_2</mat-icon>
+              <span class="fw-medium">No se encontraron sugerencias</span>
+              @if (input.value){
+                <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
+              }
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+  </mat-card>
+</div>

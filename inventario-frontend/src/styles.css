@@ -2,6 +2,10 @@
 /*******************************************************************************
 /*******************************************************************************
 /*******************************************************************************/
+html {
+  font-size: 14px; /* El valor por defecto de los navegadores es 16px */
+}
+
 
 .btn-success {
     background-color: #2e7d32 !important;
@@ -17,7 +21,6 @@
     color: white !important;
 }
 
-
 /* =========================================
    ESTILOS GLOBALES PARA TABLAS (Modern Soft UI)
    ========================================= */
@@ -32,10 +35,19 @@
 }
 
 /* Encabezados de Tabla (Header) */
+
+/* Se ha sustituido por el de abajo
+
 .mat-mdc-header-row {
     background-color: #ffffff;
     border-bottom: 2px solid #f1f3f5;
     height: 60px;
+}*/
+
+.mat-mdc-header-row {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-bottom: 2px solid #f1f3f5;
+  height: 48px;
 }
 
 .mat-mdc-header-cell {
@@ -52,6 +64,13 @@
     border-bottom: 1px solid #f8f9fa;
     transition: all 0.2s ease-in-out;
 }
+
+/*
+Se ha sustituido por el de abajo
+.mat-mdc-row {
+  height: 55px;
+  transition: all 0.2s ease-in-out;
+}*/
 
 .mat-mdc-row:hover {
     background-color: #f8faff !important;
@@ -113,7 +132,7 @@
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
     border: none;
     color: white !important;
-    height: 45px;
+    height: 40px;
     font-weight: 500;
     letter-spacing: 0.5px;
 }
@@ -147,8 +166,6 @@
         padding-left: 1rem;
     }
 }
-
-
 
 /* =========================================
    ESTILOS GLOBALES PARA BOTONES DE DIÁLOGOS

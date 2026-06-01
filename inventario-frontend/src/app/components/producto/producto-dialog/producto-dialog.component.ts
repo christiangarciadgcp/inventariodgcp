@@ -1,7 +1,7 @@
 import { Component, OnInit, inject,ChangeDetectorRef, Inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +19,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { ProductoService } from '../../../services/producto.service';
 import {ProductoRegistroDTO} from '../../../models/producto';
 import {MatIcon} from '@angular/material/icon';
+import {ConfirmDialogComponent} from '../../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -36,6 +37,7 @@ export class ProductoDialogComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   public sn = inject(Utils);
   private mensaje = inject(Mensaje);
+  private dialog = inject(MatDialog);
 
   // servicios inyectados
   private catService = inject(CategoriaService);
@@ -62,7 +64,7 @@ export class ProductoDialogComponent implements OnInit {
 
   archivosSeleccionados: File[] = [];
   previsualizaciones: string[] = [];
-
+  imagenesActuales: any[] = [];
 
   form: FormGroup = this.fb.group({
     nombreproducto: ['', [Validators.required]],
@@ -144,6 +146,17 @@ export class ProductoDialogComponent implements OnInit {
     this.unitService.getUnidadesMedidaActivas().subscribe(data => this.listaUnidades = data);
     this.marcaService.getMarcasActivas().subscribe(data => this.listaMarcas = data);
 
+    if (this.productoData && this.productoData.sugerenciaParaConvertir) {
+      const sug = this.productoData.sugerenciaParaConvertir;
+
+      this.form.patchValue({
+        nombreproducto: sug.nombreSugerido,
+        descripcionproducto: `Sugerencia por Técnico UTDI.\nMotivo: ${sug.justificacion}`,
+        idCategoria: sug.categoriaSugerida?.idCategoria
+      });
+
+    }
+
     this.form.valueChanges.subscribe( valores => {
       if(!this.esEdicion){
         this.actualizarPreviewSKU(valores.idCategoria, valores.idMarca);
@@ -175,6 +188,12 @@ export class ProductoDialogComponent implements OnInit {
       this.esEdicion = true;
       const p = this.productoData.producto;
 
+      if (p.imagenes && p.imagenes.length > 0) {
+        this.imagenesActuales = [...p.imagenes];
+      }
+
+      console.log("IMÁGENES DESDE EL BACKEND:", this.imagenesActuales);
+
       this.form.patchValue({
         nombreproducto: p.nombreproducto,
         skuproducto: p.skuproducto,
@@ -187,6 +206,7 @@ export class ProductoDialogComponent implements OnInit {
         idProveedor: p.proveedor?.idProveedor,
         idUnidadMedida: p.unidadMedida?.idUnidadMedida,
         idMarca : p.modelo?.marca?.idMarca // <--- ESTO DISPARA EL valueChanges DE ARRIBA
+
       });
 
       setTimeout(() => {
@@ -195,6 +215,8 @@ export class ProductoDialogComponent implements OnInit {
 
       this.form.get('precioventaproducto')?.disable();
     }
+
+
   }
 
   actualizarPreviewSKU(idCat: number | null, idMar: number | null) {
@@ -253,6 +275,33 @@ export class ProductoDialogComponent implements OnInit {
     this.previsualizaciones.splice(index, 1);
   }
 
+  eliminarImagenExistente(idImagen: number, index: number) {
+    // Usamos el confirm dialog que ya tienes importado para evitar borrados por accidente
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Eliminar fotografía?',
+        mensaje: 'Esta acción borrará la imagen de la base de datos inmediatamente.',
+        textoBoton: 'Eliminar',
+        colorBoton: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.productoService.eliminarImagenProducto(idImagen).subscribe({
+          next: () => {
+            // Si el backend la borró, la quitamos visualmente del arreglo
+            this.imagenesActuales.splice(index, 1);
+            this.mensaje.open('Imagen eliminada correctamente', 'exito');
+          },
+          error: () => {
+            this.mensaje.open('Error al eliminar la imagen', 'error');
+          }
+        });
+      }
+    });
+  }
 
   guardar() {
 

@@ -3,7 +3,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -13,7 +13,7 @@
 .mat-mdc-header-row {
     background: linear-gradient(#031e3f 0%, #153863 100%);
     border-bottom: 2px solid #f1f3f5;
-    height: 60px;
+    height: 48px;
 }
 
 .mat-mdc-header-cell {
@@ -25,7 +25,7 @@
 }
 
 .mat-mdc-row {
-    height: 70px;
+    height: 55px;
     transition: all 0.2s ease-in-out;
 }
 
