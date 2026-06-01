@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -304,8 +304,18 @@ public class ProductoService {
 
     @Transactional
     public void eliminarImagenPorId(Integer idImagen) {
-        // Opcional: Aquí también podrías agregar la lógica con java.nio.file.Files 
-        // para borrar el archivo físico del disco duro si lo deseas.
+        ProductoImagen imagen = productoImagenRepository.findById(idImagen)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
+
+        String nombreArchivo = imagen.getRutaimagen();
+
+        try{
+            Path rutaFisica = Paths.get(this.storageLocation).resolve(nombreArchivo).normalize();
+
+            Files.deleteIfExists(rutaFisica);
+        }catch(IOException e){
+            throw new RuntimeException("No se puedo eliminar la imagen del servidor: " + e.getMessage());
+        }
         productoImagenRepository.deleteById(idImagen);
     }
 }

@@ -3,7 +3,7 @@
 /*******************************************************************************
 /*******************************************************************************/
 html {
-  font-size: 14px; /* El valor por defecto de los navegadores es 16px */
+  font-size: 14px;
 }
 
 
@@ -114,6 +114,10 @@ Se ha sustituido por el de abajo
 
 .edit-icon{
   color: rgb(232 120 38) !important;
+}
+
+.delete-img{
+  color: rgb(255 0 0 / 0.85) !important;
 }
 
 .action-btn.delete {

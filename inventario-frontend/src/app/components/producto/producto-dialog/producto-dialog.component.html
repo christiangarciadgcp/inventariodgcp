@@ -134,10 +134,10 @@
 
             <img [src]="img.rutaimagen" class="img-thumbnail bg-white border" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
 
-            <button mat-mini-fab color="warn" type="button"
-                    class="position-absolute shadow-sm"
+            <button mat-mini-fab type="button"
+                    class="position-absolute shadow-sm delete-img"
                     style="top: -10px; right: -10px; transform: scale(0.65);"
-                    matTooltip="Eliminar permanentemente"
+                    matTooltip="Eliminar"
                     (click)="eliminarImagenExistente(img.idProductoImagen, $index)">
               <mat-icon>delete</mat-icon>
             </button>

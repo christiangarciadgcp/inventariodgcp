@@ -21,7 +21,7 @@ import { MatIconModule } from '@angular/material/icon';
             <div class="d-flex flex-column align-items-center">
                 <img [src]="data.imagenes[indiceActual].rutaimagen"
                      class="img-fluid rounded shadow-sm mb-4 bg-white p-1 border"
-                     style="max-height: 450px; object-fit: contain;">
+                     style="max-height: 400px; object-fit: contain;">
 
                 @if (data.imagenes.length > 1) {
                     <div class="d-flex gap-4 align-items-center">
