@@ -141,10 +141,22 @@ export class ProductoDialogComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.catService.getCategoriasActivas().subscribe(data => this.listaCategorias = data);
+   /* this.catService.getCategoriasActivas().subscribe(data => this.listaCategorias = data);*/
+
+    this.catService.getCategoriasActivas().subscribe(data => {
+      this.listaCategorias = data;
+      this.actualizarPreviewSKU(this.form.get('idCategoria')?.value, this.form.get('idMarca')?.value);
+    });
+
     this.provService.getProveedoresActivos().subscribe(data => this.listaProveedores = data);
     this.unitService.getUnidadesMedidaActivas().subscribe(data => this.listaUnidades = data);
-    this.marcaService.getMarcasActivas().subscribe(data => this.listaMarcas = data);
+
+    /*this.marcaService.getMarcasActivas().subscribe(data => this.listaMarcas = data);*/
+
+    this.marcaService.getMarcasActivas().subscribe(data => {
+      this.listaMarcas = data;
+      this.actualizarPreviewSKU(this.form.get('idCategoria')?.value, this.form.get('idMarca')?.value);
+    });
 
     if (this.productoData && this.productoData.sugerenciaParaConvertir) {
       const sug = this.productoData.sugerenciaParaConvertir;
@@ -157,11 +169,15 @@ export class ProductoDialogComponent implements OnInit {
 
     }
 
-    this.form.valueChanges.subscribe( valores => {
+/*    this.form.valueChanges.subscribe( valores => {
       if(!this.esEdicion){
         this.actualizarPreviewSKU(valores.idCategoria, valores.idMarca);
       }
-    });
+    });*/
+
+    this.form.valueChanges.subscribe( valores => {
+      this.actualizarPreviewSKU(valores.idCategoria, valores.idMarca);
+    })
 
 
     this.form.get('idMarca')?.valueChanges.subscribe(idMarcaSeleccionada => {
@@ -223,17 +239,22 @@ export class ProductoDialogComponent implements OnInit {
     let catStr = 'XXX';
     let marStr = 'XXX';
 
-    if (idCat) {
+    if (idCat && this.listaCategorias.length > 0) {
       const categoria = this.listaCategorias.find(c => c.idCategoria === idCat);
       if (categoria) catStr = this.generarPrefijoCategoria(categoria.nombrecategoria);
     }
 
-    if (idMar) {
+    if (idMar && this.listaMarcas.length > 0) {
       const marca = this.listaMarcas.find(m => m.idMarca === idMar);
       if (marca) marStr = this.generarPrefijoMarca(marca.nombremarca);
     }
 
-    this.skuPreview = `${catStr}-${marStr}-XXXXX`;
+    if (this.esEdicion && this.productoData?.producto) {
+      const idStr = this.productoData.producto.idProducto.toString().padStart(5, '0');
+      this.skuPreview = `${catStr}-${marStr}-${idStr}`;
+    } else {
+      this.skuPreview = `${catStr}-${marStr}-XXXXX`;
+    }
   }
 
   generarPrefijoCategoria(texto: string): string {

@@ -8,7 +8,7 @@
 
       <div>
         <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Configuración</h6>
-        <h2 class="fw-bold text-dark m-0">Gestión de Modelos</h2>
+        <h2 class="fw-bold text-dark m-0">Gestión de Ubicaciones</h2>
       </div>
     </div>
 
@@ -21,7 +21,7 @@
       </div>
 
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo" (click)="abrirFormulario()">
-        <mat-icon class="me-2">library_add</mat-icon> Nuevo Modelo
+        <mat-icon class="me-2">library_add</mat-icon>Nueva Ubicación
       </button>
     </div>
   </div>
@@ -36,36 +36,36 @@
         </td>
       </ng-container>
 
+
 <!--      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> N° </th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="ps-4"> N° </th>
         <td mat-cell *matCellDef="let element" class="ps-4 text-secondary">
-          {{ element.idModelo }}
+          {{ element.idUbicacion }}
         </td>
       </ng-container>-->
 
-      <ng-container matColumnDef="marca">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Marca </th>
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre Ubicación </th>
         <td mat-cell *matCellDef="let element">
           <div class="d-flex align-items-center">
             <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
                  style="width: 35px; height: 35px; color: #5c6bc0;">
-              <mat-icon style="font-size: 13px; width: 15px; height: 15px;"><i class="bi bi-substack"></i></mat-icon>
+              <mat-icon style="font-size: 20px; width: 20px; height: 20px;">location_on</mat-icon>
             </div>
-            <span class="fw-bold">{{element.marca.nombremarca}}</span>
+            <span class="fw-bold">{{element.nombreubicacion}}</span>
           </div>
         </td>
       </ng-container>
 
-      <ng-container matColumnDef="nombre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Modelo </th>
-        <td mat-cell *matCellDef="let element">
-          <div class="d-flex align-items-center">
-            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
-                 style="width: 35px; height: 35px; color: #5c6bc0;">
-              <mat-icon style="font-size: 13px; width: 15px; height: 15px;"><i class="bi bi-ui-checks-grid"></i></mat-icon>
+      <ng-container matColumnDef="siglas">
+        <th mat-header-cell *matHeaderCellDef> Siglas </th>
+        <td mat-cell *matCellDef="let element" class="text-secondary fw-medium">
+          @if(element.siglasubicacion){
+            <div class="d-flex align-items-center">
+              <mat-icon class="me-2 text-muted" style="font-size: 18px; width: 18px; height: 18px;">abc</mat-icon>
+              {{element.siglasubicacion}}
             </div>
-            <span class="fw-bold">{{element.nombremodelo}}</span>
-          </div>
+          }
         </td>
       </ng-container>
 
@@ -84,20 +84,20 @@
         </td>
       </ng-container>
 
+
       <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> Acciones </th>
+        <th mat-header-cell *matHeaderCellDef class="pe-4"> Acciones </th>
         <td mat-cell *matCellDef="let element" class="col-acciones">
 
-          <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Modelo" (click)="abrirFormulario(element)">
-            <mat-icon class="icon-acciones align-middle me-1">edit_note</mat-icon>
-          </button>
+          <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Ubicación" (click)="abrirFormulario(element)">
+            <mat-icon class="icon-acciones align-middle me-1">edit_note</mat-icon> </button>
 
           @if (element.activo) {
-            <button mat-icon-button class="action-btn icon-success" matTooltip="Desactivar Modelo" (click)="desactivarModelo(element.idModelo)">
+            <button mat-icon-button class="action-btn icon-success" matTooltip="Desactivar Ubicación" (click)="desactivarUbicacion(element.idUbicacion)">
               <mat-icon class="icon-acciones align-middle">toggle_on</mat-icon>
             </button>
           } @else {
-            <button mat-icon-button class="action-btn restore icon-danger" matTooltip="Reactivar Modelo" (click)="reactivarModelo(element.idModelo)">
+            <button mat-icon-button class="action-btn restore icon-danger" matTooltip="Reactivar Ubicación" (click)="reactivarUbicacion(element.idUbicacion)">
               <mat-icon class="icon-acciones align-middle">toggle_off</mat-icon>
             </button>
           }
@@ -111,14 +111,14 @@
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell text-center py-5" colspan="5">
           <div class="d-flex flex-column align-items-center justify-content-center text-muted">
-            <mat-icon style="font-size: 35px; width: 40px; height: 40px;" class="mb-2"><i class="bi bi-ui-checks-grid"></i></mat-icon>
-            <span class="fw-medium">No se encontraron Modelos</span>
+            <mat-icon style="font-size: 40px; width: 40px; height: 40px;" class="mb-2">location_on</mat-icon>
+            <span class="fw-medium">No se encontraron ubicaciones</span>
             @if (input.value){
               <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
             }
           </div>
         </td>
-      </tr>2
+      </tr>
     </table>
 
     <mat-paginator [pageSizeOptions]="[10, 25, 50]"

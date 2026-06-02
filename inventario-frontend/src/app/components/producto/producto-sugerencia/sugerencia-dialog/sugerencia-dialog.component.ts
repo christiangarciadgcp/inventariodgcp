@@ -11,6 +11,7 @@ import {SugerenciaService} from '../../../../services/sugerencia.service';
 import {AuthService} from '../../../../services/auth.service';
 import {Mensaje} from '../../../../core/mensaje';
 import {ProductoSugerenciaRegistroDTO} from '../../../../models/sugerencia';
+import {Utils} from '../../../../core/utils';
 
 @Component({
   selector: 'app-sugerencia-dialog',
@@ -19,13 +20,13 @@ import {ProductoSugerenciaRegistroDTO} from '../../../../models/sugerencia';
   template: `
     <h2 mat-dialog-title>Sugerir Nuevo Producto</h2>
     <mat-dialog-content class="pt-2">
-      <p class="text-secondary small mb-3">Si no encuentras un producto en el catálogo, llena este formulario. El departamento de inventario evaluará su inclusión.</p>
+      <p class="text-secondary small mb-3">Si no encuentras un producto en el diccionario de materiales, llena este formulario.</p>
 
       <form [formGroup]="form" class="row g-3">
         <div class="col-12">
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Nombre Sugerido del Producto</mat-label>
-            <input matInput formControlName="nombreSugerido" placeholder="Ej. Monitor Dell 24 pulgadas">
+            <input matInput formControlName="nombreSugerido" (input)="onInputMayusculas($event, 'nombreSugerido')" placeholder="Ej. Monitor Dell 24 pulgadas">
           </mat-form-field>
         </div>
 
@@ -64,6 +65,7 @@ export class SugerenciaDialogComponent implements OnInit {
   private sugerenciaService = inject(SugerenciaService);
   public authService = inject(AuthService);
   private mensaje = inject(Mensaje);
+  private sn = inject(Utils);
 
   listaCategorias: any[] = [];
   guardando = false;
@@ -76,6 +78,11 @@ export class SugerenciaDialogComponent implements OnInit {
 
   ngOnInit() {
     this.catService.getCategoriasActivas().subscribe(data => this.listaCategorias = data);
+  }
+
+  onInputMayusculas(event: Event, controlName: string) {
+    const control = this.form.get(controlName);
+    this.sn.convertirAMayusculas(event, control);
   }
 
   guardar() {

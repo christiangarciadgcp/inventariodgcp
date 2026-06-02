@@ -2,7 +2,7 @@
 .test-session-timer {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     background-color: #153863;
     color: white;
     padding: 10px 15px;

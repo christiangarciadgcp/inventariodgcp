@@ -19,12 +19,36 @@ public class UbicacionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Ubicacion>> listarUbicaciones() {
-        return ResponseEntity.ok(ubicacionService.listarTodas());
+    public List<Ubicacion> listarUbicaciones() {
+        return ubicacionService.listarUbicaciones();
+    }
+
+    @GetMapping("/activas")
+    public ResponseEntity<List<Ubicacion>> listarUbicacionesActivas() {
+        return ResponseEntity.ok(ubicacionService.listarUbicacionesActivas());
     }
 
     @PostMapping
     public ResponseEntity<Ubicacion> guardarUbicacion(@RequestBody Ubicacion ubicacion) {
         return ResponseEntity.ok(ubicacionService.guardarUbicacion(ubicacion));
     }
+
+    @PutMapping("/{id}")
+    public Ubicacion actualizaUbicacion(@PathVariable Integer id, @RequestBody Ubicacion ubicacion) {
+
+        return ubicacionService.actualizarUbicacion(id, ubicacion);
+    }
+
+    @PutMapping("/{id}/desactivar")
+    public ResponseEntity<Void> desactivarUbicacion(@PathVariable Integer id){
+        ubicacionService.desactivarUbicacion(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/activar")
+    public ResponseEntity<Void> activarUbicacion(@PathVariable Integer id){
+        ubicacionService.activarUbicacion(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

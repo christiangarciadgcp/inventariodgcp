@@ -164,12 +164,12 @@ public class ProductoService {
         Producto productoActual = productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        if(!productoActual.getSkuproducto().equals(dto.getSkuproducto())){
+/*         if(!productoActual.getSkuproducto().equals(dto.getSkuproducto())){
             Optional<Producto> skuExistente = productoRepository.findByskuproducto(dto.getSkuproducto());
             if(skuExistente.isPresent()){
                 throw new RuntimeException("Ya existe un producto con el SKU: " + dto.getSkuproducto());
             }
-        }
+        } */
 
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -186,7 +186,7 @@ public class ProductoService {
         }
 
         productoActual.setNombreproducto(dto.getNombreproducto());
-        productoActual.setSkuproducto(dto.getSkuproducto());
+        // productoActual.setSkuproducto(dto.getSkuproducto());
         productoActual.setDescripcionproducto(dto.getDescripcionproducto());
         productoActual.setSerieproducto(dto.getSerieproducto());
         productoActual.setInventarioproducto(dto.getInventarioproducto());
@@ -197,6 +197,9 @@ public class ProductoService {
         productoActual.setUnidadMedida(unidadMedida);
         productoActual.setModelo(modelo);
         productoActual.setProveedor(proveedor);
+
+        String nuevoSku = generarSku(productoActual);
+        productoActual.setSkuproducto(nuevoSku);
 
         if (imagenes != null && imagenes.length > 0) {
             guardarImagenesFisicas(productoActual, imagenes);

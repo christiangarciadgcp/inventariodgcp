@@ -29,6 +29,7 @@ import {ProductoDiccionarioComponent} from './components/producto/producto-dicci
 import {
   SugerenciasListComponent
 } from './components/producto/producto-sugerencia/sugerencia-list/sugerencia-list.component';
+import {UbicacionListComponent} from './components/catalogos/ubicacion/ubicacion-list/ubicacion-list.component';
 
 
 const ADMIN = 'administrador';
@@ -260,6 +261,12 @@ export const routes: Routes = [
                       component: ModeloListComponent,
                       data: { breadcrumb: 'Modelos' }
                     },
+                  {
+                    path: 'ubicaciones',
+                    component: UbicacionListComponent,
+                    data: { breadcrumb: 'Ubicaciones' }
+                  },
+
                 ]
             },
 

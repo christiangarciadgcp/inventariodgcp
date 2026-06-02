@@ -31,7 +31,7 @@ interface ItemRecepcionVista {
   selector: 'app-solicitud-recepcion-modal',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatIconModule, 
+    CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatIconModule,
     MatTableModule, MatFormFieldModule, MatInputModule, MatTooltipModule
   ],
   templateUrl: './solicitud-recepcion-modal.component.html',
@@ -47,7 +47,7 @@ export class SolicitudRecepcionModalComponent implements OnInit {
 
   dataSource = new MatTableDataSource<ItemRecepcionVista>([]);
   displayedColumns: string[] = ['producto','proveedor', 'solicitado', 'recibido', 'faltante', 'ingreso'];
-  
+
   cargando: boolean = false;
   totalARecibirHoyCalculado: number = 0;
 
@@ -67,11 +67,11 @@ export class SolicitudRecepcionModalComponent implements OnInit {
         const items = detalles.map(d => {
           const yaRecibido = d.cantidad_recibida || 0;
           const faltante = d.cantidad_solicitada - yaRecibido;
-          
+
           return {
             idDetalle: d.idSolicitudDetalle!,
             nombreProducto: d.producto.nombreproducto,
-            proveedor: d.producto.proveedor?.nombreproveedor || 'Sin proveedor',
+            proveedor: d.producto.proveedor?.nombreproveedor || 'SIN PROVEEDOR',
             sku: d.producto.skuproducto || 'N/A',
             solicitado: d.cantidad_solicitada,
             yaRecibido: yaRecibido,
@@ -99,12 +99,12 @@ export class SolicitudRecepcionModalComponent implements OnInit {
   // Validaciones
   validarCantidad(element: ItemRecepcionVista) {
     if (element.aRecibirHoy > element.faltante) {
-      element.aRecibirHoy = element.faltante; 
+      element.aRecibirHoy = element.faltante;
       this.mensaje.open(`Solo faltan ${element.faltante} unidades de este producto`, 'warning');
     } else if (element.aRecibirHoy < 0 || !element.aRecibirHoy) {
       element.aRecibirHoy = 0;
     }
-    
+
     // LLAMAMOS AL CÁLCULO CADA VEZ QUE EL USUARIO ESCRIBE
     this.recalcularTotal();
     this.cdr.detectChanges();

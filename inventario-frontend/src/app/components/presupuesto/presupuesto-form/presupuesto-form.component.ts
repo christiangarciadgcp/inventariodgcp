@@ -79,7 +79,7 @@ export class PresupuestoFormComponent implements OnInit {
       this.productosFiltrados.set(data);
     });
 
-    this.ubicacionService.listarTodos().subscribe(data => {
+    this.ubicacionService.getUbicacionesActivas().subscribe(data => {
       this.listaUbicaciones.set(data);
     })
 

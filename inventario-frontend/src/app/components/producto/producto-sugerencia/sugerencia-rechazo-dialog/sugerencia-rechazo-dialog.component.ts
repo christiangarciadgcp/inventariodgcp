@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-sugerencia-rechazo-dialog',
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, FormsModule],
+  styleUrl: './sugerencia-rechazo-dialog.component.css',
   template: `
     <h2 mat-dialog-title class="text-danger">Rechazar Sugerencia</h2>
 
@@ -19,13 +20,16 @@ import { FormsModule } from '@angular/forms';
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Motivo del rechazo</mat-label>
         <textarea matInput [(ngModel)]="comentario" rows="3" placeholder="Ej. Ya existe un material similar o especificaciones incompletas." required></textarea>
+        @if (!comentario.trim()) {
+          <mat-error>Ingrese el motivo</mat-error>
+        }
       </mat-form-field>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-flat-button color="warn" [disabled]="!comentario.trim()" (click)="confirmarRechazo()">
-        Confirmar Rechazo
+      <button mat-button class="btn-cancelar" (click)="dialogRef.close()">Cancelar</button>
+      <button mat-flat-button class="btn-confirm" (click)="confirmarRechazo()">
+         Rechazar
       </button>
     </mat-dialog-actions>
   `

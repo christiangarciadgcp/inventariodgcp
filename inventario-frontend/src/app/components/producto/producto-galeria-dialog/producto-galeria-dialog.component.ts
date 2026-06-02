@@ -10,10 +10,10 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
   template : `
     <div class="d-flex justify-content-center align-items-center p-3 border-bottom position-relative">
-      <h3 class="m-0 fw-bold text-dark">{{data.nombre}}</h3>
-      <button mat-icon-button mat-dialog-close class="position-absolute end-0 me-3">
+      <h4 class="m-0 fw-bold text-dark">{{data.nombre}}</h4>
+<!--      <button mat-icon-button mat-dialog-close class="position-absolute end-0 me-3">
         <mat-icon class="mb-5">close</mat-icon>
-      </button>
+      </button>-->
     </div>
 
     <mat-dialog-content class="p-4 bg-light text-center">

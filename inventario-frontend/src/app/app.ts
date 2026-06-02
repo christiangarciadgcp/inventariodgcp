@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class App implements OnDestroy {
 
-    private authService = inject(AuthService);
+    public authService = inject(AuthService);
     private dialog = inject(MatDialog);
     private router = inject(Router);
 
@@ -250,6 +250,12 @@ export class App implements OnDestroy {
 
 
   mostrarAlertaInactividad() {
+
+    if (!this.authService.isAuthenticated() || window.location.pathname.includes('login')) {
+      return;
+    }
+
+
     this.isDialogResultPending = true;
 
     let segundosRestantes = Math.floor((this.MAX_INACTIVIDAD - this.TIEMPO_AVISO) / 1000);
@@ -342,5 +348,9 @@ export class App implements OnDestroy {
         this.limpiarTimersInactividad();
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
         if (this.actividadSub) this.actividadSub.unsubscribe();
+
+        if (this.countdownInterval) clearInterval(this.countdownInterval);
+        this.tiempoRestanteSegundos = 0;
+        this.tiempoFormateado.set('00:00');
     }
 }

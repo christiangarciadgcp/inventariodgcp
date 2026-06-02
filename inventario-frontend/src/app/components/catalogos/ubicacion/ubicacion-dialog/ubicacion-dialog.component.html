@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>{{esEdicion ? 'Editar Ubicación' : 'Nueva Ubicación'}}</h2>
+
+<mat-dialog-content>
+  <p class="text-secondary small mb-3">
+    {{esEdicion ? 'Modificar los datos de Ubicación' : 'Ingrese los datos para registrar una nueva Ubicación en el sistema.' }}</p>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre de Ubicación</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" (input)="onInputMayusculas($event, 'nombre')">
+      @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
+        <mat-error>El nombre es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Siglas de Ubicación</mat-label>
+      <input matInput formControlName="siglas" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" (input)="onInputMayusculas($event, 'siglas')">
+      @if (form.get('siglas')?.hasError('required') && form.get('siglas')?.touched) {
+        <mat-error>Las siglas son obligatorias</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="pb-3 pe-3 gap-2">
+  <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cancelar()">Cancelar</button>
+  <button mat-raised-button class="btn-confirm px-4 rounded-pill" (click)="guardar()">
+    {{esEdicion ? 'Guardar cambios' : 'Guardar'}}
+  </button>
+</mat-dialog-actions>
