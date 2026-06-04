@@ -51,7 +51,7 @@ export class SolicitudListComponent implements OnInit {
   private solicitudService = inject(SolicitudCompraService);
   private pdfService = inject(PdfService);
   private authService = inject(AuthService);
-  public fe = inject(Utils);
+  public utils = inject(Utils);
 
   constructor() {
     effect(() => {
@@ -110,27 +110,12 @@ export class SolicitudListComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-
-  obtenerIniciales(nombre: string | undefined): string {
-    if (!nombre) return '';
-
-    const partes = nombre.split('.');
-
-    if (partes.length > 1) {
-      const inicialNombre = partes[0].charAt(0);
-      const inicialApellido = partes[1].charAt(0);
-      return (inicialNombre + inicialApellido).toUpperCase();
-    }
-
-    return nombre.substring(0, 2).toUpperCase();
-  }
-
   // --------------------------------------------------------
   // MODAL CON EL DETALLE DE LA SOLICITUD
   // --------------------------------------------------------
   verDetalle(solicitud: SolicitudCompra) {
     const dialogRef = this.dialog.open(SolicitudDetalleDialogComponent, {
-      width: '800px',
+      width: '900px',
       maxWidth: '100vw',
       maxHeight: '90vh',
       disableClose: false,
@@ -180,7 +165,8 @@ export class SolicitudListComponent implements OnInit {
   // MODAL DE SELECCION PARA RECEPCIONAR
   // --------------------------------------------------------
   ejecutarAprobacion(id: number) {
-    this.solicitudService.aprobarSolicitud(id).subscribe({
+    const idUsuario = this.authService.getIdUsuarioActual();
+    this.solicitudService.aprobarSolicitud(id, idUsuario).subscribe({
       next: () => {
         this.mensaje.open('Solicitud Aprobada', 'exito');
         this.cargarSolicitudes();

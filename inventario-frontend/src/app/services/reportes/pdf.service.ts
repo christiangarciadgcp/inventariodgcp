@@ -18,13 +18,13 @@ export class PdfService {
 
     // POSICIÓN PARA EL LOGO
     const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 14; 
+    const margin = 14;
     const logoWidth = 40;
     const logoHeight = 20;
     const xPos = pageWidth - logoWidth - margin;
     const yPos = 10;
-    const logoUrl = 'assets/images/dgcp-logo.jpg'; 
-    
+    const logoUrl = 'assets/images/dgcp-logo.jpg';
+
     const img = new Image();
     img.src = logoUrl;
 
@@ -46,7 +46,7 @@ export class PdfService {
     // CARD DATOS DE LA SOLICITUD
     doc.setDrawColor(220);
     doc.setFillColor(248, 249, 250);
-    doc.roundedRect(14, 38, 182, 35, 3, 3, 'FD'); 
+    doc.roundedRect(14, 38, 182, 35, 3, 3, 'FD');
 
     doc.setFontSize(12);
     doc.setTextColor(0);
@@ -70,15 +70,16 @@ export class PdfService {
     doc.text(new Date(solicitud.fechacreacionsolicitud!).toLocaleString(), 130, 64);
 
     //AGREGAR LOS PRODUCTOS AL DETALLE
-    const columnas = ['#', 'SKU', 'Producto', 'Cantidad', 'Precio', 'Subtotal'];
-
+    const columnas = ['#', 'SKU', 'Producto', 'Req.', 'Rec.', 'Rest.', 'Estado'];
     const data = detalles.map((item,index) => [
       index + 1,
       item.producto.skuproducto,
       item.producto.nombreproducto,
       item.cantidad_solicitada,
-    `$${item.producto.preciocostoproducto.toFixed(2)}`,
-    `$${(item.cantidad_solicitada * item.producto.preciocostoproducto).toFixed(2)}`
+      item.cantidad_recibida,
+/*    `$${item.producto.preciocostoproducto.toFixed(2)}`,*/
+      (item.cantidad_solicitada - item.cantidad_recibida),
+      ((item.cantidad_solicitada - item.cantidad_recibida) <= 0 ? "ENTREGADO" : "PENDIENTE")
     ]);
 
     //CALCULAR EL TOTAL DEL DETALLE DE PRODUCTOS
@@ -95,25 +96,35 @@ export class PdfService {
       columnStyles: {
         0: { cellWidth: 10, halign: 'center' },
         3: { halign: 'center' },
-        4: { halign: 'right' },
-        5: { halign: 'right', fontStyle: 'bold' }
+        4: { halign: 'center' },
+        5: { halign: 'center', fontStyle: 'bold' },
+        6: { halign: 'center', fontStyle: 'bold' }
+      },
+      didParseCell: function (data) {
+        if (data.section === 'body' && data.column.index === 6 && data.cell.raw !== undefined) {
+          if (data.cell.raw === 'ENTREGADO') {
+            data.cell.styles.textColor = [25, 135, 84]; // Verde
+          } else if (data.cell.raw === 'PENDIENTE') {
+            data.cell.styles.textColor = [220, 53, 69]; // Rojo
+          }
+        }
       },
       didDrawPage: (data) => {
-        // Footer 
+        // Footer
       }
     });
 
     const finalY = (doc as any).lastAutoTable.finalY + 10;
-    
-    doc.setFontSize(12);
+
+/*    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL ESTIMADO: $${total.toFixed(2)}`, 140, finalY, { align: 'left' });
+    doc.text(`TOTAL ESTIMADO: $${total.toFixed(2)}`, 140, finalY, { align: 'left' });*/
 
     // FIRMAS
     doc.setDrawColor(0);
-    doc.line(20, finalY + 40, 80, finalY + 40); 
-    doc.line(120, finalY + 40, 180, finalY + 40); 
-    
+    doc.line(20, finalY + 40, 80, finalY + 40);
+    doc.line(120, finalY + 40, 180, finalY + 40);
+
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Firma Solicitante', 35, finalY + 45);
@@ -141,5 +152,5 @@ export class PdfService {
     //doc.save(nombreArchivo);
 
   }
-  
+
 }

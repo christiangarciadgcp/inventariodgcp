@@ -1,6 +1,9 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import java.util.List;
 import java.time.Instant;
 
 @Data
@@ -30,6 +33,13 @@ public class SolicitudCompra {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idbodegadestino", nullable = false)
     private Bodega idbodegadestino;
+
+    
+    @OneToMany(mappedBy = "solicitudCompra", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("fecha ASC")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<SolicitudCompraHistorial> historial;
 
     // Pre-persist para poner la fecha y estado automáticamente
     

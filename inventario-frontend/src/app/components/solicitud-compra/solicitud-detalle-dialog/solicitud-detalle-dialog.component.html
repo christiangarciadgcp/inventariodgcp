@@ -1,112 +1,193 @@
 <div class="custom-modal-container">
 
-    <div class="modal-header d-flex justify-content-between align-items-start p-4 border-bottom text-white" style="background: linear-gradient(#031e3f 0%, #153863 100%); border-bottom: 1px solid rgba(255,255,255,0.1);">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
-                    Solicitud #{{ data.solicitud.idSolicitudCompra }}
-                </h6>
-                
-                <span class="badge-soft" 
-                      [ngClass]="{
+  <div class="modal-header d-flex justify-content-between align-items-start p-4 border-bottom text-white"
+       style="background: linear-gradient(#031e3f 0%, #153863 100%); border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
+          Solicitud de Compra #{{ data.solicitud.idSolicitudCompra }}
+        </h6>
+
+        <span class="badge-soft"
+              [ngClass]="{
                         'status-pendiente': data.solicitud.estado === 'PENDIENTE',
                         'status-aprobada': data.solicitud.estado === 'APROBADA',
                         'status-recepcionada': data.solicitud.estado === 'RECEPCIONADA',
-                        'status-rechazada': data.solicitud.estado === 'RECHAZADA'
+                        'status-rechazada': data.solicitud.estado === 'RECHAZADA',
+                        'status-recepcion-parcial': data.solicitud.estado === 'RECEPCION_PARCIAL'
                       }">
-                    {{ data.solicitud.estado }}
+                    {{ utils.formatearEstado(data.solicitud.estado) }}
                 </span>
-            </div>
+      </div>
 
-            <h3 class="fw-bold text-white m-0">{{ data.solicitud.nombresolicitud }}</h3>
-            
-            <div class="d-flex align-items-center mt-2 text-white ">
-                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">store</mat-icon>
-                <small class="fw-bold text-white">Recepción: {{ data.solicitud.idbodegadestino.nombrebodega }}</small>
-                <span class="mx-2"> | </span>
-                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
-                <small class="fw-bold text-white">Solicitante: {{ fn.formatearNombre(data.solicitud.idusuariosolicitante.nombreusuario) }}</small>
-            </div>
-        </div>
-        
-        <button mat-icon-button (click)="cerrar()" class="text-white">
-            <mat-icon>close</mat-icon>
-        </button>
+      <h3 class="fw-bold text-white m-0">{{ data.solicitud.nombresolicitud }}</h3>
+
+      <div class="d-flex align-items-center mt-2 text-white ">
+        <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">store</mat-icon>
+        <small class="fw-bold text-white">Recepción: {{ data.solicitud.idbodegadestino.nombrebodega }}</small>
+        <span class="mx-2"> | </span>
+        <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
+        <small
+          class="fw-bold text-white">Solicitante: {{ utils.formatearNombre(data.solicitud.idusuariosolicitante.nombreusuario) }}</small>
+      </div>
     </div>
 
-    <div class="modal-body p-0">
+    <button mat-icon-button (click)="cerrar()" class="text-white">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
-        <mat-dialog-content class="mat-typography p-0">
-        
-            @if (cargando) {
-                <div class="d-flex justify-content-center align-items-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
+  <div class="modal-body p-0">
+
+    <div class="px-3 pb-2 border-top pt-4">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
+        <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+          Historial
+        </h6>
+      </div>
+
+      <div class="horizontal-timeline-wrapper overflow-auto pb-3 px-2">
+        <div class="d-flex align-items-start position-relative" style="min-width: max-content;">
+
+          @for (h of data.solicitud.historial; track h.idSolicitudCompraHistorial; let isLast = $last) {
+            <div class="horizontal-timeline-step" style="width: 140px;">
+
+              <div class="step-connector" [class.d-none]="isLast"
+                   [ngClass]="{
+                     'tl-creacion': h.accion === 'CREACION',
+                     'tl-edicion': h.accion === 'EDICION',
+                     'tl-aprobacion': h.accion === 'APROBACION',
+                     'tl-recepcion': h.accion === 'RECEPCION TOTAL',
+                     'tl-parcial': h.accion === 'RECEPCION PARCIAL'
+                   }">
+              </div>
+
+              <div class="step-dot d-flex justify-content-center align-items-center text-white mx-auto shadow"
+                   [ngClass]="{
+                     'tl-creacion': h.accion === 'CREACION',
+                     'tl-edicion': h.accion === 'EDICION',
+                     'tl-aprobacion': h.accion === 'APROBACION',
+                     'tl-recepcion': h.accion === 'RECEPCION TOTAL',
+                     'tl-parcial': h.accion === 'RECEPCION PARCIAL'
+                   }">
+
+                <mat-icon style="font-size: 22px; width: 22px; height: 22px;">
+                  {{
+                    h.accion === 'CREACION' ? 'note_add' :
+                      h.accion === 'EDICION' ? 'edit' :
+                        h.accion === 'APROBACION' ? 'verified' :
+                          h.accion === 'RECEPCION PARCIAL' ? 'inventory_2' :
+                            h.accion === 'RECEPCION TOTAL' ? 'done_all' : 'history'
+                  }}
+                </mat-icon>
+              </div>
+
+              <div class="step-content text-center mt-3 px-2">
+                <span class="badge-accion mb-2 d-inline-block shadow-sm"
+                      [ngClass]="{
+                        'bg-creacion-subtle text-creacion': h.accion === 'CREACION',
+                        'bg-warning-subtle text-warning': h.accion === 'EDICION',
+                        'bg-parcial-subtle text-parcial': h.accion === 'RECEPCION PARCIAL',
+                        'bg-info-subtle text-info': h.accion === 'RECEPCION TOTAL',
+                        'bg-success-subtle text-success': h.accion === 'APROBACION'
+                      }">
+                    {{ h.accion }}
+                </span>
+
+                <div class="fw-bold text-dark lh-sm text-truncate" style="font-size: 0.85rem;" [matTooltip]="utils.formatearNombre(h.usuario.nombreusuario)">
+                  {{ utils.formatearNombre(h.usuario.nombreusuario) }}
                 </div>
-            } @else {
-                
-                <table mat-table [dataSource]="dataSource" class="w-100">
 
-                    <ng-container matColumnDef="producto">
-                        <th mat-header-cell *matHeaderCellDef class="ps-4"> ITEM </th>
-                        <td mat-cell *matCellDef="let element" class="ps-4"> 
-                            <div class="d-flex flex-column py-2">
-                                <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
-                                <span class="small text-muted">{{ element.producto.skuproducto }}</span>
-                            </div>
-                        </td>
-                    </ng-container>
+                <div class="text-muted mt-1 fw-medium" style="font-size: 0.75rem;">
+                  {{ h.fecha | date:'dd/MMM/yyyy' }} <br>
+                  {{ h.fecha | date:'h:mm a' }}
+                </div>
+              </div>
 
-                    <ng-container matColumnDef="cantidad">
-                        <th mat-header-cell *matHeaderCellDef class="text-center"> CANTIDAD </th>
-                        <td mat-cell *matCellDef="let element" class="text-center"> 
-                            {{ element.cantidad_solicitada }}
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="precio">
-                        <th mat-header-cell *matHeaderCellDef class="text-end"> PRECIO </th>
-                        <td mat-cell *matCellDef="let element" class="text-end text-muted"> 
-                            ${{ element.producto.preciocostoproducto | number:'1.2-2' }} 
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="subtotal">
-                        <th mat-header-cell *matHeaderCellDef class="text-end pe-4"> SUBTOTAL </th>
-                        <td mat-cell *matCellDef="let element" class="text-end fw-bold text-dark pe-4"> 
-                            ${{ (element.cantidad_solicitada * element.producto.preciocostoproducto) | number:'1.2-2' }} 
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
-                </table>
-            }
-        </mat-dialog-content>
-
+            </div>
+          } @empty {
+            <div class="text-center w-100 text-muted small py-3 bg-light rounded-3 border-dashed">
+              No hay registros de historial disponibles.
+            </div>
+          }
+        </div>
+      </div>
     </div>
 
-    <div class="modal-footer p-3 bg-light border-top d-flex justify-content-between align-items-center">
-        
-        <div class="d-flex flex-column ms-2">
-            <span class="text-uppercase text-muted" style="font-size: 0.7rem; font-weight: 700;">Monto Total</span>
-            <span class="fs-4 fw-bold text-primary">${{ total | number:'1.2-2' }}</span>
+    <mat-dialog-content class="mat-typography p-0">
+
+      @if (cargando) {
+        <div class="d-flex justify-content-center align-items-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
         </div>
+      } @else {
 
-        <div class="d-flex gap-2">
-            <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cerrar</button>
+        <table mat-table [dataSource]="dataSource" class="w-100">
 
-            @if (data.solicitud.estado === 'PENDIENTE' && esJefeUTDI()) {
-                <button mat-flat-button color="primary" class="btn-confirmar" (click)="aprobar()">
-                    <mat-icon class="me-2">check</mat-icon> Aprobar
-                </button>
-            }
+          <ng-container matColumnDef="producto">
+            <th mat-header-cell *matHeaderCellDef class="ps-4"> MATERIAL</th>
+            <td mat-cell *matCellDef="let element" class="ps-4">
+              <div class="d-flex flex-column py-2">
+                <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
+                <span class="small text-muted">{{ element.producto.skuproducto }}</span>
+              </div>
+            </td>
+          </ng-container>
 
-            @if (data.solicitud.estado === 'APROBADA') {
-                <button mat-flat-button color="primary" class="btn-confirmar" (click)="recepcionar()">
-                    <mat-icon class="me-2">inventory_2</mat-icon> Recepcionar
-                </button>
-            }
-        </div>
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> REQUERIDO </th>
+            <td mat-cell *matCellDef="let element" class="text-center">
+              {{ element.cantidad_solicitada }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="recibido">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> RECIBIDO</th>
+            <td mat-cell *matCellDef="let element" class="text-center text-muted">
+              {{ element.cantidad_recibida }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="restante">
+            <th mat-header-cell *matHeaderCellDef class="text-center"> RESTANTE</th>
+            <td mat-cell *matCellDef="let element" class="text-center fw-bold text-dark pe-4">
+              {{ (element.cantidad_solicitada - element.cantidad_recibida) }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+        </table>
+      }
+    </mat-dialog-content>
+
+  </div>
+
+  <div class="modal-footer p-3 bg-light border-top d-flex align-items-center">
+
+<!--    <div class="d-flex flex-column ms-2">
+      <span class="text-uppercase text-muted" style="font-size: 0.7rem; font-weight: 700;">Monto Total</span>
+      <span class="fs-4 fw-bold text-primary">${{ total | number:'1.2-2' }}</span>
+    </div>-->
+
+    <div class="d-flex gap-2">
+      <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cerrar</button>
+
+      @if (data.solicitud.estado === 'PENDIENTE' && esJefeUTDI()) {
+        <button mat-flat-button color="primary" class="btn-confirmar" (click)="aprobar()">
+          <mat-icon class="me-2">check</mat-icon>
+          Aprobar
+        </button>
+      }
+
+      @if (data.solicitud.estado === 'APROBADA') {
+        <button mat-flat-button color="primary" class="btn-confirmar" (click)="recepcionar()">
+          <mat-icon class="me-2">inventory_2</mat-icon>
+          Recepcionar
+        </button>
+      }
     </div>
+  </div>
 
 </div>

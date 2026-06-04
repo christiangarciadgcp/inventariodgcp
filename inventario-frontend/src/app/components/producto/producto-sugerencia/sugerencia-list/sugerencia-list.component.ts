@@ -16,6 +16,7 @@ import {SugerenciaDialogComponent} from '../sugerencia-dialog/sugerencia-dialog.
 import {ConfirmDialogComponent} from '../../../confirm-dialog/confirm-dialog.component';
 import {ProductoDialogComponent} from '../../producto-dialog/producto-dialog.component';
 import {SugerenciaRechazoDialogComponent} from '../sugerencia-rechazo-dialog/sugerencia-rechazo-dialog.component';
+import {Utils} from '../../../../core/utils';
 
 @Component({
   selector: 'app-sugerencia-list',
@@ -36,6 +37,7 @@ export class SugerenciasListComponent implements OnInit {
   private sugerenciaService = inject(SugerenciaService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
+  public utils = inject(Utils);
 
   esEncargadoInventario = signal<boolean>(false);
 

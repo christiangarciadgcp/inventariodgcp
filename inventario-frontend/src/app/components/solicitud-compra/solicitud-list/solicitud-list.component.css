@@ -1,7 +1,7 @@
 .custom-card {
     border: 1px solid #e0e0e0 !important;
     border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important; 
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
     background: white;
     overflow: hidden;
 }
@@ -68,6 +68,10 @@
     overflow: visible !important;
 }
 
+.mat-header-cell-estado {
+  text-align: center;
+}
+
 .btn-nuevo {
     background: linear-gradient(#031e3f 0%, #153863 100%);
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
@@ -82,31 +86,31 @@
 }
 
 .status-pendiente {
-    background-color: #fff8dd; 
+    background-color: #fff8dd;
     color: #d6a800;
     border-color: #ffedb8;
 }
 
 .status-aprobada {
-    background-color: #e8fff3; 
-    color: #19cb69; 
+    background-color: #e8fff3;
+    color: #19cb69;
     border-color: #d1fbe4;
 }
 
 .status-recepcionada {
-    background-color: #e1f0ff; 
-    color: #009ef7; 
+    background-color: #e1f0ff;
+    color: #009ef7;
     border-color: #cce9ff;
 }
 
 .status-recepcion-parcial {
-    background-color: #fef1ed; 
-    color: #f36739; 
+    background-color: #fef1ed;
+    color: #f36739;
     border-color: #ffd9cb;
 }
 
 .status-rechazada {
-    background-color: #fff5f8; 
+    background-color: #fff5f8;
     color: #f1416c;
     border-color: #ffe1e9;
 }
@@ -139,6 +143,7 @@
     opacity: 0.9 !important;
 }
 
+/*
 ::ng-deep .mat-sort-header-container {
     justify-content: center !important;
-}
+}*/

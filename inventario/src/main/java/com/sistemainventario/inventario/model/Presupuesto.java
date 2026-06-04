@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Entity
@@ -25,11 +26,11 @@ public class Presupuesto {
     @JoinColumn(name = "idubicacion", nullable = false)
     private Ubicacion ubicacion;
 
-@OneToMany(mappedBy = "presupuesto", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @OrderBy("fecha DESC")
+    @OneToMany(mappedBy = "presupuesto", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OrderBy("fecha ASC")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private java.util.List<PresupuestoHistorial> historial;
+    private List<PresupuestoHistorial> historial;
 
     @Column(name = "nombre_presupuesto", nullable = false, length = 100)
     private String nombre_presupuesto;

@@ -16,7 +16,7 @@ import { Presupuesto, PresupuestoDetalle } from '../../../models/presupuesto';
   selector: 'app-presupuesto-detalle',
   standalone: true,
   imports: [
-    CommonModule, MatDialogModule, MatButtonModule, MatIconModule, 
+    CommonModule, MatDialogModule, MatButtonModule, MatIconModule,
     MatTableModule, MatDividerModule, MatTooltipModule
   ],
   templateUrl: './presupuesto-detalle.component.html',
@@ -26,7 +26,7 @@ export class PresupuestoDetalleComponent implements OnInit{
 
   private presupuestoService = inject(PresupuestoService);
   private cdr = inject(ChangeDetectorRef);
-  public fn = inject(Utils);
+  public utils = inject(Utils);
   private authService = inject(AuthService);
 
   dataSource = new MatTableDataSource<PresupuestoDetalle>([]);

@@ -4,14 +4,14 @@
         <div>
             <div class="d-flex align-items-center gap-2 mb-1">
                 <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
-                    Solicitud #{{ data.presupuesto.idPresupuesto }}
+                    Presupuesto #{{ data.presupuesto.idPresupuesto }}
                 </h6>
 
                 <span class="badge-soft"
                       [ngClass]="{
                         'status-pendiente': data.presupuesto.estado === 'PENDIENTE',
                         'status-aprobada': data.presupuesto.estado === 'APROBADO',
-                        'status-rechazada': data.presupuesto.estado === 'RECHAZADO',
+                        'status-rechazada': data.presupuesto.estado === 'CANCELADO',
                         'status-recepcion-parcial': data.presupuesto.estado === 'DESPACHO PARCIAL',
                         'status-despachado': data.presupuesto.estado === 'DESPACHADO'
                       }">
@@ -34,7 +34,7 @@
                 <small class="fw-bold text-white">Última Modificación: {{ data.presupuesto.fecha_modificacion | date:'dd/MM/yyyy h:mm a' }}</small>
                 <span class="mx-2"> | </span>
                 <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
-                <small class="fw-bold text-white">Solicitante: {{ fn.formatearNombre(data.presupuesto.idusuariopresupuesto.nombreusuario) }}</small>
+                <small class="fw-bold text-white">Solicitante: {{ utils.formatearNombre(data.presupuesto.idusuariopresupuesto.nombreusuario) }}</small>
             </div>
         </div>
 
@@ -43,7 +43,89 @@
         </button>
     </div>
 
+
+
     <div class="modal-body p-0">
+
+      <div class="px-3 pb-2 border-top pt-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
+          <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+            Historial
+          </h6>
+        </div>
+
+        <div class="horizontal-timeline-wrapper overflow-auto pb-3 px-2">
+          <div class="d-flex align-items-start position-relative" style="min-width: max-content;">
+          @for (h of data.presupuesto.historial; track h.idHistorial; let isLast = $last) {
+            <div class="horizontal-timeline-step" style="width: 140px;">
+
+              <div class="step-connector" [class.d-none]="isLast"
+                 [ngClass]="{
+                   'tl-creacion': h.accion === 'CREACION',
+                   'tl-edicion': h.accion === 'EDICION',
+                   'tl-aprobacion': h.accion === 'APROBACION',
+                   'tl-parcial': h.accion === 'DESPACHO PARCIAL',
+                   'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                   'tl-cancelacion': h.accion === 'CANCELACION'
+                 }">
+                </div>
+
+              <div class="step-dot d-flex justify-content-center align-items-center text-white mx-auto shadow"
+                  [ngClass]="{
+                   'tl-creacion': h.accion === 'CREACION',
+                   'tl-edicion': h.accion === 'EDICION',
+                   'tl-aprobacion': h.accion === 'APROBACION',
+                   'tl-parcial': h.accion === 'DESPACHO PARCIAL',
+                   'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                   'tl-cancelacion': h.accion === 'CANCELACION'
+                  }">
+
+                <mat-icon style="font-size: 22px; width: 22px; height: 22px;">
+                  {{
+                    h.accion === 'CREACION' ? 'note_add' :
+                      h.accion === 'EDICION' ? 'edit' :
+                        h.accion === 'APROBACION' ? 'verified' :
+                          h.accion === 'DESPACHO PARCIAL' ? 'inventory_2' :
+                            h.accion === 'DESPACHO TOTAL' ? 'done_all' :
+                              h.accion === 'CANCELACION' ? 'close' : 'history'
+                  }}
+                </mat-icon>
+              </div>
+              <div class="step-content text-center mt-3 px-2">
+                <span class="badge-accion mb-2 d-inline-block shadow-sm"
+                      [ngClass]="{
+                        'bg-creacion-subtle text-creacion': h.accion === 'CREACION',
+                        'bg-warning-subtle text-warning': h.accion === 'EDICION',
+                        'bg-success-subtle text-success': h.accion === 'APROBACION',
+                        'bg-parcial-subtle text-parcial': h.accion === 'DESPACHO PARCIAL',
+                        'bg-info-subtle text-info': h.accion === 'DESPACHO TOTAL',
+                        'bg-danger-subtle text-danger': h.accion === 'CANCELACION'
+                      }">
+                    {{ h.accion }}
+                </span>
+
+                <div class="fw-bold text-dark lh-sm text-truncate" style="font-size: 0.85rem;" [matTooltip]="utils.formatearNombre(h.usuario.nombreusuario)">
+                  {{ utils.formatearNombre(h.usuario.nombreusuario) }}
+                </div>
+
+                <div class="text-muted mt-1 fw-medium" style="font-size: 0.75rem;">
+                  {{ h.fecha | date:'dd/MMM/yyyy' }} <br>
+                  {{ h.fecha | date:'h:mm a' }}
+                </div>
+              </div>
+
+            </div>
+
+
+
+          } @empty {
+            <div class="text-center text-muted small py-3 bg-light rounded-3 border-dashed">
+              No hay registros de historial disponibles.
+            </div>
+          }
+        </div>
+      </div>
 
         <mat-dialog-content class="mat-typography p-0">
 
@@ -56,7 +138,7 @@
                 <table mat-table [dataSource]="dataSource" class="w-100">
 
                     <ng-container matColumnDef="producto">
-                        <th mat-header-cell *matHeaderCellDef class="ps-4"> ITEM </th>
+                        <th mat-header-cell *matHeaderCellDef class="ps-4"> MATERIAL </th>
                         <td mat-cell *matCellDef="let element" class="ps-4">
                             <div class="d-flex flex-column py-2">
                                 <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
@@ -76,61 +158,6 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
                 </table>
 
-
-              <div class="mt-4 px-4 pb-4 border-top pt-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                  <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
-                  <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
-                    Historial
-                  </h6>
-                </div>
-
-                <div class="timeline-container">
-                  @for (h of data.presupuesto.historial; track h.idHistorial) {
-                    <div class="timeline-item d-flex gap-3 pb-2">
-
-                      <div class="timeline-line d-flex flex-column align-items-center">
-                        <div class="timeline-dot"
-                             [ngClass]="{
-                                           'bg-creacion': h.accion === 'CREACION',
-                                           'bg-warning': h.accion === 'EDICION',
-                                           'bg-info': h.accion === 'DESPACHO',
-                                           'bg-success': h.accion === 'APROBACION',
-                                           'bg-danger': h.accion === 'CANCELACION'
-                                         }">
-                        </div>
-                        <div class="timeline-connector flex-grow-1 bg-light"></div>
-                      </div>
-
-                      <div class="timeline-content w-100 d-flex justify-content-between align-items-center bg-light p-2 rounded-2 border" style="margin-bottom: 8px;">
-                        <div class="d-flex align-items-center gap-2">
-                                        <span class="badge-accion"
-                                              [ngClass]="{
-                                                'bg-creacion-subtle text-creacion': h.accion === 'CREACION',
-                                                'bg-warning-subtle text-warning': h.accion === 'EDICION',
-                                                'bg-info-subtle text-info': h.accion === 'DESPACHO',
-                                                'bg-success-subtle text-success': h.accion === 'APROBACION',
-                                                'bg-danger-subtle text-danger': h.accion === 'CANCELACION'
-                                              }">
-                                            {{ h.accion }}
-                                        </span>
-                          <span class="fw-bold text-dark" style="font-size: 0.85rem;">
-                                            {{ fn.formatearNombre(h.usuario.nombreusuario) }}
-                                        </span>
-                        </div>
-                        <span class="text-muted small">
-                                        {{ h.fecha | date:'dd/MM/yy, h:mm a' }}
-                                    </span>
-                      </div>
-
-                    </div>
-                  } @empty {
-                    <div class="text-center text-muted small py-3 bg-light rounded-3 border-dashed">
-                      No hay registros de historial disponibles.
-                    </div>
-                  }
-                </div>
-              </div>
             }
         </mat-dialog-content>
 

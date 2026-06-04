@@ -31,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         return new User(
             usuario.getNombreusuario(),
             usuario.getPasswordusuario(),
-            isEnabled, // Aquí inyectamos tu campo 'activo'
+            isEnabled, //  campo 'activo'
             true,      // accountNonExpired (No expirada)
             true,      // credentialsNonExpired (Credenciales no expiradas)
             true,      // accountNonLocked (No bloqueada)

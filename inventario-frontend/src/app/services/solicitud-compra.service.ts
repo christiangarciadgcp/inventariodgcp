@@ -35,10 +35,10 @@ export class SolicitudCompraService {
   agregarProducto(idSolicitud: number, detalle: DetalleSolicitudDTO): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${idSolicitud}/productos`, detalle);
   }
-  
+
   // Aprobar
-  aprobarSolicitud(id: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/aprobar`, {});
+  aprobarSolicitud(id: number, idUsuario: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/aprobar?idUsuario=${idUsuario}`, {});
   }
 
   // Recepcionar
@@ -54,5 +54,5 @@ export class SolicitudCompraService {
   actualizarSolicitud(id: number, dto: SolicitudCreacionDTO): Observable<SolicitudCompra> {
     return this.http.put<SolicitudCompra>(`${this.apiUrl}/${id}/editar`, dto);
   }
-  
+
 }

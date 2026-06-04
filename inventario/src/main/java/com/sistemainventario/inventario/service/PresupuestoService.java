@@ -285,15 +285,16 @@ public class PresupuestoService {
         // Evaluar estado final
         if (todoCompletado) {
             presupuesto.setEstado("DESPACHADO");
+            presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "DESPACHO TOTAL"));
         } else {
             presupuesto.setEstado("DESPACHO PARCIAL");
+            presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "DESPACHO PARCIAL"));
         }
 
         presupuesto.setFecha_modificacion(Instant.now());
 
-        presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "DESPACHO"));
         presupuestoRepository.save(presupuesto);
-        presupuestoRepository.save(presupuesto);
+        //presupuestoRepository.save(presupuesto);
     }
 
     @Transactional(readOnly = true)

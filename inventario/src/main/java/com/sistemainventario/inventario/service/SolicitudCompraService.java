@@ -18,19 +18,22 @@ public class SolicitudCompraService {
     private final UsuarioRepository usuarioRepository;
     private final BodegaRepository bodegaRepository;
     private final ProductoRepository productoRepository;
+    private final SolicitudCompraHistorialRepository solicitudCompraHistorialRepository;
 
     public SolicitudCompraService(SolicitudCompraRepository solicitudCompraRepository,
                                   SolicitudCompraDetalleRepository solicitudCompraDetalleRepository,
                                   InventarioService inventarioService,
                                   UsuarioRepository usuarioRepository,
                                   BodegaRepository bodegaRepository,
-                                  ProductoRepository productoRepository){
+                                  ProductoRepository productoRepository,
+                                  SolicitudCompraHistorialRepository solicitudCompraHistorialRepository){
         this.solicitudCompraRepository = solicitudCompraRepository;
         this.solicitudCompraDetalleRepository = solicitudCompraDetalleRepository;
         this.inventarioService = inventarioService;
         this.usuarioRepository = usuarioRepository;
         this.bodegaRepository = bodegaRepository;
         this.productoRepository = productoRepository;
+        this.solicitudCompraHistorialRepository = solicitudCompraHistorialRepository;
     }
 
     //CREANDO LA SOLICITUD DE COMPRA
@@ -62,6 +65,8 @@ public class SolicitudCompraService {
             solicitudCompraDetalleRepository.save(detalle);
         }
 
+        solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuario,"CREACION"));
+
         return solicitudGuardada;
     }
 
@@ -74,6 +79,9 @@ public class SolicitudCompraService {
         if (!"PENDIENTE".equals(solicitudCompra.getEstado())) {
             throw new RuntimeException("Solo se pueden editar solicitudes en estado PENDIENTE.");
         }
+
+        Usuario usuarioEditor = usuarioRepository.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Bodega bodega = bodegaRepository.findById(dto.getIdBodegaDestino())
                 .orElseThrow(() -> new RuntimeException("Bodega no encontrada"));
@@ -96,6 +104,8 @@ public class SolicitudCompraService {
             detalle.setCantidad_solicitada(item.getCantidad());
             solicitudCompraDetalleRepository.save(detalle);
         }
+
+        solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuarioEditor,"EDICION"));
 
         return solicitudCompraRepository.save(solicitudCompra);
     }
@@ -123,10 +133,15 @@ public class SolicitudCompraService {
 
     //APROBACION DE UNA SOLICITUD DE COMPRA
     @Transactional
-    public void aprobarSolicitudCompra(Long idSolicitudCompra){
+    public void aprobarSolicitudCompra(Long idSolicitudCompra, Integer idUsuario){
         SolicitudCompra solicitudCompra = solicitudCompraRepository.findById(idSolicitudCompra)
                 .orElseThrow(() -> new RuntimeException("Solicitud compra no encontrada"));
+
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow();
         solicitudCompra.setEstado("APROBADA");
+
+        solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuario,"APROBACION"));
+
         solicitudCompraRepository.save(solicitudCompra);
     }
 
@@ -135,6 +150,9 @@ public class SolicitudCompraService {
     public void recepcionarSolicitudCompra(Long idSolicitudCompra, RecepcionPayloadDTO payload) {
         SolicitudCompra solicitud = solicitudCompraRepository.findById(idSolicitudCompra)
                 .orElseThrow(() -> new RuntimeException("Solicitud compra no encontrada"));
+
+        Usuario usuario = usuarioRepository.findById(payload.getIdUsuarioComprador())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         // Validar estado
         if ("PENDIENTE".equals(solicitud.getEstado()) || "RECEPCIONADA".equals(solicitud.getEstado())) {
@@ -186,9 +204,12 @@ public class SolicitudCompraService {
         // 3. Cambiar estado dinámicamente
         if (faltaAlMenosUnProducto) {
             solicitud.setEstado("RECEPCION_PARCIAL");
+            solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitud ,usuario,"RECEPCION PARCIAL"));
         } else {
-            solicitud.setEstado("RECEPCIONADA"); // Ya se entregó el 100%
+            solicitud.setEstado("RECEPCIONADA");
+            solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitud ,usuario,"RECEPCION TOTAL"));
         }
+
         
         solicitudCompraRepository.save(solicitud);
     }

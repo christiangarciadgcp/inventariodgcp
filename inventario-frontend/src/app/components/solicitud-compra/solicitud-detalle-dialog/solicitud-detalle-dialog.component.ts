@@ -16,7 +16,7 @@ import { AuthService } from '../../../services/auth.service';
   selector: 'app-solicitud-detalle-dialog',
   standalone: true,
   imports: [
-    CommonModule, MatDialogModule, MatButtonModule, MatIconModule, 
+    CommonModule, MatDialogModule, MatButtonModule, MatIconModule,
     MatTableModule, MatDividerModule, MatTooltipModule
   ],
   templateUrl: './solicitud-detalle-dialog.component.html',
@@ -27,12 +27,12 @@ export class SolicitudDetalleDialogComponent implements OnInit{
 
   private solicitudService = inject(SolicitudCompraService);
   private cdr = inject(ChangeDetectorRef);
-  public fn = inject(Utils);
+  public utils = inject(Utils);
   private authService = inject(AuthService);
 
-  //AGREGAMOS LOS DATOS 
+  //AGREGAMOS LOS DATOS
   dataSource = new MatTableDataSource<SolicitudCompraDetalle>([]);
-  displayedColumns: string[] = ['producto', 'cantidad', 'precio', 'subtotal'];
+  displayedColumns: string[] = ['producto', 'cantidad', 'recibido', 'restante'];
 
   // Variables de estado
   total: number = 0;

@@ -85,7 +85,7 @@
                     <div class="d-flex align-items-center">
                         <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center text-primary fw-bold me-2"
                              style="width: 32px; height: 32px; font-size: 0.75rem;">
-                             {{ obtenerIniciales(element.idusuariosolicitante?.nombreusuario)}}
+                             {{ utils.obtenerIniciales(element.idusuariosolicitante?.nombreusuario)}}
                         </div>
                         <span class="text-secondary font-weight-bold" style="font-size: 0.85rem;">
                             {{ element.idusuariosolicitante?.nombreusuario }}
@@ -102,8 +102,8 @@
             </ng-container>
 
             <ng-container matColumnDef="estado">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> ESTADO </th>
-                <td mat-cell *matCellDef="let element" class="text-center">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header > ESTADO </th>
+                <td mat-cell *matCellDef="let element">
                     <span class="badge-soft"
                           [ngClass]="{
                             'status-pendiente': element.estado === 'PENDIENTE',
@@ -112,7 +112,7 @@
                             'status-recepcion-parcial': element.estado === 'RECEPCION_PARCIAL',
                             'status-rechazada': element.estado === 'RECHAZADA'
                           }">
-                        {{ fe.formatearEstado(element.estado) }}
+                        {{ utils.formatearEstado(element.estado) }}
                     </span>
                 </td>
             </ng-container>

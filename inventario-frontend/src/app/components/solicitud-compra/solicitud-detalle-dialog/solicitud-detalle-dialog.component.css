@@ -77,6 +77,12 @@
     border-color: #ffe1e9;
 }
 
+.status-recepcion-parcial {
+  background-color: #fef1ed;
+  color: #f36739;
+  border-color: #ffd9cb;
+}
+
 .btn-cancelar {
     background: #ffffff;
     color: #f72828;
@@ -93,3 +99,144 @@
     /* border-color: #000000; */
     color: #ffffff;
 }
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item:last-child .timeline-connector {
+  display: none;
+}
+
+.timeline-line {
+  width: 20px;
+  padding-top: 10px;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 2;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+.timeline-connector {
+  width: 2px;
+  background-color: #e2e8f0 !important;
+}
+
+.badge-accion {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bg-creacion-subtle { background-color: #91e47e; }
+.text-creacion { color: #ffffff !important; }
+
+.bg-warning-subtle { background-color: #fff8dd; }
+.text-warning { color: #d6a800 !important; }
+
+.bg-info-subtle { background-color: #e1f0ff; }
+.text-info { color: #009ef7 !important; }
+
+.bg-success-subtle { background-color: #e8fff3; }
+.text-success { color: #19cb69 !important; }
+
+.bg-danger-subtle { background-color: #fff5f8; }
+.text-danger { color: #f1416c !important; }
+
+.bg-parcial-subtle {background-color: #fef1ed;}
+.text-parcial {color: #f36739 !important;}
+
+.bg-parcial {background-color: #f36739 !important;}
+.bg-creacion { background-color: #91e47e; }
+
+.text-custom { color: #9b9797 !important; }
+
+.border-dashed {
+  border: 1px dashed #cbd5e1 !important;
+}
+
+
+.horizontal-timeline-wrapper {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+/* Scrollbar minimalista para poder deslizar si hay muchos pasos */
+.horizontal-timeline-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.horizontal-timeline-wrapper::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 4px;
+}
+.horizontal-timeline-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.horizontal-timeline-step {
+  position: relative;
+  flex: 0 0 auto; /* Evita que los pasos se encojan y aplasten */
+}
+
+/* Círculo central interactivo */
+.step-dot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s;
+}
+
+/* Efecto al pasar el mouse por encima del paso */
+.horizontal-timeline-step:hover .step-dot {
+  transform: scale(1.15);
+  box-shadow: 0 10px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Línea base conectora horizontal */
+.step-connector {
+  position: absolute;
+  top: 22px; /* Centrado respecto a la altura del dot de 48px */
+  left: 50%;
+  width: 100%;
+  height: 4px;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* Flecha apuntando al siguiente paso integrada a la línea */
+.step-connector::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -4px; /* Centrar la flecha con la línea base */
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+/* --- COLORES DEFINIDOS PARA CÍRCULOS Y LÍNEAS CONECTIVAS --- */
+
+.tl-creacion { background-color: #91e47e !important; }
+.tl-creacion::after { border-left: 8px solid #91e47e; }
+
+.tl-edicion { background-color: #ffbf00 !important; }
+.tl-edicion::after { border-left: 8px solid #ffbf00; }
+
+.tl-recepcion { background-color: #009ef7 !important; }
+.tl-recepcion::after { border-left: 8px solid #009ef7; }
+
+.tl-aprobacion { background-color: #19cb69 !important; }
+.tl-aprobacion::after { border-left: 8px solid #19cb69; }
+
+.tl-parcial { background-color: #f36739 !important; }
+.tl-parcial::after { border-left: 8px solid #f36739; }

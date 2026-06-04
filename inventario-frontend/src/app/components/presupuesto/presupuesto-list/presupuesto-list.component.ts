@@ -26,6 +26,7 @@ import { DespachoService } from '../../../services/reportes/despacho.service';
 import { Mensaje } from '../../../core/mensaje';
 import { PresupuestoDetalleComponent } from '../presupuesto-detalle/presupuesto-detalle.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import {Utils} from '../../../core/utils';
 
 @Injectable()
 export class CustomDateAdapter extends NativeDateAdapter {
@@ -75,6 +76,7 @@ export class PresupuestoListComponent implements OnInit {
   private authService = inject(AuthService);
   private despachoService = inject(DespachoService);
   private mensaje = inject(Mensaje);
+  public utils = inject(Utils);
 
   displayedColumns: string[] = ['id', 'fecha', 'destino', 'solicitante', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Presupuesto>([]);
@@ -207,7 +209,7 @@ export class PresupuestoListComponent implements OnInit {
       }
 
       const historial = this.todasLasSolicitudes.filter(p => {
-        if(p.estado !== 'DESPACHO PARCIAL' && p.estado !== 'DESPACHADO') return false; // AGREGAR p.estado !== 'CANCELADO' SI SE REQUIERE QUE APAREZCAN LAS CANCELADAS
+        if(p.estado !== 'DESPACHO PARCIAL' && p.estado !== 'DESPACHADO' && p.estado !== 'CANCELADO') return false; // AGREGAR p.estado !== 'CANCELADO' SI SE REQUIERE QUE APAREZCAN LAS CANCELADAS
         if(!start || !end) return true;
 
         const fecha = new Date(p.fecha_creacion);
@@ -284,23 +286,9 @@ export class PresupuestoListComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  obtenerIniciales(nombre: string | undefined): string {
-    if (!nombre) return '';
-
-    const partes = nombre.split('.');
-
-    if (partes.length > 1) {
-      const inicialNombre = partes[0].charAt(0);
-      const inicialApellido = partes[1].charAt(0);
-      return (inicialNombre + inicialApellido).toUpperCase();
-    }
-
-    return nombre.substring(0, 2).toUpperCase();
-  }
-
   verDetallePresupuesto(presupuesto : Presupuesto){
     const dialogRef = this.dialog.open(PresupuestoDetalleComponent, {
-      width: '800px',
+      width: '900px',
       maxWidth: '100vw',
       maxHeight: '90vh',
       disableClose: false,

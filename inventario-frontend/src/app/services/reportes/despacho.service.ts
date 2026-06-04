@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
-import { DespachoReporteDTO } from '../../models/presupuesto'; 
+import { DespachoReporteDTO } from '../../models/presupuesto';
 import { Utils } from '../../core/utils';
 
 @Injectable({
@@ -15,13 +15,13 @@ export class DespachoService {
 
     //LOGO
     const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 14; 
+    const margin = 14;
     const logoWidth = 40;
     const logoHeight = 20;
     const xPos = pageWidth - logoWidth - margin;
     const yPos = 10;
-    const logoUrl = 'assets/images/dgcp-logo.jpg'; 
-    
+    const logoUrl = 'assets/images/dgcp-logo.jpg';
+
     const img = new Image();
     img.src = logoUrl;
 
@@ -29,7 +29,7 @@ export class DespachoService {
 
     // Título
     doc.setFontSize(18);
-    doc.setTextColor(21, 56, 99); 
+    doc.setTextColor(21, 56, 99);
     doc.setFont('helvetica', 'bold');
     doc.text('Hoja de Despacho', 14, 22);
 
@@ -45,9 +45,9 @@ export class DespachoService {
     const textoObservaciones = data.observaciones || 'No hay Observaciones';
     const maxWidth = 130; // Ancho máximo para el texto
     const lineasObservaciones = doc.splitTextToSize(textoObservaciones, maxWidth);
-    
+
     // Altura aproximada por cada línea de texto
-    const altoDeLinea = 5; 
+    const altoDeLinea = 5;
     // Altura total que ocupará el bloque de texto
     const alturaTotalObservaciones = (lineasObservaciones.length - 1) * altoDeLinea;
 
@@ -60,7 +60,7 @@ export class DespachoService {
     // CARD DE PROYECTO
     doc.setDrawColor(220);
     doc.setFillColor(248, 249, 250);
-    doc.roundedRect(14, 38, 182, alturaDinamicaTarjeta, 3, 3, 'FD'); 
+    doc.roundedRect(14, 38, 182, alturaDinamicaTarjeta, 3, 3, 'FD');
 
     // ========================================================
     // Imprimir todos los textos encima de la tarjeta
@@ -85,13 +85,13 @@ export class DespachoService {
     doc.text(`${data.ubicacionDestino}`, 55, 44);
     doc.text(`${data.nombreProyecto}`, 55, 50);
     doc.text(`${data.idPresupuesto}`, 55, 56);
-    
+
     const nomSolicitante = this.fn.formatearNombre(data.solicitante).split(' ').slice(0, 2).join(' ');
     const nomDespachador = this.fn.formatearNombre(data.usuarioDespachado || 'Sistema');
 
     doc.text(nomSolicitante, 145, 56);
     doc.text(nomDespachador, 55, 62);
-    
+
     const fecha = data.fechaAprobacion ? new Date(data.fechaAprobacion).toLocaleString() : '---';
     doc.text(fecha, 145, 62);
     doc.text(lineasObservaciones, 55, 68);
@@ -123,23 +123,23 @@ let indexGlobal = 1;
 // Iteramos sobre el arreglo ordenado
 for (const bodega of bodegasOrdenadas) {
   const itemsDeBodega = groupbyBodegas[bodega];
-  
+
   // Colores por defecto para las cabeceras de Bodega
-  let fillColor: [number, number, number] = [236, 240, 241]; 
-  let textColor: [number, number, number] = [44, 62, 80]; 
+  let fillColor: [number, number, number] = [236, 240, 241];
+  let textColor: [number, number, number] = [44, 62, 80];
 
   // Destacar la sección de pendientes con un color rojizo suave
 /*   if (bodega === 'PENDIENTES DE ENTREGAR') {
-      fillColor = [253, 237, 237]; 
+      fillColor = [253, 237, 237];
       textColor = [220, 53, 69];
   } */
-    
+
   bodyData.push([
       {
           content: ` ${bodega.toUpperCase()}`,
           colSpan: 7,
-          styles: { 
-              fillColor: fillColor, 
+          styles: {
+              fillColor: fillColor,
               textColor: textColor,
               fontStyle: 'bold',
               halign: 'center',
@@ -167,9 +167,9 @@ autoTable(doc, {
 //... (El resto de tu configuración de autoTable queda igual)
       body: bodyData,
       theme: 'grid',
-      headStyles: { 
-        fillColor: [21, 56, 99], 
-        textColor: 255, 
+      headStyles: {
+        fillColor: [21, 56, 99],
+        textColor: 255,
         fontStyle: 'bold',
         halign: 'center'
       },
@@ -203,19 +203,19 @@ autoTable(doc, {
 
     doc.line(20, finalY, 80, finalY);
     doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-
-    doc.text(this.fn.formatearNombre(data.usuarioDespachado), 50, finalY + 5, { align: 'center' });
     doc.setFont('helvetica', 'normal');
-    doc.text('Entregado por', 50, finalY + 10, { align: 'center' });
+
+/*    doc.text(this.fn.formatearNombre(data.usuarioDespachado), 50, finalY + 5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');*/
+    doc.text('Despachado por', 50, finalY + 5, { align: 'center' });
 
 
-    doc.line(120, finalY, 180, finalY); 
-    doc.setFont('helvetica', 'bold');
-
-    doc.text(this.fn.formatearNombre(data.solicitante), 150, finalY + 5, { align: 'center' });
+    doc.line(120, finalY, 180, finalY);
     doc.setFont('helvetica', 'normal');
-    doc.text('Recibido Conforme', 150, finalY + 10, { align: 'center' });
+
+/*    doc.text(this.fn.formatearNombre(data.solicitante), 150, finalY + 5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');*/
+    doc.text('Recibido Conforme', 150, finalY + 5, { align: 'center' });
 
     // --- PIE DE PÁGINA ---
     const pageCount = doc.getNumberOfPages();
@@ -237,4 +237,3 @@ autoTable(doc, {
   }
 }
 
-  

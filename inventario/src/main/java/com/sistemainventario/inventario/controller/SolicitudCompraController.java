@@ -40,8 +40,8 @@ public class SolicitudCompraController {
 
     //APROBAR LA SOLICITUD
     @PutMapping("/{idSolicitud}/aprobar")
-    public ResponseEntity<Void> aprobarSolicitud(@PathVariable Long idSolicitud) {
-        solicitudCompraService.aprobarSolicitudCompra(idSolicitud);
+    public ResponseEntity<Void> aprobarSolicitud(@PathVariable Long idSolicitud, @RequestParam Integer idUsuario) {
+        solicitudCompraService.aprobarSolicitudCompra(idSolicitud, idUsuario);
         return ResponseEntity.ok().build();
     }
 

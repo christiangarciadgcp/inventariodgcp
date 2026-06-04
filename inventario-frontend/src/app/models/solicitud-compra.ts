@@ -10,6 +10,7 @@ export interface SolicitudCompra {
     idusuariosolicitante: Usuario;
     idbodegadestino: Bodega;
     detalles?: SolicitudCompraDetalle[];
+    historial?: SolicitudCompraHistorial[];
 }
 
 export interface SolicitudCompraDetalle {
@@ -31,6 +32,12 @@ export interface DetalleSolicitudDTO {
     cantidad: number;
 }
 
+export interface SolicitudCompraHistorial {
+  idSolicitudCompraHistorial: number;
+  usuario: Usuario;
+  accion: string;
+  fecha: string;
+}
 
 export interface SolicitudCreacionDTO {
     nombreSolicitud: string;
