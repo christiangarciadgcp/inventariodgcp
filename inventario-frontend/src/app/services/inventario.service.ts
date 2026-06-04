@@ -31,6 +31,10 @@ export class InventarioService {
     return this.http.get<any>(`${environment.apiUrl}/dashboard/resumen`);
   }
 
+  listarInventarioConsolidado(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/consolidado`);
+  }
+
   realizarAjuste(ajuste: any): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/ajuste`, ajuste);
   }
@@ -48,4 +52,3 @@ export class InventarioService {
   }
 
 }
-  

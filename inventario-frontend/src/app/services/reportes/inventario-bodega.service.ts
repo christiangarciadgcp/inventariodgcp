@@ -13,7 +13,7 @@ export class InventarioBodegaService {
   // =========================================================
   // REPORTE DE INVENTARIO POR BODEGA
   // =========================================================
-  generarPdfInventarioBodega(nombreBodega: string, inventario: any[]): string {
+  generarPdfInventarioBodega(nombreBodega: string, inventario: any[]): string {2
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -48,7 +48,7 @@ export class InventarioBodegaService {
 /*     const columnas = ['#', 'SKU', 'Producto', 'Categoría', 'Stock', 'Costo Unit.', 'Valor Total']; */
 
     const columnas = ['#', 'SKU', 'Producto', 'Categoría', 'Stock'];
-    
+
     const data = inventario.map((item, index) => [
       index + 1,
       item.producto.skuproducto,
@@ -60,7 +60,7 @@ export class InventarioBodegaService {
     ]);
 
     // CALCULAR TOTAL GLOBAL
-    const totalGlobal = inventario.reduce((acc, curr) => 
+    const totalGlobal = inventario.reduce((acc, curr) =>
       acc + (curr.cantidad_actual * curr.producto.preciocostoproducto), 0
     );
 
@@ -97,5 +97,5 @@ export class InventarioBodegaService {
     const blob = doc.output('blob');
     return URL.createObjectURL(blob);
   }
-  
+
 }

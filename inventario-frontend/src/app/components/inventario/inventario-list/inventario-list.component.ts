@@ -9,6 +9,9 @@ import { InventarioService } from '../../../services/inventario.service';
 import { Bodega } from '../../../models/bodega';
 import { MatDivider } from '@angular/material/divider';
 import { Mensaje } from '../../../core/mensaje';
+import {MatDialog} from '@angular/material/dialog';
+import {InventarioBodegasConsolidadoService} from '../../../services/reportes/inventario-bodegas-consolidado.service';
+import {PdfViewerDialogComponent} from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 
 @Component({
   selector: 'app-inventario-list',
@@ -23,8 +26,11 @@ export class InventarioListComponent implements OnInit {
   private inventarioService = inject(InventarioService);
   private cdr = inject(ChangeDetectorRef);
   private mensaje = inject(Mensaje)
+  private dialog = inject(MatDialog);
+  private reporteConsolidado = inject(InventarioBodegasConsolidadoService)
 
   bodegas = signal<Bodega[]>([]);
+  generandoReporte = false;
 
   ngOnInit(): void {
     this.cargarInventario();
@@ -42,6 +48,42 @@ export class InventarioListComponent implements OnInit {
         const msg = err.error?.mensaje || err.error?.message || 'Error con el servidor';
         this.mensaje.open('Error al cargar la información', 'warning');
         this.mensaje.open(msg, 'error');
+      }
+    });
+  }
+
+  imprimirReporteConsolidado() {
+    this.generandoReporte = true;
+
+    this.inventarioService.listarInventarioConsolidado().subscribe({
+      next: (data) => {
+        if(!data || data.length === 0) {
+          this.mensaje.open('No hay inventario en ninguna Bodega', 'warning');
+          this.generandoReporte = false;
+          return;
+        }
+
+        const urlBlob = this.reporteConsolidado.generarPdfInventarioConsolidado(data);
+
+        this.dialog.open(PdfViewerDialogComponent, {
+          width : '100%',
+          maxWidth : '60vw',
+          height : '75%',
+          panelClass : 'full-screen-modal',
+          data : {
+            url: urlBlob,
+            titulo: 'Consolidado Global de Existencias'
+          }
+        });
+
+        this.generandoReporte = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log(err);
+        this.mensaje.open('Error al cargar el inventario', 'error');
+        this.generandoReporte = false;
+        this.cdr.detectChanges();
       }
     });
   }

@@ -289,9 +289,15 @@ public class InventarioService {
                 descargdoDto.getIdUsuario(),
                 "Descargo de Material desde: " + bodega.getNombrebodega()
             );
-        }
+        }       
+    }
 
-                
+    /********************************************************************************************************
+    MÉTODO PARA OBTENER EL INVENTARIO CONSOLIDADO EXISTENTE DE TODAS LAS BODEGAS (EXCLUYE STOCK 0)
+    *********************************************************************************************************/
+    @Transactional(readOnly = true)
+    public List<Inventario> listarInventarioConsolidadoExistente() {
+        return inventarioRepository.findInventarioConsolidadoExistente();
     }
 
 }

@@ -12,9 +12,6 @@ import com.sistemainventario.inventario.dto.MovimientoStockDTO;
 import com.sistemainventario.inventario.model.Bodega;
 import com.sistemainventario.inventario.model.Inventario;
 import com.sistemainventario.inventario.service.InventarioService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/api/inventario")
@@ -42,6 +39,12 @@ public class InventarioController {
     public ResponseEntity<List<Inventario>> listarStockPorProducto (@PathVariable Integer idProducto){
         return ResponseEntity.ok(inventarioService.listarStockPorProducto(idProducto));
     }
+
+    /* Reporte de existencias de productos */
+    @GetMapping("/consolidado")
+    public ResponseEntity<List<Inventario>> listarInventarioConsolidado() {
+        return ResponseEntity.ok(inventarioService.listarInventarioConsolidadoExistente());
+    }
     
 
     @PostMapping("/ajuste")
@@ -67,8 +70,5 @@ public class InventarioController {
         inventarioService.realizarDescargo(descargdoDto);
         
         return ResponseEntity.ok().build();
-    }
-    
-    
-    
+    }    
 }

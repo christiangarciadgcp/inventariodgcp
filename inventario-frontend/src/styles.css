@@ -233,23 +233,25 @@ Se ha sustituido por el de abajo
   z-index: 999999 !important;
 }
 
-/* =====================================================================
-   BARRA DE BÚSQUEDA (Estilo Pastilla Azul con Botón Blanco)
-   ===================================================================== */
+/* ==================================
+   OPCIÓN 1: MINIMALISTA PREMIUM
+   ================================== */
 .search-elegant {
   display: flex;
   align-items: center;
-  background: linear-gradient(#031e3f 0%, #153863 100%);
-  border-radius: 50px; /* Forma de pastilla completa */
-  padding: 6px 6px 6px 20px; /* Padding asimétrico: poco a la derecha para abrazar el círculo */
+  background-color: #ffffff;
+  border: 1px solid #bbbfc5;
+  border-radius: 50px;
+  padding: 4px 4px 4px 20px;
   max-width: 450px;
-  box-shadow: 0 4px 10px rgba(122, 140, 218, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); /* Sombra súper sutil */
   transition: all 0.3s ease;
 }
 
-/* Efecto sutil al hacer clic para escribir */
+/* Efecto al hacer clic para escribir */
 .search-elegant:focus-within {
-  box-shadow: 0 4px 15px rgba(122, 140, 218, 0.4);
+  border-color: #153863;
+  box-shadow: 0 4px 15px rgba(21, 56, 99, 0.12);
   transform: translateY(-1px);
 }
 
@@ -258,42 +260,40 @@ Se ha sustituido por el de abajo
   outline: none;
   background: transparent;
   width: 100%;
-  font-size: 1rem;
-  color: #ffffff; /* Texto de búsqueda en blanco */
+  font-size: 0.95rem;
+  color: #2d3748; /* Texto gris oscuro elegante */
   font-weight: 500;
   letter-spacing: 0.5px;
 }
 
 .search-input::placeholder {
-  color: #ffffff; /* "Search..." en blanco semi-transparente */
+  color: #3f4750; /* Gris claro para el placeholder */
   font-weight: 400;
 }
 
-/* ==================================
-   EL CÍRCULO BLANCO DE LA DERECHA
-   ================================== */
+/* El círculo se vuelve del color corporativo */
 .search-btn-circle {
-  background-color: #ffffff; /* Fondo blanco sólido */
-  border-radius: 50%; /* Círculo perfecto */
+  background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
+  border-radius: 50%;
   width: 40px;
   height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(3, 30, 63, 0.3);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, filter 0.2s;
 }
 
 .search-btn-circle:hover {
-  transform: scale(1.05); /* Crece un poquito al pasar el mouse */
+  transform: scale(1.05);
+  filter: brightness(110%);
 }
 
-/* Lupa dentro del círculo */
 .search-btn-circle mat-icon {
-  color: #0d36e4; /* La lupa toma el mismo color azul del fondo de la barra */
-  font-size: 22px;
-  width: 22px;
-  height: 22px;
+  color: #ffffff; /* Lupa en blanco */
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }

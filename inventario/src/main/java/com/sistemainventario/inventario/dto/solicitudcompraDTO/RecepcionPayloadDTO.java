@@ -11,7 +11,7 @@ public class RecepcionPayloadDTO {
 
     @Data
     public static class ItemRecepcion {
-        private Long idDetalle; // El ID de la fila en SolicitudCompraDetalle
-        private Integer cantidadARecibir; // Lo que llegó en el camión hoy
+        private Long idDetalle;
+        private Integer cantidadARecibir;
     }
 }

@@ -32,4 +32,13 @@ public interface InventarioRepository extends JpaRepository<Inventario, Inventar
     @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM Inventario i WHERE i.bodega.idBodega = :idBodega AND i.cantidad_actual > 0")
     boolean existeStockEnBodega(@Param("idBodega") Integer idBodega);
 
+    // OBTENER INVENTARIO GLOBAL CON EXISTENCIAS
+    @Query("SELECT i FROM Inventario i " +
+           "JOIN FETCH i.bodega b " +
+           "JOIN FETCH i.producto p " +
+           "LEFT JOIN FETCH p.categoria " +
+           "WHERE i.cantidad_actual > 0 AND p.activo = true " +
+           "ORDER BY b.nombrebodega ASC, p.nombreproducto ASC")
+    List<Inventario> findInventarioConsolidadoExistente();
+
 }
