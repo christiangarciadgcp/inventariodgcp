@@ -31,6 +31,7 @@ export class InventarioListComponent implements OnInit {
 
   bodegas = signal<Bodega[]>([]);
   generandoReporte = false;
+  generandoExcel = false;
 
   ngOnInit(): void {
     this.cargarInventario();
@@ -83,6 +84,32 @@ export class InventarioListComponent implements OnInit {
         console.log(err);
         this.mensaje.open('Error al cargar el inventario', 'error');
         this.generandoReporte = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  descargarExcelConsolidado() {
+    this.generandoExcel = true;
+
+    this.inventarioService.listarInventarioConsolidado().subscribe({
+      next: (data) => {
+        if(!data || data.length === 0) {
+          this.mensaje.open('No hay inventario en ninguna Bodega', 'warning');
+          this.generandoExcel = false;
+          return;
+        }
+
+        this.reporteConsolidado.generarExcelInventarioConsolidado(data);
+
+        this.mensaje.open('Excel generado exitosamente', 'exito');
+        this.generandoExcel = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.log(err);
+        this.mensaje.open('No se pudo generar el archivo Excel', 'error');
+        this.generandoExcel = false;
         this.cdr.detectChanges();
       }
     });

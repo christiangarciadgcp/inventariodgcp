@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Utils } from '../../core/utils';
 import { jsPDF } from 'jspdf';
 import { autoTable } from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 @Injectable({
   providedIn: 'root',
@@ -63,7 +64,6 @@ export class InventarioBodegasConsolidadoService {
       }
     });
 
-    // PAGINACIÓN TRASERA
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -74,6 +74,54 @@ export class InventarioBodegasConsolidadoService {
 
     const blob = doc.output('blob');
     return URL.createObjectURL(blob);
+  }
+
+  generarExcelInventarioConsolidado(inventario: any[]): void {
+
+    const cleanStr = (valor: any, fallback: string = '') => {
+      if (valor === null || valor === undefined) return fallback;
+      return String(valor).replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, '').trim() || fallback;
+    };
+
+    const getNum = (valor: any) => {
+      const n = Number(valor);
+      return isNaN(n) ? 0 : n;
+    };
+
+    const data = inventario.map((item, index) => ({
+      'N': index + 1,
+      'Bodega': cleanStr(item.bodega?.nombrebodega, 'N/A'),
+      'SKU': cleanStr(item.producto?.skuproducto, 'N/A'),
+      'Producto': cleanStr(item.producto?.nombreproducto, 'N/A'),
+      'Categoria': cleanStr(item.producto?.categoria?.nombrecategoria, 'N/A'),
+      'Stock Actual': getNum(item.cantidad_actual),
+      'U. Medida': cleanStr(item.producto?.unidadMedida?.abreviaturaunidadmedida, 'N/A')
+    }));
+
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
+
+    const wscols = [
+      { wch: 5 },   // N°
+      { wch: 25 },  // Bodega
+      { wch: 20 },  // SKU
+      { wch: 45 },  // Producto
+      { wch: 20 },  // Categoría
+      { wch: 12 },  // Stock
+      { wch: 12 }  // Unidad de Medida
+    ];
+    ws['!cols'] = wscols;
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Consolidado Existencias');
+
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const anio = hoy.getFullYear();
+    const fechaFormateada = `${dia}-${mes}-${anio}`;
+
+    const nombreArchivo = `Inventario_Consolidado_UTDI_${fechaFormateada}.xlsx`;
+    XLSX.writeFile(wb, nombreArchivo);
   }
 
 }

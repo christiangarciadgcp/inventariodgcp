@@ -13,12 +13,23 @@
           <div class="ms-auto d-flex align-items-center gap-3">
             <button mat-raised-button
                     class="rounded-pill px4"
-                    style="height: 42px"
+                    style="height: 42px;"
                     [disabled]="generandoReporte"
                     (click)="imprimirReporteConsolidado()">
                     <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon>
-                    {{ generandoReporte ? 'Generando ......' : 'Consolidado Global de Existencias'}}
+                    {{ generandoReporte ? 'Generando Reporte' : 'Consolidado Global de Existencias'}}
             </button>
+
+            <button mat-raised-button
+                    class="rounded-pill px4"
+                    style="height: 42px;"
+                    [disabled]="generandoExcel"
+            (click)="descargarExcelConsolidado()">
+              <mat-icon class="me-2 text-success">table_view</mat-icon>
+              {{ generandoReporte ? 'Exportando Reporte' : 'Exportar Excel'}}
+            </button>
+
+
           </div>
 
         </div>
