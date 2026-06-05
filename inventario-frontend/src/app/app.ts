@@ -50,6 +50,11 @@ export class App implements OnDestroy {
                 this.isLoggingOut = false;
                 this.iniciarMonitoreoBackend();
                 this.iniciarAutoRenovacionToken();
+
+                this.syncChannel.postMessage('LOGIN_SESSION');
+                if (isLoginRoute) {
+                  this.router.navigate(['/dashboard']);
+                }
             } else {
 
                 if (!this.isLoggingOut) {
@@ -86,6 +91,12 @@ export class App implements OnDestroy {
                     this.dialog.closeAll();
                     this.isDialogResultPending = false;
                     this.resetearTimers();
+                    break;
+                case 'LOGIN_SESSION':
+                    console.log('Otra pestaña inició sesión');
+                    if (window.location.pathname.includes('login')) {
+                      window.location.reload();
+                    }
                     break;
                 case 'LOGOUT_SESSION':
                     console.log('Otra pestaña cerró la sesión');

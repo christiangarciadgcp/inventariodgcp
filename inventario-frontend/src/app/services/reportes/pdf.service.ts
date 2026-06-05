@@ -41,7 +41,7 @@ export class PdfService {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha de Impresión: ${new Date().toLocaleString()}`, 14, 31);
+    doc.text(`Fecha de Impresión: ${new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`, 14, 31);
 
     // CARD DATOS DE LA SOLICITUD
     doc.setDrawColor(220);
@@ -67,7 +67,7 @@ export class PdfService {
     doc.text(this.fn.formatearNombre(solicitud.idusuariosolicitante.nombreusuario), 45, 56);
     doc.text(solicitud.idbodegadestino.nombrebodega, 120, 56);
     doc.text(this.fn.formatearEstado(solicitud.estado), 45, 64);
-    doc.text(new Date(solicitud.fechacreacionsolicitud!).toLocaleString(), 130, 64);
+    doc.text(new Date(solicitud.fechacreacionsolicitud!).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}), 130, 64);
 
     //AGREGAR LOS PRODUCTOS AL DETALLE
     const columnas = ['#', 'SKU', 'Producto', 'Req.', 'Rec.', 'Rest.', 'Estado'];

@@ -51,4 +51,12 @@ export class InventarioService {
     return this.http.post<void>(`${this.apiUrl}/descargo`, Descargo)
   }
 
+  buscarMovimientosPorFechas(inicio: string, fin: string, tipo?: string): Observable<any[]> {
+    let url = `${this.apiUrl}/movimientos/buscar?inicio=${inicio}&fin=${fin}`;
+    if (tipo && tipo !== 'TODOS') {
+      url += `&tipo=${tipo}`;
+    }
+    return this.http.get<any[]>(url);
+  }
+
 }

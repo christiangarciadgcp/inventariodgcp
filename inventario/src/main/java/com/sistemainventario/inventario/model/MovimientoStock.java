@@ -37,7 +37,7 @@ public class MovimientoStock {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idusuario", nullable = false)
-    private Usuario usuario; // El usuario que realizó el movimiento
+    private Usuario usuario;
 
     @PrePersist
     protected void onCreate() {

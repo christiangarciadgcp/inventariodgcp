@@ -52,6 +52,13 @@ public class DashboardService {
             movDTO.setNombreProducto(m.getProducto().getNombreproducto());
             movDTO.setNombreBodega(m.getBodega().getNombrebodega());
             movDTO.setCantidad(m.getCantidad());
+
+            if (m.getProducto().getUnidadMedida() != null) {
+                movDTO.setUnidadMedida(m.getProducto().getUnidadMedida().getAbreviaturaunidadmedida());
+            } else {
+                movDTO.setUnidadMedida("");
+            }
+            
             movDTO.setNombreUsuario(m.getUsuario().getNombreusuario());
             movDTO.setFechaMovimiento(m.getFecha());
             

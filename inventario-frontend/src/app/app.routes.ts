@@ -30,6 +30,9 @@ import {
   SugerenciasListComponent
 } from './components/producto/producto-sugerencia/sugerencia-list/sugerencia-list.component';
 import {UbicacionListComponent} from './components/catalogos/ubicacion/ubicacion-list/ubicacion-list.component';
+import {
+  InventarioMovimientoHistorialComponent
+} from './components/inventario/inventario-movimiento-historial/inventario-movimiento-historial.component';
 
 
 const ADMIN = 'administrador';
@@ -210,6 +213,16 @@ export const routes: Routes = [
                     roles: [ADMIN, INVENTARIO]
                 }
             },
+
+          {
+            path: 'movimientos-historial',
+            canActivate: [permisosGuard],
+            component: InventarioMovimientoHistorialComponent,
+            data: {
+              breadcrumb: 'Historial de Movimientos',
+              roles: [ADMIN, INVENTARIO]
+            }
+          },
 
             /*********************************
                         Catalogos

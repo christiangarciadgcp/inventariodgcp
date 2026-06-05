@@ -11,6 +11,7 @@ public class MovimientosDashboardDTO {
     private String nombreProducto;
     private String nombreBodega;
     private Integer cantidad;
+    private String unidadMedida;
     private String nombreUsuario;
     private Instant fechaMovimiento;
 }

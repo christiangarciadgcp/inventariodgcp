@@ -10,6 +10,7 @@ import com.sistemainventario.inventario.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 
@@ -299,5 +300,18 @@ public class InventarioService {
     public List<Inventario> listarInventarioConsolidadoExistente() {
         return inventarioRepository.findInventarioConsolidadoExistente();
     }
+
+    /********************************************************************************************************
+    MÉTODO PARA FILTRAR HISTORIAL DE MOVIMIENTOS POR FECHAS Y TIPO OPCIONAL
+    *********************************************************************************************************/
+    @Transactional(readOnly = true)
+    public List<MovimientoStock> filtrarMovimientosHistorial (Instant inicio, Instant fin, String tipo){
+        if(tipo == null || tipo.trim().isEmpty() || "TODOS".equals(tipo.toUpperCase())){
+            return movimientoStockRepository.findMovimientosPorRangoDeFechas(inicio,fin);
+        }else{
+            return movimientoStockRepository.findMovimientosPorRangoYTipo(inicio, fin, tipo.toUpperCase());
+        }
+    }
+
 
 }

@@ -56,9 +56,15 @@ import {AbstractControl} from '@angular/forms';
     if (!control) return;
 
     const input = event.target as HTMLInputElement;
+
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+
     const valorEnMayusculas = input.value.toUpperCase();
 
     control.setValue(valorEnMayusculas, { emitEvent: false });
+
+    input.setSelectionRange(start, end);
   }
 
   }

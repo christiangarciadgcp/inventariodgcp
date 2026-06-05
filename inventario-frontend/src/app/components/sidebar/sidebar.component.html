@@ -187,6 +187,17 @@
             }
 
             @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
+              <a routerLink="/movimientos-historial" routerLinkActive="active" class="nav-link"
+                 [matTooltip]="layoutService.sidebarCollapsed() ? 'Historial de Movimientos' : ''" matTooltipPosition="right">
+                <div class="nav-icon"><mat-icon>history</mat-icon></div>
+
+                @if (!layoutService.sidebarCollapsed()) {
+                  <span class="nav-text">Historial de Movimientos</span>
+                }
+              </a>
+            }
+
+            @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
                 <a routerLink="/solicitud_compra" routerLinkActive="active"
                     class="nav-link" [matTooltip]="layoutService.sidebarCollapsed() ? 'Solicitud de Compra' : ''"
                     matTooltipPosition="right">

@@ -37,7 +37,7 @@ export class DespachoService {
     doc.setTextColor(100);
     doc.setFont('helvetica', 'normal');
     doc.text('Control de Salida de Materiales', 14, 28);
-    doc.text(`Fecha Impresión: ${new Date().toLocaleString()}`, 14, 33);
+    doc.text(`Fecha Impresión: ${new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`, 14, 33);
 
 // ========================================================
     // Calcular el tamaño de las observaciones
@@ -92,7 +92,7 @@ export class DespachoService {
     doc.text(nomSolicitante, 145, 56);
     doc.text(nomDespachador, 55, 62);
 
-    const fecha = data.fechaAprobacion ? new Date(data.fechaAprobacion).toLocaleString() : '---';
+    const fecha = data.fechaAprobacion ? new Date(data.fechaAprobacion).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '---';
     doc.text(fecha, 145, 62);
     doc.text(lineasObservaciones, 55, 68);
 

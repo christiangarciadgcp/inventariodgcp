@@ -127,7 +127,7 @@ export class ProductoListComponent implements OnInit {
       width: '800px',
 /*      height: '85vh',*/
       maxHeight: '90vh',
-      disableClose: false,
+      disableClose: true,
       data: producto ? { producto: producto } : null
     });
 

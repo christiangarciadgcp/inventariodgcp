@@ -33,7 +33,7 @@ export class InventarioBodegasConsolidadoService {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha de Impresión: ${new Date().toLocaleString()}`, 14, 31);
+    doc.text(`Fecha de Impresión: ${new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`, 14, 31);
     doc.text('Solo productos con existencias reales a nivel global.', 14, 36);
 
     // PREPARAR DATOS DE LA TABLA (Añadiendo la columna de Bodega)

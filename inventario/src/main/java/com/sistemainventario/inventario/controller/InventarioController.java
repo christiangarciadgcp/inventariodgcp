@@ -1,5 +1,6 @@
 package com.sistemainventario.inventario.controller;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import com.sistemainventario.inventario.dto.MovimientoDTO;
 import com.sistemainventario.inventario.dto.MovimientoStockDTO;
 import com.sistemainventario.inventario.model.Bodega;
 import com.sistemainventario.inventario.model.Inventario;
+import com.sistemainventario.inventario.model.MovimientoStock;
 import com.sistemainventario.inventario.service.InventarioService;
 
 @RestController
@@ -46,6 +48,19 @@ public class InventarioController {
         return ResponseEntity.ok(inventarioService.listarInventarioConsolidadoExistente());
     }
     
+    
+    /* Buscar movimientos por rango de fechas y tipo opcional */
+    @GetMapping("/movimientos/buscar")
+    public ResponseEntity<List<MovimientoStock>> buscarMovimientos(
+            @RequestParam String inicio, 
+            @RequestParam String fin,
+            @RequestParam(required = false) String tipo) {
+        
+        Instant fechaInicio = Instant.parse(inicio);
+        Instant fechaFin = Instant.parse(fin);
+        
+        return ResponseEntity.ok(inventarioService.filtrarMovimientosHistorial(fechaInicio, fechaFin, tipo));
+    }
 
     @PostMapping("/ajuste")
     public ResponseEntity<Void> realizarAjuste(@RequestBody AjusteStockDTO dto) {
@@ -71,4 +86,5 @@ public class InventarioController {
         
         return ResponseEntity.ok().build();
     }    
+
 }

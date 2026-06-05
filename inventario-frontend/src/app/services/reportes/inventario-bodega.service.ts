@@ -32,7 +32,7 @@ export class InventarioBodegaService {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Fecha de Impresión: ${new Date().toLocaleString()}`, 14, 31);
+    doc.text(`Fecha de Impresión: ${new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`, 14, 31);
 
     // CARD DE LA BODEGA
     doc.setDrawColor(220);
