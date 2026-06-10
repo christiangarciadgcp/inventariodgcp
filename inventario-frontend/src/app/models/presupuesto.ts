@@ -62,6 +62,7 @@ export interface PresupuestoDetalle {
     idPresupuesto?: number;
     producto: Producto;
     cantidad_solicitada: number;
+    cantidad_despachada : number;
 }
 
 export interface DespachoReporteDTO {

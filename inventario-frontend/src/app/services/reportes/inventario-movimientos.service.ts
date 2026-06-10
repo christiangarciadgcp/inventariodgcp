@@ -65,7 +65,7 @@ export class InventarioMovimientosService {
       columnStyles: {
         0: { cellWidth: 18, halign: 'center'},
         1: { cellWidth: 'auto', halign: 'center' },
-        4: { cellWidth: 10, halign: 'center', fontStyle: 'bold' },
+        4: { cellWidth: 'auto', halign: 'center', fontStyle: 'bold' },
         6: { cellWidth: 'auto' }
       }
     });

@@ -67,6 +67,7 @@
                    'tl-aprobacion': h.accion === 'APROBACION',
                    'tl-parcial': h.accion === 'DESPACHO PARCIAL',
                    'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                   'tl-reactivacion': h.accion === 'REACTIVACION',
                    'tl-cancelacion': h.accion === 'CANCELACION'
                  }">
                 </div>
@@ -78,6 +79,7 @@
                    'tl-aprobacion': h.accion === 'APROBACION',
                    'tl-parcial': h.accion === 'DESPACHO PARCIAL',
                    'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                   'tl-reactivacion': h.accion === 'REACTIVACION',
                    'tl-cancelacion': h.accion === 'CANCELACION'
                   }">
 
@@ -88,7 +90,8 @@
                         h.accion === 'APROBACION' ? 'verified' :
                           h.accion === 'DESPACHO PARCIAL' ? 'inventory_2' :
                             h.accion === 'DESPACHO TOTAL' ? 'done_all' :
-                              h.accion === 'CANCELACION' ? 'close' : 'history'
+                              h.accion === 'REACTIVACION' ? 'refresh' :
+                                h.accion === 'CANCELACION' ? 'close' : 'history'
                   }}
                 </mat-icon>
               </div>
@@ -100,6 +103,7 @@
                         'bg-success-subtle text-success': h.accion === 'APROBACION',
                         'bg-parcial-subtle text-parcial': h.accion === 'DESPACHO PARCIAL',
                         'bg-info-subtle text-info': h.accion === 'DESPACHO TOTAL',
+                        'bg-reactivacion-subtle text-white': h.accion === 'REACTIVACION',
                         'bg-danger-subtle text-danger': h.accion === 'CANCELACION'
                       }">
                     {{ h.accion }}
@@ -160,8 +164,8 @@
 
             }
         </mat-dialog-content>
-
     </div>
+
 
     <div class="modal-footer p-3 bg-light border-top d-flex align-items-center">
 
@@ -171,4 +175,5 @@
         </div>
     </div>
 
+</div>
 </div>

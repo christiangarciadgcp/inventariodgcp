@@ -110,18 +110,17 @@ public class PresupuestoService {
     }
 
 
-    //EDITAR UN PRESUPUESTO CUANDO YA FUE CREADO
+// EDITAR UN PRESUPUESTO CUANDO YA FUE CREADO O ESTÁ EN PROCESO
     @Transactional
     public Presupuesto actualizarPresupuesto(Long id, PresupuestoCreacionDTO dto) {
         Presupuesto presupuesto = this.obtenerPorId(id);
 
-        if (!"PENDIENTE".equals(presupuesto.getEstado())) {
-            throw new RuntimeException("Solo se pueden editar presupuestos en estado PENDIENTE.");
+        if ("CANCELADO".equals(presupuesto.getEstado())) {
+            throw new RuntimeException("No se pueden editar presupuestos en estado CANCELADO.");
         }
 
         Usuario usuarioEditor = usuarioRepository.findById(dto.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
 
         Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
                 .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
@@ -130,9 +129,32 @@ public class PresupuestoService {
         presupuesto.setUbicacion(ubicacion);
         presupuesto.setObservaciones(dto.getObservaciones());
         presupuesto.setFecha_modificacion(Instant.now());
-        
-        presupuestoDetalleRepository.deleteByPresupuesto(presupuesto);
 
+        // 1. RESPALDAR LO QUE YA SE DESPACHÓ ANTES DE BORRAR
+        List<PresupuestoDetalle> detallesAntiguos = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+        java.util.Map<Integer, Integer> despachadosPorProducto = detallesAntiguos.stream()
+                .collect(Collectors.toMap(
+                        d -> d.getProducto().getIdProducto(),
+                        d -> d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0
+                ));
+
+        // 2. VALIDAR QUE NO SE ELIMINEN PRODUCTOS QUE YA TIENEN ENTREGAS FÍSICAS
+        for (java.util.Map.Entry<Integer, Integer> entry : despachadosPorProducto.entrySet()) {
+            if (entry.getValue() > 0) {
+                boolean aunExiste = dto.getItems().stream().anyMatch(i -> i.getIdProducto().equals(entry.getKey()));
+                if (!aunExiste) {
+                    throw new RuntimeException("No puedes eliminar un producto que ya tiene unidades despachadas. Redúcelo al mínimo entregado si es necesario.");
+                }
+            }
+        }
+
+        // 3. LIMPIAR DETALLES ANTERIORES
+        presupuestoDetalleRepository.deleteByPresupuesto(presupuesto);
+        presupuestoDetalleRepository.flush(); // Forzamos el borrado en BD antes de reinsertar
+
+        boolean hayNuevosPendientes = false;
+
+        // 4. INSERTAR LOS NUEVOS DETALLES CON SU HISTORIAL DE DESPACHO
         for (PresupuestoCreacionDTO.DetalleItemDTO item : dto.getItems()) {
             Producto producto = productoRepository.findById(item.getIdProducto())
                     .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + item.getIdProducto()));
@@ -140,12 +162,32 @@ public class PresupuestoService {
             PresupuestoDetalle detalle = new PresupuestoDetalle();
             detalle.setPresupuesto(presupuesto);
             detalle.setProducto(producto);
-            detalle.setCantidad_solicitada(item.getCantidad());
+
+            int yaDespachado = despachadosPorProducto.getOrDefault(item.getIdProducto(), 0);
             
+            // Validar que no pidan menos de lo que ya se entregó físicamente
+            if (item.getCantidad() < yaDespachado) {
+                throw new RuntimeException("La cantidad solicitada del material '" + producto.getNombreproducto() + 
+                                        "' no puede ser menor a lo que ya se despachó (" + yaDespachado + ").");
+            }
+
+            detalle.setCantidad_solicitada(item.getCantidad());
+            detalle.setCantidad_despachada(yaDespachado);
+
+            if (item.getCantidad() > yaDespachado) {
+                hayNuevosPendientes = true;
+            }
+
             presupuestoDetalleRepository.save(detalle);
         }
 
-        presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto,usuarioEditor, "EDICION"));
+        // 5. LÓGICA DE REVERSIÓN DE ESTADO AUTOMÁTICA
+        if ("DESPACHADO".equals(presupuesto.getEstado()) && hayNuevosPendientes) {
+            presupuesto.setEstado("DESPACHO PARCIAL");
+            presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuarioEditor, "REACTIVACION"));
+        } else {
+            presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuarioEditor, "EDICION"));
+        }
 
         return presupuestoRepository.save(presupuesto);
     }

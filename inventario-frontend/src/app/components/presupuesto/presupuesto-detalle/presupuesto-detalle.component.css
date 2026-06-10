@@ -155,7 +155,8 @@
 .text-parcial {color: #f36739 !important;}
 
 .bg-parcial {background-color: #f36739 !important;}
-.bg-creacion { background-color: #91e47e; }
+.bg-creacion { background-color: #91e47e !important;}
+.bg-reactivacion-subtle{ background-color: rgb(57 243 72 / 0.64) !important;}
 
 .text-custom { color: #9b9797 !important; }
 
@@ -240,6 +241,9 @@
 
 .tl-parcial { background-color: #f36739 !important; }
 .tl-parcial::after { border-left: 8px solid #f36739; }
+
+.tl-reactivacion { background-color: #39f348 !important; }
+.tl-reactivacion::after { border-left: 8px solid #39f348; }
 
 .tl-cancelacion { background-color: rgb(214 0 0) !important; }
 .tl-cancelacion::after { border-left: 8px solid rgb(214 0 0); }

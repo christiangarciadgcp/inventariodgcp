@@ -1,14 +1,33 @@
 <div class="container-wide px-5 mt-4">
 
-  <div class="d-flex align-items-center gap-3 mb-3 px-2">
-    <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
-      <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
-    </button>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-5 px-2 gap-3">
 
-    <div>
-      <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Gestión de Proyectos</h6>
-      <h2 class="fw-bold text-dark m-0">Presupuestos y Requerimientos</h2>
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
+
+      <div>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Gestión de Proyectos</h6>
+        <h2 class="fw-bold text-dark m-0">Presupuestos y Requerimientos</h2>
+      </div>
     </div>
+
+    <div class="d-flex flex-wrap align-items-center gap-3">
+
+      <div class="search-elegant m-0" style="width: 280px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
+      <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" routerLink="/presupuesto/nuevo_presupuesto">
+        <mat-icon class="me-2">add_task</mat-icon> Nuevo Presupuesto
+      </button>
+
+    </div>
+
   </div>
 
   <div class="d-flex flex-wrap align-items-center gap-3 mb-4 px-2">
@@ -27,7 +46,7 @@
         </mat-tab>
         <mat-tab>
           <ng-template mat-tab-label>
-            <mat-icon class="me-2 text-primary">local_shipping</mat-icon>CONTROL DESPACHOS
+            <mat-icon class="me-2 text-primary">local_shipping</mat-icon>DESPACHOS
           </ng-template>
         </mat-tab>
       </mat-tab-group>
@@ -45,16 +64,7 @@
       </mat-form-field>
     }
 
-    <div class="search-elegant m-0" style="width: 280px;">
-      <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
-      <div class="search-btn-circle">
-        <mat-icon>search</mat-icon>
-      </div>
-    </div>
 
-    <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" routerLink="/presupuesto/nuevo_presupuesto">
-      <mat-icon class="me-2">add_task</mat-icon> Nuevo Presupuesto
-    </button>
 
   </div>
 
@@ -137,47 +147,46 @@
 
             <ng-container matColumnDef="acciones">
                 <th mat-header-cell *matHeaderCellDef class="pe-4 text-center"> ACCIONES </th>
-                <td mat-cell *matCellDef="let element" class="col-acciones text-center">
+              <td mat-cell *matCellDef="let element" class="col-acciones text-center">
 
-                    <button mat-icon-button class="action-btn text-dark" matTooltip="Ver Detalles"
+                <button mat-icon-button class="action-btn text-dark" matTooltip="Ver Detalles"
                         (click)="verDetallePresupuesto(element)">
-                        <mat-icon>format_list_bulleted</mat-icon>
-                    </button>
+                  <mat-icon>format_list_bulleted</mat-icon>
+                </button>
 
-                    @if (element.estado === 'PENDIENTE') {
-                    <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
-                        [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]">
-                        <mat-icon>edit</mat-icon>
-                    </button>
+                @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO') && esEncargadoInventario())) {
+                  <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
+                          [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                }
 
-                    @if (esEncargadoInventario()) {
-                    <button mat-icon-button class="action-btn text-success" matTooltip="Aprobar Solicitud"
-                        (click)="aprobarSolicitud(element.idPresupuesto)">
-                        <mat-icon>check_circle</mat-icon>
-                    </button>
+                @if (element.estado === 'PENDIENTE' && esEncargadoInventario()) {
+                  <button mat-icon-button class="action-btn text-success" matTooltip="Aprobar Solicitud"
+                          (click)="aprobarSolicitud(element.idPresupuesto)">
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
 
-                    <button mat-icon-button class="action-btn text-danger" matTooltip="Cancelar Solicitud"
-                        (click)="cancelarSolicitud(element.idPresupuesto)">
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                    }
-                    }
+                  <button mat-icon-button class="action-btn text-danger" matTooltip="Cancelar Solicitud"
+                          (click)="cancelarSolicitud(element.idPresupuesto)">
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                }
 
-                    @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') &&
-                    esEncargadoInventario()) {
-                    <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
-                        (click)="revisionPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
-                        <mat-icon>inventory</mat-icon>
-                    </button>
-                    }
+                @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
+                  <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
+                          (click)="revisionPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
+                    <mat-icon>inventory</mat-icon>
+                  </button>
+                }
 
-                    @if (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL') {
-                    <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho"
-                        (click)="imprimirDespacho(element)">
-                        <mat-icon>picture_as_pdf</mat-icon>
-                    </button>
-                    }
-                </td>
+                @if (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL') {
+                  <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho"
+                          (click)="imprimirDespacho(element)">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                  </button>
+                }
+              </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

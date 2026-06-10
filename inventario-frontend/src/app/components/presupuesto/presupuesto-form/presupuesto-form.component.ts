@@ -27,6 +27,7 @@ import { Ubicacion } from '../../../models/ubicacion';
 interface DetalleVista {
   producto: Producto;
   cantidad: number;
+  cantidadDespachada?: number;
 }
 
 @Component({
@@ -104,7 +105,8 @@ export class PresupuestoFormComponent implements OnInit {
     this.presupuestoService.listarDetalles(id).subscribe(detalles => {
       const itemsMapeados = detalles.map(d => ({
         producto: d.producto,
-        cantidad: d.cantidad_solicitada
+        cantidad: d.cantidad_solicitada,
+        cantidadDespachada: d.cantidad_despachada || 0
       }));
       this.detallesAgregados.set(itemsMapeados);
     });

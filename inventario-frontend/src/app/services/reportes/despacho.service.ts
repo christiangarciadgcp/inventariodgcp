@@ -69,12 +69,13 @@ export class DespachoService {
     // DATOS DE CABECERA
     doc.setFontSize(10);
     doc.setTextColor(80);
-    doc.text('Destino:', 20, 44);
-    doc.text('Area:', 20, 50);
-    doc.text('N° Solicitud:', 20, 56);
-    doc.text('Solicitante:', 110, 56);
-    doc.text('Despachado por:', 20, 62);
-    doc.text('Fecha Presupuesto:', 110, 62);
+
+    doc.text('N° Solicitud:', 20, 44);
+    doc.text('Solicitante:', 110, 44);
+    doc.text('Despachado por:', 20, 50);
+    doc.text('Fecha Presupuesto:', 110, 50);
+    doc.text('Destino:', 20, 56);
+    doc.text('Área:', 20, 62);
     doc.text('Observaciones:', 20, 68);
 
     // VALORES
@@ -82,18 +83,18 @@ export class DespachoService {
     doc.setTextColor(0);
     doc.setFont('helvetica', 'bold');
 
-    doc.text(`${data.ubicacionDestino}`, 55, 44);
-    doc.text(`${data.nombreProyecto}`, 55, 50);
-    doc.text(`${data.idPresupuesto}`, 55, 56);
+    doc.text(`${data.idPresupuesto}`, 55, 44);
 
     const nomSolicitante = this.fn.formatearNombre(data.solicitante).split(' ').slice(0, 2).join(' ');
     const nomDespachador = this.fn.formatearNombre(data.usuarioDespachado || 'Sistema');
 
-    doc.text(nomSolicitante, 145, 56);
-    doc.text(nomDespachador, 55, 62);
+    doc.text(nomSolicitante, 145, 44);
+    doc.text(nomDespachador, 55, 50);
 
     const fecha = data.fechaAprobacion ? new Date(data.fechaAprobacion).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '---';
-    doc.text(fecha, 145, 62);
+    doc.text(fecha, 145, 50);
+    doc.text(`${data.ubicacionDestino}`, 55, 56);
+    doc.text(`${data.nombreProyecto}`, 55, 62);
     doc.text(lineasObservaciones, 55, 68);
 
     // La tabla empezará justo debajo de donde termina nuestra tarjeta dinámica + un margen de 5
@@ -167,6 +168,7 @@ autoTable(doc, {
 //... (El resto de tu configuración de autoTable queda igual)
       body: bodyData,
       theme: 'grid',
+      margin: { bottom: 45 },
       headStyles: {
         fillColor: [21, 56, 99],
         textColor: 255,
@@ -194,27 +196,22 @@ autoTable(doc, {
       }
     });
 
-    // --- FIRMAS ---
-    const finalY = (doc as any).lastAutoTable.finalY + 30;
+    // Obtenemos la altura total de la página actual
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Fijamos la posición Y a 30 unidades desde el borde inferior
+    const finalY = pageHeight - 30;
 
     doc.setDrawColor(0);
     doc.setLineWidth(0.5);
 
-
     doc.line(20, finalY, 80, finalY);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-
-/*    doc.text(this.fn.formatearNombre(data.usuarioDespachado), 50, finalY + 5, { align: 'center' });
-    doc.setFont('helvetica', 'normal');*/
     doc.text('Despachado por', 50, finalY + 5, { align: 'center' });
-
 
     doc.line(120, finalY, 180, finalY);
     doc.setFont('helvetica', 'normal');
-
-/*    doc.text(this.fn.formatearNombre(data.solicitante), 150, finalY + 5, { align: 'center' });
-    doc.setFont('helvetica', 'normal');*/
     doc.text('Recibido Conforme', 150, finalY + 5, { align: 'center' });
 
     // --- PIE DE PÁGINA ---

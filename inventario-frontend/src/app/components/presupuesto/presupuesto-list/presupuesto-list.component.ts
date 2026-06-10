@@ -209,7 +209,7 @@ export class PresupuestoListComponent implements OnInit {
       }
 
       const historial = this.todasLasSolicitudes.filter(p => {
-        if(p.estado !== 'DESPACHO PARCIAL' && p.estado !== 'DESPACHADO' && p.estado !== 'CANCELADO') return false; // AGREGAR p.estado !== 'CANCELADO' SI SE REQUIERE QUE APAREZCAN LAS CANCELADAS
+        if(p.estado !== 'DESPACHO PARCIAL' && p.estado !== 'DESPACHADO') return false; // AGREGAR p.estado !== 'CANCELADO' SI SE REQUIERE QUE APAREZCAN LAS CANCELADAS
         if(!start || !end) return true;
 
         const fecha = new Date(p.fecha_creacion);
