@@ -1,0 +1,119 @@
+<div class="container-wide px-5 mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
+      <div>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Stock  Diario</h6>
+        <h3 class="fw-bold m-0 text-dark">Cierres de Inventario (Snapshots)</h3>
+      </div>
+    </div>
+  </div>
+
+  <mat-card class="custom-card mb-4 p-3 shadow-sm border-0" style="border-radius: 16px;">
+    <form [formGroup]="filtroForm" class="d-flex flex-wrap gap-3 align-items-center">
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 250px;">
+        <mat-label>Bodega</mat-label>
+        <mat-select formControlName="idBodega">
+          @for (b of bodegas; track b.idBodega) {
+            <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 200px;">
+        <mat-label>Fecha de Cierre</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="fecha">
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-raised-button class="btn-buscar rounded-pill px-4" [disabled]="buscando" (click)="buscarSnapshot()">
+        <mat-icon class="me-2">search</mat-icon> {{ buscando ? 'Buscando...' : 'Buscar Cierre' }}
+      </button>
+    </form>
+  </mat-card>
+
+  @if (snapshots().length > 0) {
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Filtrar resultados en tabla..." autocomplete="off">
+        <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button mat-raised-button class="rounded-pill px-4" style="height: 42px;" [disabled]="generandoExcel" (click)="descargarExcel()">
+          <mat-icon class="me-2 text-success">table_view</mat-icon> Excel
+        </button>
+        <button mat-raised-button class="rounded-pill px-4" style="height: 42px;" (click)="descargarPDF()">
+          <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon> Reporte PDF
+        </button>
+      </div>
+    </div>
+  }
+
+  <mat-card class="activity-card shadow-sm h-100 mb-5">
+    <div class="card-body p-4">
+      <div class="table-scroll-container">
+        <table mat-table [dataSource]="dataSource" class="w-100 table-modern mb-3">
+
+          <ng-container matColumnDef="sku">
+            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide"> SKU </th>
+            <td mat-cell *matCellDef="let element">
+              <span class="badge bg-light text-dark border font-monospace" style="font-size: 0.85rem; letter-spacing: 1px;">{{ element.producto.skuproducto }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="producto">
+            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">PRODUCTO</th>
+            <td mat-cell *matCellDef="let element" class="py-2 fw-bold text-dark">
+              {{ element.producto?.nombreproducto }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="categoria">
+            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">CATEGORÍA</th>
+            <td mat-cell *matCellDef="let element" class="py-2 text-muted">
+              <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">category</mat-icon>
+              {{ element.producto?.categoria?.nombrecategoria }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">STOCK AL CORTE</th>
+            <td mat-cell *matCellDef="let element" class="text-center py-2">
+                            <span class="badge rounded-pill bg-primary-subtle text-primary border px-3 py-1 fw-bold shadow-sm" style="font-size: 0.85rem;">
+                                {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
+                            </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row-modern"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center py-5 text-muted" colspan="4">
+              <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">inventory</mat-icon>
+
+              @if (textoBusqueda){
+                <h5 class="fw-bold m-0">No se encontraron registros</h5>
+                <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
+              }
+              @else{
+                <h5 class="fw-bold m-0">Cierre de Inventario</h5>
+                <p class="m-0 small">Seleccione una Bodega y Fecha para ver el cierre del día.</p>
+              }
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      @if (snapshots().length > 0) {
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+      }
+    </div>
+  </mat-card>
+</div>

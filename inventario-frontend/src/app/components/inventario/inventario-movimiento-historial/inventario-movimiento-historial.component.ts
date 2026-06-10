@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, effect } from '@angular/core';
+import {Component, inject, signal, ViewChild, effect, input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -8,7 +8,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select'; // <-- IMPORTACIÓN CLAVE
+import { MatSelectModule } from '@angular/material/select';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
@@ -38,13 +38,14 @@ export class InventarioMovimientoHistorialComponent {
   private reporteService = inject(InventarioMovimientosService);
   private dialog = inject(MatDialog);
 
+  textoBusqueda = '';
   buscando = false;
   displayedColumns: string[] = ['icono', 'detalle', 'bodega', 'cantidad', 'fecha'];
   dataSource = new MatTableDataSource<any>([]);
   movimientos = signal<any[]>([]);
 
   // Lista de tipos de movimientos disponibles para el select
-  tiposMovimiento: string[] = ['TODOS', 'ENTRADA', 'SALIDA', 'DESPACHO', 'DESCARGO']; // S EPUEDE AGREGAR 'AJUSTE' SI SE REQUIERE
+  tiposMovimiento: string[] = ['TODOS', 'ENTRADA', 'SALIDA', 'DESPACHO', 'DESCARGO']; // SE PUEDE AGREGAR 'AJUSTE' SI SE REQUIERE
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -56,6 +57,20 @@ export class InventarioMovimientoHistorialComponent {
   });
 
   constructor() {
+
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const datosAString = (
+        (data.producto?.nombreproducto || '') +
+        (data.bodega?.nombrebodega || '') +
+        (data.tipo || '') +
+        (data.motivo || '') +
+        (data.usuario?.nombreusuario || '')
+      ).toLowerCase();
+
+      return datosAString.includes(filter);
+    };
+
+
     effect(() => {
       this.dataSource.data = this.movimientos();
       if (this.paginator) this.dataSource.paginator = this.paginator;
@@ -71,7 +86,6 @@ export class InventarioMovimientoHistorialComponent {
 
     this.buscando = true;
 
-    // Normalizar horas para abarcar los días completos
     const fechaInicio = new Date(this.filtroForm.value.inicio!);
     fechaInicio.setHours(0, 0, 0, 0);
 
@@ -120,8 +134,10 @@ export class InventarioMovimientoHistorialComponent {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
+    this.textoBusqueda = filterValue;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
 
   getIconoMovimiento(tipo: string): string {
     switch (tipo.toUpperCase()) {
@@ -144,4 +160,5 @@ export class InventarioMovimientoHistorialComponent {
       default: return 'text-secondary bg-light';
     }
   }
+
 }

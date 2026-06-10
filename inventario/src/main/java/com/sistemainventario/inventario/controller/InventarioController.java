@@ -13,16 +13,20 @@ import com.sistemainventario.inventario.dto.MovimientoStockDTO;
 import com.sistemainventario.inventario.model.Bodega;
 import com.sistemainventario.inventario.model.Inventario;
 import com.sistemainventario.inventario.model.MovimientoStock;
+import com.sistemainventario.inventario.model.SnapshotInventario;
 import com.sistemainventario.inventario.service.InventarioService;
+import com.sistemainventario.inventario.service.SnapshotService;
 
 @RestController
 @RequestMapping("/api/inventario")
 @CrossOrigin(origins = "*")
 public class InventarioController {
     private final InventarioService inventarioService;
+    private final SnapshotService snapshotService;
 
-    public InventarioController(InventarioService inventarioService) {
+    public InventarioController(InventarioService inventarioService,SnapshotService snapshotService) {
         this.inventarioService = inventarioService;
+        this.snapshotService = snapshotService;
     }
 
     @GetMapping("/bodegas")
@@ -86,5 +90,17 @@ public class InventarioController {
         
         return ResponseEntity.ok().build();
     }    
+
+    @GetMapping("/snapshots/buscar")
+    public ResponseEntity<List<SnapshotInventario>> buscarSnapshot(
+            @RequestParam Integer idBodega,
+            @RequestParam String inicio,
+            @RequestParam String fin) {
+        
+        Instant fechaInicio = Instant.parse(inicio);
+        Instant fechaFin = Instant.parse(fin);
+        
+        return ResponseEntity.ok(snapshotService.buscarSnapshotPorFiltros(idBodega, fechaInicio, fechaFin));
+    }
 
 }

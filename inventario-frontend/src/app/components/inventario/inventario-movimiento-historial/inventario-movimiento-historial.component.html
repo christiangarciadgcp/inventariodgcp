@@ -6,7 +6,7 @@
         <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
       </button>
       <div>
-        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Auditoría de Stock</h6>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Cambios en Stock</h6>
         <h3 class="fw-bold m-0 text-dark">Historial de Movimientos</h3>
       </div>
     </div>
@@ -16,7 +16,7 @@
     <form [formGroup]="filtroForm" class="d-flex flex-wrap gap-3 align-items-center">
 
       <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 280px;">
-        <mat-label>Rango de Fechas *</mat-label>
+        <mat-label>Rango de Fechas </mat-label>
         <mat-date-range-input [rangePicker]="picker">
           <input matStartDate formControlName="inicio" placeholder="Inicio">
           <input matEndDate formControlName="fin" placeholder="Fin">
@@ -44,7 +44,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 animacion-fade">
 
       <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Filtrar en esta tabla..." autocomplete="off">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..."  autocomplete="off">
         <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
       </div>
 
@@ -120,8 +120,15 @@
           <tr class="mat-row" *matNoDataRow>
             <td class="mat-cell text-center py-5 text-muted" colspan="5">
               <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">manage_search</mat-icon>
-              <h5 class="fw-bold m-0">Consulta Histórica</h5>
-              <p class="m-0 small">Establezca el período requerido y presione "Buscar Movimientos".</p>
+
+              @if (textoBusqueda) {
+                <h5 class="fw-bold m-0">No se encontraron movimientos</h5>
+                <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
+              }
+              @else {
+                <h5 class="fw-bold m-0">Consulta de Movimientos</h5>
+                <p class="m-0 small">Establezca el período requerido y presione "Buscar Movimientos".</p>
+              }
             </td>
           </tr>
         </table>

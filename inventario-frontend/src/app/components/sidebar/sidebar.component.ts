@@ -6,16 +6,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { LayoutService } from '../../services/layout.service';
 import { AuthService } from '../../services/auth.service';
-
+import { roles } from '../../core/roles'
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterLink, 
-    RouterLinkActive, 
-    MatIconModule, 
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    MatIconModule,
     MatTooltipModule,
     MatButtonModule
   ],
@@ -26,6 +26,7 @@ export class SidebarComponent implements OnInit{
 
   private authService = inject(AuthService);
   public layoutService = inject(LayoutService);
+  public readonly rolesPermitidos = roles;
   opcionesCatalogo = signal(false);
 
   rolActual = signal<string>('');
@@ -45,11 +46,11 @@ export class SidebarComponent implements OnInit{
     this.opcionesCatalogo.update(value => !value);
   }
 
-  @HostBinding('style.width') 
+  @HostBinding('style.width')
   get width() {
     return this.layoutService.sidebarCollapsed() ? '75px' : '260px';
   }
-  
+
   @HostBinding('style.transition') transition = 'width 0.3s ease-in-out';
 
 }

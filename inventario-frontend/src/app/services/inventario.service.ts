@@ -59,4 +59,8 @@ export class InventarioService {
     return this.http.get<any[]>(url);
   }
 
+  buscarSnapshot(idBodega: number, inicio: string, fin: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/snapshots/buscar?idBodega=${idBodega}&inicio=${inicio}&fin=${fin}`);
+  }
+
 }

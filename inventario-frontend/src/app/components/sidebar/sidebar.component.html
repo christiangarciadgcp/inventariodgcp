@@ -39,7 +39,7 @@
             </a>
 
 
-          @if (permiso(['administrador', 'inventario utdi'])) {
+          @if (permiso(rolesPermitidos.INVENTARIO2)) {
             @if (!layoutService.sidebarCollapsed()) {
               <div class="nav-header">ADMINISTRACIÓN</div>
             } @else {
@@ -47,16 +47,18 @@
             }
           }
 
-          <!--             <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
-                          [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
-                          <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
+          @if (permiso(rolesPermitidos._INVENTARIO)) {
+          <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
+              [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
+              <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
 
-                          @if (!layoutService.sidebarCollapsed()) {
-                          <span class="nav-text">Catálogos</span>
-                          }
-                      </a> -->
+              @if (!layoutService.sidebarCollapsed()) {
+              <span class="nav-text">Catálogos</span>
+              }
+          </a>
+          }
 
-          @if (permiso(['administrador', 'inventario utdi'])) {
+          @if (permiso(rolesPermitidos.ADMIN)) {
             <div class="nav-item-group" routerLinkActive="active-group" [routerLinkActiveOptions]="{exact: false}">
 
               <a class="nav-link cursor-pointer" (click)="acoplarCatalogo()" [class.active]="rla.isActive"
@@ -122,7 +124,7 @@
             </div>
           }
 
-          @if (permiso(['administrador'])) {
+          @if (permiso(rolesPermitidos.ADMIN)) {
             <a routerLink="/usuarios" routerLinkActive="active" class="nav-link"
                [matTooltip]="layoutService.sidebarCollapsed() ? 'Usuarios' : '' " matTooltipPosition="right">
               <div class="nav-icon"><mat-icon>group</mat-icon></div>
@@ -178,7 +180,7 @@
                 }
             </a>-->
 
-            @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
+            @if (permiso(rolesPermitidos.INVENTARIO)) {
                 @if (!layoutService.sidebarCollapsed()) {
                     <div class="nav-header">INVENTARIO</div>
                 } @else {
@@ -186,18 +188,8 @@
                 }
             }
 
-            @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
-              <a routerLink="/movimientos-historial" routerLinkActive="active" class="nav-link"
-                 [matTooltip]="layoutService.sidebarCollapsed() ? 'Historial de Movimientos' : ''" matTooltipPosition="right">
-                <div class="nav-icon"><mat-icon>history</mat-icon></div>
 
-                @if (!layoutService.sidebarCollapsed()) {
-                  <span class="nav-text">Historial de Movimientos</span>
-                }
-              </a>
-            }
-
-            @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
+            @if (permiso(rolesPermitidos.INVENTARIO)) {
                 <a routerLink="/solicitud_compra" routerLinkActive="active"
                     class="nav-link" [matTooltip]="layoutService.sidebarCollapsed() ? 'Solicitud de Compra' : ''"
                     matTooltipPosition="right">
@@ -209,7 +201,7 @@
                 </a>
             }
 
-            @if (permiso(['administrador', 'jefe utdi', 'inventario utdi'])) {
+            @if (permiso(rolesPermitidos.INVENTARIO)) {
                 <a routerLink="/inventario" routerLinkActive="active" class="nav-link"
                     [matTooltip]="layoutService.sidebarCollapsed() ? 'Inventario' : ''" matTooltipPosition="right">
                     <div class="nav-icon"><mat-icon>inventory_2</mat-icon></div>
@@ -220,7 +212,7 @@
                 </a>
             }
 
-            @if (permiso(['administrador', 'inventario utdi'])) {
+            @if (permiso(rolesPermitidos.INVENTARIO2)) {
                 <a routerLink="/movimientos" routerLinkActive="active" class="nav-link"
                     [matTooltip]="layoutService.sidebarCollapsed() ? 'Movimientos' : ''" matTooltipPosition="right">
                     <div class="nav-icon"><mat-icon>swap_horiz</mat-icon></div>
@@ -231,7 +223,7 @@
                 </a>
             }
 
-            @if (permiso(['administrador','inventario utdi'])) {
+            @if (permiso(rolesPermitidos.INVENTARIO2)) {
                 <a routerLink="/descargo" routerLinkActive="active" class="nav-link"
                     [matTooltip]="layoutService.sidebarCollapsed() ? 'Descargo' : ''" matTooltipPosition="right">
                     <div class="nav-icon"><mat-icon>remove_circle_outline</mat-icon></div>
@@ -242,7 +234,31 @@
                 </a>
             }
 
+          @if (permiso(rolesPermitidos.INVENTARIO)) {
+            @if (!layoutService.sidebarCollapsed()) {
+              <div class="nav-header">REPORTES</div>
+            } @else {
+              <div class="nav-divider"></div>
+            }
 
+            <a routerLink="/movimientos-historial" routerLinkActive="active" class="nav-link"
+               [matTooltip]="layoutService.sidebarCollapsed() ? 'Historial de Movimientos' : ''" matTooltipPosition="right">
+              <div class="nav-icon"><mat-icon>history</mat-icon></div>
+
+              @if (!layoutService.sidebarCollapsed()) {
+                <span class="nav-text">Historial de Movimientos</span>
+              }
+            </a>
+
+            <a routerLink="/snapshots" routerLinkActive="active" class="nav-link"
+               [matTooltip]="layoutService.sidebarCollapsed() ? 'Snapshots' : ''" matTooltipPosition="right">
+              <div class="nav-icon"><mat-icon>event_available</mat-icon></div>
+
+              @if (!layoutService.sidebarCollapsed()) {
+                <span class="nav-text">Snapshots</span>
+              }
+            </a>
+          }
 
         </div>
     </div>

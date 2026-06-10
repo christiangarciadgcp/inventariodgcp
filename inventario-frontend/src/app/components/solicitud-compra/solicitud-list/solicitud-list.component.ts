@@ -17,7 +17,7 @@ import { SolicitudCompra } from '../../../models/solicitud-compra';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { SolicitudDetalleDialogComponent } from '../solicitud-detalle-dialog/solicitud-detalle-dialog.component';
 import { SolicitudCompraService } from '../../../services/solicitud-compra.service';
-import { PdfService } from '../../../services/reportes/pdf.service';
+import { SolicitudCompraReporteService } from '../../../services/reportes/solicitud-compra-reporte.service';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 import { Mensaje } from '../../../core/mensaje';
 import { AuthService } from '../../../services/auth.service';
@@ -49,7 +49,7 @@ export class SolicitudListComponent implements OnInit {
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
   private solicitudService = inject(SolicitudCompraService);
-  private pdfService = inject(PdfService);
+  private pdfService = inject(SolicitudCompraReporteService);
   private authService = inject(AuthService);
   public utils = inject(Utils);
 
@@ -113,7 +113,7 @@ export class SolicitudListComponent implements OnInit {
   // --------------------------------------------------------
   // MODAL CON EL DETALLE DE LA SOLICITUD
   // --------------------------------------------------------
-  verDetalle(solicitud: SolicitudCompra) {
+  verDetalle(solicitud: SolicitudCompraReporteService) {
     const dialogRef = this.dialog.open(SolicitudDetalleDialogComponent, {
       width: '900px',
       maxWidth: '100vw',
@@ -213,7 +213,7 @@ export class SolicitudListComponent implements OnInit {
       });
     } */
 
-  ejecutarRecepcion(solicitud: SolicitudCompra) {
+  ejecutarRecepcion(solicitud: SolicitudCompraReporteService) {
     const dialogRef = this.dialog.open(SolicitudRecepcionModalComponent, {
       width: '900px',
       maxWidth: '95vw',

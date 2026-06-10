@@ -185,7 +185,7 @@ public class SolicitudCompraService {
                         "ENTRADA",
                         item.getCantidadARecibir(), // Entra solo lo que llegó hoy
                         payload.getIdUsuarioComprador(),
-                        "Recepción Parcial/Total Solicitud #" + solicitud.getIdSolicitudCompra()
+                        "Recepcion Parcial/Total Solicitud #" + solicitud.getIdSolicitudCompra()
                 );
             }
         }

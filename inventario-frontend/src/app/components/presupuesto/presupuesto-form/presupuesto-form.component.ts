@@ -206,7 +206,10 @@ export class PresupuestoFormComponent implements OnInit {
           this.mensaje.open('Presupuesto actualizado exitosamente', 'exito');
           this.router.navigate(['/presupuesto']);
         },
-        error: (err) => this.mensaje.open(err.error?.message || 'Error al actualizar', 'error')
+        error : (err) => {
+          const msg = err.error?.mensaje || 'Error al actualizar Presupuesto';
+          this.mensaje.open(msg, 'error');
+        }
       });
     } else {
       this.presupuestoService.crearPresupuesto(dto).subscribe({
