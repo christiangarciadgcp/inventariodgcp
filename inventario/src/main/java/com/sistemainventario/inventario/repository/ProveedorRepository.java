@@ -3,7 +3,7 @@ package com.sistemainventario.inventario.repository;
 import com.sistemainventario.inventario.model.Proveedor;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface ProveedorRepository extends JpaRepository<Proveedor,Integer>{
 
     List<Proveedor> findByActivoTrue(Sort sort);
+
+    Optional<Proveedor> findFirstByNombreproveedorIgnoreCase(String nombreproveedor);
 
 }

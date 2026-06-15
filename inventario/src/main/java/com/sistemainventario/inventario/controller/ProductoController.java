@@ -20,9 +20,12 @@ import java.util.Optional;
 public class ProductoController {
 
     private final ProductoService productoService;
+    private final ProductoExcelService productoExcelService;
 
-    public ProductoController(ProductoService productoService) {
+    public ProductoController(ProductoService productoService, ProductoExcelService productoExcelService) {
         this.productoService = productoService;
+        this.productoExcelService = productoExcelService;
+
     }
 
     @GetMapping
@@ -76,6 +79,24 @@ public class ProductoController {
     public ResponseEntity<Void> eliminarImagenProducto(@PathVariable Integer idImagen) {
         productoService.eliminarImagenPorId(idImagen);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/carga-masiva")
+    public ResponseEntity<?> cargaMasiva(@RequestParam("file") MultipartFile file) {
+        try {
+            // Capturamos la lista de productos devuelta por el servicio
+            List<com.sistemainventario.inventario.model.Producto> guardados = productoExcelService.procesarCargaMasiva(file);
+            
+            // Retornamos un mapa estructurado con la cantidad real procesada
+            return ResponseEntity.ok().body(java.util.Map.of(
+                "mensaje", "Carga masiva completada con éxito",
+                "cantidad", guardados.size()
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of(
+                "mensaje", e.getMessage()
+            ));
+        }
     }
 
 }

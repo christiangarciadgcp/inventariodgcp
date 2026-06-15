@@ -14,6 +14,11 @@
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3">
+
+      <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" style="display: none;">
+
+
+
       <div class="search-elegant m-0" style="width: 300px;">
         <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input
                autocomplete="off">
@@ -21,6 +26,11 @@
           <mat-icon>search</mat-icon>
         </div>
       </div>
+
+      <button mat-raised-button class="rounded-pill px-4" style=" color: darkblue;" (click)="fileInput.click()" [disabled]="cargandoExcel">
+        <mat-icon class="me-2 text-success">{{ cargandoExcel ? 'hourglass_empty' : 'table_view' }}</mat-icon>
+        {{ cargandoExcel ? 'Cargando...' : 'Cargar Productos' }}
+      </button>
 
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo" (click)="abrirFormulario()">
         <mat-icon class="me-2">inventory_2</mat-icon>Nuevo Producto

@@ -37,6 +37,7 @@ export class ProductoListComponent implements OnInit {
   displayedColumns: string[] = ['id', 'sku', 'ser-inv', 'nombre', 'categoria', 'marca', 'proveedor', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
+  cargandoExcel = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -248,6 +249,35 @@ export class ProductoListComponent implements OnInit {
         });
       }
     });
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.cargandoExcel = true;
+      this.mensaje.open('Procesando archivo, por favor espere...', 'info');
+
+      this.productoService.subirExcelMasivo(file).subscribe({
+        next: (res) => { // <-- Recibimos la respuesta estructurada del backend
+          this.cargandoExcel = false;
+
+          // Extraemos la cantidad (si por alguna razón viene nulo ponemos 0)
+          const totalProductos = res.cantidad || 0;
+
+          // Mostramos el mensaje personalizado con el total exacto
+          this.mensaje.open(`Se agregaron ${totalProductos} productos exitosamente`, 'exito');
+
+          this.cargarProductos(); // Refresca la tabla automáticamente
+          event.target.value = ''; // Limpia el input
+        },
+        error: (err) => {
+          this.cargandoExcel = false;
+          const errorMsg = err.error?.mensaje || 'Error al procesar el archivo Excel';
+          this.mensaje.open(errorMsg, 'error');
+          event.target.value = '';
+        }
+      });
+    }
   }
 
 }
