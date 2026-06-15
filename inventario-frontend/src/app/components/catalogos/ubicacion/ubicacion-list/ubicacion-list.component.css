@@ -133,3 +133,7 @@ button[mat-icon-button][color="warn"] {
 ::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
   opacity: 0.9 !important;
 }
+
+::ng-deep .mat-sort-header-container {
+  justify-content: center !important;
+}

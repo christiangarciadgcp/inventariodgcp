@@ -22,8 +22,8 @@ import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dia
   selector: 'app-inventario-detalle',
   standalone: true,
   imports: [
-    CommonModule, MatTableModule, MatPaginatorModule, MatSortModule, 
-    MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule, 
+    CommonModule, MatTableModule, MatPaginatorModule, MatSortModule,
+    MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule,
     MatCardModule, MatTooltipModule, RouterLink
   ],
   templateUrl: './inventario-detalle.component.html',
@@ -65,31 +65,31 @@ export class InventarioDetalleComponent implements OnInit {
 
     this.dataSource.sortingDataAccessor = (item: any,property : string) => {
       switch(property){
-          case 'sku': 
+          case 'sku':
             return item.producto?.skuproducto;
-          case 'producto': 
+          case 'producto':
             return item.producto?.nombreproducto;
-          case 'categoria': 
+          case 'categoria':
             // Si no hay categoría, devolvemos un string vacío para que no falle al ordenar
-            return item.producto?.categoria?.nombrecategoria || ''; 
-          case 'cantidad': 
+            return item.producto?.categoria?.nombrecategoria || '';
+          case 'cantidad':
             return item.cantidad_actual;
-          default: 
+          default:
             return item[property];
       }
     };
   }
 
   ngOnInit(): void {
-    
+
     //CONFIGURACIÓN DEL FILTRO PERSONALIZADO
     this.dataSource.filterPredicate = (data: any, filter: string) => {
       const datosAString = (
-        data.producto.skuproducto + 
-        data.producto.nombreproducto + 
+        data.producto.skuproducto +
+        data.producto.nombreproducto +
         (data.producto.categoria?.nombrecategoria || '')
       ).toLowerCase();
-      
+
       return datosAString.includes(filter);
     };
 
@@ -108,18 +108,26 @@ export class InventarioDetalleComponent implements OnInit {
     this.inventarioService.listarInventarioPorBodega(id).subscribe({
       next: (data) => {
         this.dataSource.data = data;
-        
+
         //CAPTURAR EL NOMBRE DE LA BODEGA
         //Si hay productos, tomamos el nombre de la bodega del primer ítem
         if (data.length > 0) {
             this.nombreBodega = data[0].bodega.nombrebodega;
         }
 
-        this.totalValorizado = data.reduce((acc, item) => 
+        // 2. FILTRAR SOLO PRODUCTOS CON EXISTENCIAS MAYORES A CERO
+        const inventarioConStock = data.filter((item: any) => item.cantidad_actual > 0);
+
+        // 3. ASIGNAR LA DATA FILTRADA A LA TABLA
+        this.dataSource.data = inventarioConStock;
+
+
+        // 4. CALCULAR TOTAL VALORIZADO SOBRE LOS PRODUCTOS FILTRADOS
+        this.totalValorizado = inventarioConStock.reduce((acc: number, item: any) =>
           acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
-        
+
         this.cargando = false;
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error', err);
@@ -142,13 +150,13 @@ export class InventarioDetalleComponent implements OnInit {
         producto: element.producto,
         cantidadActual: element.cantidad_actual,
         idBodega: this.idBodega,
-        nombreBodega: this.nombreBodega 
+        nombreBodega: this.nombreBodega
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        this.cargarProductos(this.idBodega); 
+        this.cargarProductos(this.idBodega);
         this.cdr.detectChanges();
       }
     });
@@ -163,7 +171,7 @@ export class InventarioDetalleComponent implements OnInit {
     }
 
     const nombre = this.nombreBodega ? this.nombreBodega : 'Bodega #' + this.idBodega;
-    
+
     // Le pasamos la data que YA está en la tabla (this.dataSource.data)
     const urlBlob = this.reporteInventario.generarPdfInventarioBodega(nombre, this.dataSource.data);
 
@@ -173,7 +181,7 @@ export class InventarioDetalleComponent implements OnInit {
       maxWidth: '60vw',
       height: '75%',
       panelClass: 'full-screen-modal',
-      data: { 
+      data: {
         url: urlBlob,
         titulo: `Reporte de Existencias - ${nombre}`
       }
