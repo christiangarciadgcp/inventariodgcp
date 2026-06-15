@@ -19,11 +19,13 @@ public class ProductoSugerenciaService {
     private final ProductoSugerenciaRepository productoSugerenciaRepository;
     private final CategoriaRepository categoriaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final NotificacionService notificacionService;
 
-    public ProductoSugerenciaService(ProductoSugerenciaRepository productoSugerenciaRepository, CategoriaRepository categoriaRepository, UsuarioRepository usuarioRepository){
+    public ProductoSugerenciaService(ProductoSugerenciaRepository productoSugerenciaRepository, CategoriaRepository categoriaRepository, UsuarioRepository usuarioRepository, NotificacionService notificacionService){
         this.productoSugerenciaRepository = productoSugerenciaRepository;
         this.categoriaRepository = categoriaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.notificacionService = notificacionService;
     }
 
     public List<ProductoSugerencia> listarProductosSugeridos(){
@@ -50,6 +52,8 @@ public class ProductoSugerenciaService {
                 .orElseThrow(() -> new RuntimeException("Usuario Solicitante no encontrado"));
         sugerencia.setUsuarioSolicitante(usuario);
 
+        notificacionService.registrar(usuario.getNombreusuario(), "ha sugerido el producto: " + dto.getNombreSugerido());
+
         return productoSugerenciaRepository.save(sugerencia);
     }
 
@@ -63,6 +67,8 @@ public class ProductoSugerenciaService {
             sugerencia.setComentario(comentario);
         }
 
+        notificacionService.registrar("Se ha " + nuevoEstado, "la sugerencia del producto: " + sugerencia.getNombreSugerido());
+
         return productoSugerenciaRepository.save(sugerencia);
     }
 
@@ -74,6 +80,8 @@ public class ProductoSugerenciaService {
         if(!"PENDIENTE".equals(sugerencia.getEstado())){
             throw new RuntimeException("Solo se pueden eliminar sugerencias en estado PENDIENTE");
         }
+
+        notificacionService.registrar("Se ha eliminado la sugerencia del producto: " , sugerencia.getNombreSugerido());
 
         productoSugerenciaRepository.delete(sugerencia);
     }

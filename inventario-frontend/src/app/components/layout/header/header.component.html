@@ -1,24 +1,63 @@
 <header class="app-header d-flex justify-content-between align-items-center py-2 px-4 mb-4 shadow-sm w-100">
-    
+
     <div class="d-flex align-items-center">
         <app-breadcrumb></app-breadcrumb>
     </div>
 
     <div class="d-flex align-items-center gap-3">
-        
-        <button class="btn btn-icon btn-light rounded-circle position-relative" type="button">
-            <mat-icon class="text-secondary icon-small">notifications</mat-icon>
-            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                <span class="visually-hidden">New alerts</span>
-            </span>
+
+      <div class="dropdown">
+        <button class="btn btn-icon btn-light rounded-circle position-relative no-arrow" type="button"
+                id="dropdownNotif" data-bs-toggle="dropdown" aria-expanded="false"
+                (click)="marcarLeidas()">
+          <mat-icon class="text-secondary icon-small">notifications</mat-icon>
+
+          @if (noLeidas() > 0) {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.65rem; padding: 0.35em 0.5em; border: 2px solid white;">
+                        {{ noLeidas() }}
+              <span class="visually-hidden">Alertas no leídas</span>
+                    </span>
+          }
         </button>
 
-        <div class="vr h-50 my-auto text-secondary opacity-25"></div>
+        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-0 fade-in"
+            aria-labelledby="dropdownNotif" style="width: 340px; max-height: 400px; overflow-y: auto;">
+
+          <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
+            <h6 class="m-0 fw-bold text-dark">Notificaciones</h6>
+          </div>
+
+          @for (notif of notificaciones(); track notif.idNotificacion) {
+            <li>
+              <a class="dropdown-item py-3 px-3 border-bottom text-wrap d-flex align-items-start gap-3" href="#"
+                 [ngStyle]="{'background-color': notif.leida ? '#ffffff' : '#f0f4f8'}">
+
+                <div class="bg-primary-subtle text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">campaign</mat-icon>
+                </div>
+
+                <div>
+                  <p class="m-0 text-dark fw-medium" style="font-size: 0.82rem; line-height: 1.3;">{{ notif.mensaje }}</p>
+                  <small class="text-muted fw-bold mt-1 d-block" style="font-size: 0.7rem;">{{ notif.fecha | date:'dd MMM, h:mm a' }}</small>
+                </div>
+              </a>
+            </li>
+          } @empty {
+            <div class="p-5 text-center text-muted">
+              <mat-icon style="font-size: 35px; height: 35px; width: 35px; opacity: 0.3;">notifications_off</mat-icon>
+              <p class="m-0 mt-2 small fw-medium">Estás al día</p>
+            </div>
+          }
+        </ul>
+      </div>
+
+      <div class="vr h-50 my-auto text-secondary opacity-25 mx-1"></div>
 
         <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-decoration-none user-pill dropdown-toggle no-arrow" 
+            <a href="#" class="d-flex align-items-center text-decoration-none user-pill dropdown-toggle no-arrow"
                id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            
+
                 <div class="text-end me-2 d-none d-md-block">
                     <div class="fw-bold text-dark user-name">{{ nombreUsuario }}</div>
                     <div class="text-muted user-role">{{ rolUsuario }}</div>
@@ -26,7 +65,7 @@
 
                 <img [src]="avatarUrl" alt="Avatar" width="40" height="40" class="rounded-circle border border-2 border-white shadow-sm">
             </a>
-            
+
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-2 fade-in" aria-labelledby="dropdownUser1">
                 <li class="d-md-none px-3 py-2 border-bottom mb-2">
                     <span class="fw-bold d-block">{{ nombreUsuario }}</span>

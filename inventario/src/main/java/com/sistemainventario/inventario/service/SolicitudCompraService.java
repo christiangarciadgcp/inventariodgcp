@@ -19,6 +19,7 @@ public class SolicitudCompraService {
     private final BodegaRepository bodegaRepository;
     private final ProductoRepository productoRepository;
     private final SolicitudCompraHistorialRepository solicitudCompraHistorialRepository;
+    private final NotificacionService notificacionService;
 
     public SolicitudCompraService(SolicitudCompraRepository solicitudCompraRepository,
                                   SolicitudCompraDetalleRepository solicitudCompraDetalleRepository,
@@ -26,7 +27,8 @@ public class SolicitudCompraService {
                                   UsuarioRepository usuarioRepository,
                                   BodegaRepository bodegaRepository,
                                   ProductoRepository productoRepository,
-                                  SolicitudCompraHistorialRepository solicitudCompraHistorialRepository){
+                                  SolicitudCompraHistorialRepository solicitudCompraHistorialRepository,
+                                  NotificacionService notificacionService){
         this.solicitudCompraRepository = solicitudCompraRepository;
         this.solicitudCompraDetalleRepository = solicitudCompraDetalleRepository;
         this.inventarioService = inventarioService;
@@ -34,6 +36,7 @@ public class SolicitudCompraService {
         this.bodegaRepository = bodegaRepository;
         this.productoRepository = productoRepository;
         this.solicitudCompraHistorialRepository = solicitudCompraHistorialRepository;
+        this.notificacionService = notificacionService;
     }
 
     //CREANDO LA SOLICITUD DE COMPRA
@@ -66,6 +69,8 @@ public class SolicitudCompraService {
         }
 
         solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuario,"CREACION"));
+
+        notificacionService.registrar(usuario.getNombreusuario(), "ha creado la Solicitud de Compra #" + solicitudGuardada.getIdSolicitudCompra());
 
         return solicitudGuardada;
     }
@@ -107,6 +112,8 @@ public class SolicitudCompraService {
 
         solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuarioEditor,"EDICION"));
 
+        notificacionService.registrar(usuarioEditor.getNombreusuario(), "ha editado la Solicitud de Compra #" + solicitudCompra.getIdSolicitudCompra());
+
         return solicitudCompraRepository.save(solicitudCompra);
     }
 
@@ -141,6 +148,8 @@ public class SolicitudCompraService {
         solicitudCompra.setEstado("APROBADA");
 
         solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitudCompra,usuario,"APROBACION"));
+
+        notificacionService.registrar(usuario.getNombreusuario(), "ha aprobado la Solicitud de Compra #" + solicitudCompra.getIdSolicitudCompra());
 
         solicitudCompraRepository.save(solicitudCompra);
     }
@@ -209,6 +218,8 @@ public class SolicitudCompraService {
             solicitud.setEstado("RECEPCIONADA");
             solicitudCompraHistorialRepository.save(new SolicitudCompraHistorial(solicitud ,usuario,"RECEPCION TOTAL"));
         }
+
+        notificacionService.registrar(usuario.getNombreusuario(),  "ha registrado recepción en la Solicitud de Compra #" + solicitud.getIdSolicitudCompra());
 
         
         solicitudCompraRepository.save(solicitud);

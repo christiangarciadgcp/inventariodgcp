@@ -25,6 +25,7 @@ public class PresupuestoService {
     private final MovimientoStockRepository movimientoStockRepository;
     private final UbicacionRepository ubicacionRepository;
     private final PresupuestoHistorialRepository presupuestoHistorialRepository;
+    private final NotificacionService notificacionService;
 
     public PresupuestoService(PresupuestoRepository presupuestoRepository,
                               PresupuestoDetalleRepository presupuestoDetalleRepository,
@@ -34,7 +35,8 @@ public class PresupuestoService {
                             InventarioService inventarioService,
                             MovimientoStockRepository movimientoStockRepository,
                             UbicacionRepository ubicacionRepository,
-                            PresupuestoHistorialRepository presupuestoHistorialRepository) {
+                            PresupuestoHistorialRepository presupuestoHistorialRepository,
+                            NotificacionService notificacionService) {
         this.presupuestoRepository = presupuestoRepository;
         this.presupuestoDetalleRepository = presupuestoDetalleRepository;
         this.inventarioRepository = inventarioRepository;
@@ -44,6 +46,7 @@ public class PresupuestoService {
         this.movimientoStockRepository = movimientoStockRepository;
         this.ubicacionRepository = ubicacionRepository;
         this.presupuestoHistorialRepository = presupuestoHistorialRepository;
+        this.notificacionService = notificacionService;
     }
 
     // METODOS PARA LISTAR LOS PRESUPUESTOS
@@ -106,6 +109,9 @@ public class PresupuestoService {
             presupuestoDetalleRepository.save(detalle);
         }
         presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto,usuario, "CREACION"));
+
+        notificacionService.registrar(usuario.getNombreusuario(), "ha creado el Presupuesto #" + presupuestoGuardado.getIdPresupuesto());
+
         return presupuestoGuardado;
     }
 
@@ -189,6 +195,8 @@ public class PresupuestoService {
             presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuarioEditor, "EDICION"));
         }
 
+        notificacionService.registrar(usuarioEditor.getNombreusuario(), "ha editado el Presupuesto #" + presupuesto.getIdPresupuesto());
+
         return presupuestoRepository.save(presupuesto);
     }
 
@@ -252,6 +260,9 @@ public class PresupuestoService {
         presupuesto.setFecha_modificacion(Instant.now());
 
         presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "APROBACION"));
+
+        notificacionService.registrar(usuario.getNombreusuario(), "ha aprobado el Presupuesto #" + presupuesto.getIdPresupuesto());
+
         presupuestoRepository.save(presupuesto);
     }
 
@@ -267,6 +278,10 @@ public class PresupuestoService {
         presupuesto.setFecha_modificacion(Instant.now());
 
         presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "CANCELACION"));
+
+        notificacionService.registrar(usuario.getNombreusuario(), "ha cancelado el Presupuesto #" + presupuesto.getIdPresupuesto());
+
+
         presupuestoRepository.save(presupuesto);
     }
 
@@ -335,8 +350,9 @@ public class PresupuestoService {
 
         presupuesto.setFecha_modificacion(Instant.now());
 
+        notificacionService.registrar(usuario.getNombreusuario(), "ha despachado materiales para el Presupuesto #" + presupuesto.getIdPresupuesto());
+
         presupuestoRepository.save(presupuesto);
-        //presupuestoRepository.save(presupuesto);
     }
 
     @Transactional(readOnly = true)
