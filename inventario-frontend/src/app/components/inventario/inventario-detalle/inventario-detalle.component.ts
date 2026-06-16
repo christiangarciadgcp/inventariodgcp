@@ -112,18 +112,10 @@ export class InventarioDetalleComponent implements OnInit {
         //CAPTURAR EL NOMBRE DE LA BODEGA
         //Si hay productos, tomamos el nombre de la bodega del primer ítem
         if (data.length > 0) {
-            this.nombreBodega = data[0].bodega.nombrebodega;
+          this.nombreBodega = data[0].bodega.nombrebodega;
         }
 
-        // 2. FILTRAR SOLO PRODUCTOS CON EXISTENCIAS MAYORES A CERO
-        const inventarioConStock = data.filter((item: any) => item.cantidad_actual > 0);
-
-        // 3. ASIGNAR LA DATA FILTRADA A LA TABLA
-        this.dataSource.data = inventarioConStock;
-
-
-        // 4. CALCULAR TOTAL VALORIZADO SOBRE LOS PRODUCTOS FILTRADOS
-        this.totalValorizado = inventarioConStock.reduce((acc: number, item: any) =>
+        this.totalValorizado = data.reduce((acc, item) =>
           acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
 
         this.cargando = false;
