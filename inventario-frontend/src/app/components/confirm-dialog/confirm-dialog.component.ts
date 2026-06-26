@@ -9,6 +9,8 @@ export interface ConfirmDialogData {
   mensaje?: string;
   textoBoton?: string;
   colorBoton?: string;
+  ocultarBotones?: boolean;
+  ocultarTitulo?: boolean;
 }
 
 @Component({
@@ -31,7 +33,8 @@ export class ConfirmDialogComponent {
   mensaje: string = '¿Estás seguro de que deseas eliminar este registro?';
   textoBoton: string = 'Eliminar';
   colorBoton: string = 'primary';
-
+  ocultarBotones: boolean = false;
+  ocultarTitulo: boolean = false;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
@@ -42,6 +45,8 @@ export class ConfirmDialogComponent {
       this.mensaje = data.mensaje || this.mensaje;
       this.textoBoton = data.textoBoton || this.textoBoton;
       this.colorBoton = data.colorBoton || this.colorBoton;
+      this.ocultarBotones = data.ocultarBotones ?? this.ocultarBotones;
+      this.ocultarTitulo = data.ocultarTitulo ?? this.ocultarTitulo;
     }
   }
 

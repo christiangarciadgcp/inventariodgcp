@@ -27,7 +27,7 @@ public class ModeloService {
     }
 
     public List<Modelo> listarModelos(){
-        return modeloRepository.findAll(Sort.by(Sort.Direction.ASC,"nombremodelo"));
+        return modeloRepository.findAll(Sort.by(Sort.Direction.ASC,"marca.nombremarca"));
     }
 
     public List<Modelo> listarModelosActivos(){

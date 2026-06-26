@@ -39,6 +39,8 @@ export class ProductoListComponent implements OnInit {
   productos = signal<Producto[]>([]);
   cargandoExcel = false;
 
+  tipoVista = signal<'NORMAL' | 'BASE'>('NORMAL');
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -47,15 +49,18 @@ export class ProductoListComponent implements OnInit {
   private mensaje = inject(Mensaje);
 
   constructor() {
-    // Sincronización reactiva: cada vez que el signal 'productos' cambie, actualizamos la tabla
     effect(() => {
-      this.dataSource.data = this.productos();
+      this.dataSource.data  = this.productos().filter(p =>
+        this.tipoVista() === 'NORMAL' ? !p.esGenerico : p.esGenerico
+      );
+
+      //this.dataSource.data = filtrados;
       if (this.paginator) this.dataSource.paginator = this.paginator;
-      if(this.sort) this.dataSource.sort = this.sort;
+      if (this.sort) this.dataSource.sort = this.sort;
     });
 
     // CONFIGURACIÓN DE BÚSQUEDA LOCAL
-    this.dataSource.filterPredicate = (data: Producto, filter: string) => {
+    this.dataSource.filterPredicate = (data : Producto, filter: string) => {
       const searchStr = (data.skuproducto + data.serieproducto + data.inventarioproducto + data.nombreproducto + data.categoria?.nombrecategoria + data.modelo?.marca?.nombremarca + data.modelo?.nombremodelo + data.proveedor?.nombreproveedor ).toLowerCase();
       //const nombre = data.nombreproducto ? data.nombreproducto.toLowerCase() : '';
       //const term = filter.trim().toLowerCase();
@@ -86,6 +91,11 @@ export class ProductoListComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarProductos();
+  }
+
+  cambiarVista(tipo: 'NORMAL' | 'BASE') {
+    this.tipoVista.set(tipo);
+    if (this.paginator) this.paginator.firstPage();
   }
 
   // Se activa al escribir en la barra de búsqueda
@@ -258,17 +268,15 @@ export class ProductoListComponent implements OnInit {
       this.mensaje.open('Procesando archivo, por favor espere...', 'info');
 
       this.productoService.subirExcelMasivo(file).subscribe({
-        next: (res) => { // <-- Recibimos la respuesta estructurada del backend
+        next: (res) => {
           this.cargandoExcel = false;
 
-          // Extraemos la cantidad (si por alguna razón viene nulo ponemos 0)
           const totalProductos = res.cantidad || 0;
 
-          // Mostramos el mensaje personalizado con el total exacto
           this.mensaje.open(`Se agregaron ${totalProductos} productos exitosamente`, 'exito');
 
-          this.cargarProductos(); // Refresca la tabla automáticamente
-          event.target.value = ''; // Limpia el input
+          this.cargarProductos();
+          event.target.value = '';
         },
         error: (err) => {
           this.cargandoExcel = false;

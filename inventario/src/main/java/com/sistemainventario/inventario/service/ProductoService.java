@@ -75,6 +75,10 @@ public class ProductoService {
         // return productoRepository.findByActivoTrue();
     }
 
+    public List<Producto> listarProductosGenericos() {
+        return productoRepository.findByEsGenericoTrueAndActivoTrue();
+    }
+
     public Optional<Producto> buscarProductoPorId(Integer id){
         return productoRepository.findById(id);
     }
@@ -95,8 +99,12 @@ public class ProductoService {
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         UnidadMedida unidadMedida = unidadMedidaRepository.findById(dto.getIdUnidadMedida())
                 .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
-        Modelo modelo = modeloRepository.findById(dto.getIdModelo())
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+
+        Modelo modelo = null;
+        if (dto.getIdModelo() != null) {
+            modelo = modeloRepository.findById(dto.getIdModelo())
+                    .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+        }
 
         Proveedor proveedor = null;
         if (dto.getIdProveedor() != null) {
@@ -106,7 +114,6 @@ public class ProductoService {
 
         Producto producto = new Producto();
         producto.setNombreproducto(dto.getNombreproducto());
-        //producto.setSkuproducto(dto.getSkuproducto());
         producto.setDescripcionproducto(dto.getDescripcionproducto());
         producto.setSerieproducto(dto.getSerieproducto());
         producto.setInventarioproducto(dto.getInventarioproducto());
@@ -119,6 +126,11 @@ public class ProductoService {
         producto.setUnidadMedida(unidadMedida);
         producto.setModelo(modelo);
         producto.setProveedor(proveedor);
+
+        producto.setEsGenerico(dto.getEsGenerico() != null ? dto.getEsGenerico() : false);
+        if (dto.getIdProductoPadre() != null) {
+            producto.setProductoPadre(productoRepository.findById(dto.getIdProductoPadre()).orElse(null));
+        }
 
         producto.setSkuproducto("TMP-" + java.util.UUID.randomUUID().toString().substring(0,8));
 
@@ -175,8 +187,12 @@ public class ProductoService {
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         UnidadMedida unidadMedida = unidadMedidaRepository.findById(dto.getIdUnidadMedida())
                 .orElseThrow(() -> new RuntimeException("Unidad de medida no encontrada"));
-        Modelo modelo = modeloRepository.findById(dto.getIdModelo())
-                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+
+        Modelo modelo = null;
+        if (dto.getIdModelo() != null) {
+            modelo = modeloRepository.findById(dto.getIdModelo())
+                    .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+        }
         
 
         Proveedor proveedor = null;
@@ -186,7 +202,6 @@ public class ProductoService {
         }
 
         productoActual.setNombreproducto(dto.getNombreproducto());
-        // productoActual.setSkuproducto(dto.getSkuproducto());
         productoActual.setDescripcionproducto(dto.getDescripcionproducto());
         productoActual.setSerieproducto(dto.getSerieproducto());
         productoActual.setInventarioproducto(dto.getInventarioproducto());
@@ -198,8 +213,14 @@ public class ProductoService {
         productoActual.setModelo(modelo);
         productoActual.setProveedor(proveedor);
 
-        String nuevoSku = generarSku(productoActual);
-        productoActual.setSkuproducto(nuevoSku);
+        productoActual.setEsGenerico(dto.getEsGenerico() != null ? dto.getEsGenerico() : false);
+        if (dto.getIdProductoPadre() != null) {
+            productoActual.setProductoPadre(productoRepository.findById(dto.getIdProductoPadre()).orElse(null));
+        } else {
+            productoActual.setProductoPadre(null);
+        }
+
+        productoActual.setSkuproducto(generarSku(productoActual));
 
         if (imagenes != null && imagenes.length > 0) {
             guardarImagenesFisicas(productoActual, imagenes);
@@ -236,12 +257,18 @@ public class ProductoService {
 
     public String generarSku(Producto producto){
         String nombreCategoria = producto.getCategoria().getNombrecategoria();
-        String nombreMarca = producto.getModelo().getMarca().getNombremarca();
+        
+        // Si tiene modelo y marca, usamos la marca, si no, usamos "GENERICA"
+        String nombreMarca = "GENERICA";
+        if (producto.getModelo() != null && producto.getModelo().getMarca() != null) {
+            nombreMarca = producto.getModelo().getMarca().getNombremarca();
+        }
 
         String prefijoCategoria = generarPrefijoCategoria(nombreCategoria);
         String prefijoMarca = generarPrefijoMarca(nombreMarca);
+        String prefijoNombre = generarPrefijoNombre(producto.getNombreproducto());
 
-        return String.format("%s-%s-%05d", prefijoCategoria, prefijoMarca, producto.getIdProducto());
+        return String.format("%s-%s-%05d", prefijoCategoria, prefijoNombre, producto.getIdProducto());
     }
 
     private String generarPrefijoCategoria(String texto) {
@@ -268,6 +295,20 @@ public class ProductoService {
             return String.format("%-3s", limpio).replace(' ', 'X');
         }
     }
+
+    private String generarPrefijoNombre(String texto) {
+        if (texto == null || texto.trim().isEmpty()) return "XXX";
+        
+        // Limpiamos los espacios y caracteres especiales, dejando solo letras/números
+        String limpio = texto.replaceAll("[^a-zA-Z0-9]", "").toUpperCase();
+        
+        if (limpio.length() >= 3) {
+            return limpio.substring(0, 3);
+        } else {
+            // Si el nombre tiene menos de 3 letras (ej. "PC"), rellena con X
+            return String.format("%-3s", limpio).replace(' ', 'X');
+        }
+      }
 
     private void guardarImagenesFisicas(Producto producto, MultipartFile[] imagenes) {
         try {

@@ -252,7 +252,7 @@ export class App implements OnDestroy {
     // MODALES Y CIERRE
     // =========================================================
 
-  // Método auxiliar para formatear los segundos en reloj (MM:SS)
+  // method auxiliar para formatear los segundos en reloj (MM:SS)
   private formatearTiempo(totalSegundos: number): string {
     const minutos = Math.floor(totalSegundos / 60);
     const segundos = totalSegundos % 60;
@@ -275,7 +275,7 @@ export class App implements OnDestroy {
       disableClose: true,
       data: {
         titulo: 'Inactividad detectada',
-        mensaje: `Llevas mucho tiempo sin actividad en el sistema. Tu sesión se cerrará en <strong class="text-primary">${this.formatearTiempo(segundosRestantes)} min</strong>. ¿Deseas mantenerla abierta?`,
+        mensaje: `Tu sesión se cerrará en <strong class="text-primary">${this.formatearTiempo(segundosRestantes)} min</strong>. ¿Deseas mantenerla abierta?`,
         textoBoton: 'Mantener sesión',
         colorBoton: 'primary'
       }
@@ -286,7 +286,7 @@ export class App implements OnDestroy {
 
       if (segundosRestantes > 0 && dialogRef.componentInstance) {
 
-        dialogRef.componentInstance.mensaje = `Llevas mucho tiempo sin actividad en el sistema. Tu sesión se cerrará en <strong class="text-primary">${this.formatearTiempo(segundosRestantes)} min</strong>. ¿Deseas mantenerla abierta?`;
+        dialogRef.componentInstance.mensaje = `Tu sesión se cerrará en <strong class="text-primary">${this.formatearTiempo(segundosRestantes)} min</strong>. ¿Deseas mantenerla abierta?`;
 
         if (dialogRef.componentInstance.cdr) {
           dialogRef.componentInstance.cdr.detectChanges();

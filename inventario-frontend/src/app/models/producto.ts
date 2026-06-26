@@ -15,6 +15,9 @@ export interface Producto {
     precioventaproducto: number;
     activo: boolean;
 
+    esGenerico: boolean;
+    productoPadre?: Producto;
+
     // Objetos llaves foráneas
     categoria?: Categoria;
     proveedor?: Proveedor;
@@ -36,5 +39,8 @@ export interface ProductoRegistroDTO {
     idProveedor: number;
     idUnidadMedida: number;
     idModelo : number;
+
+    esGenerico: boolean;
+    idProductoPadre: number | null;
 }
 

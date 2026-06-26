@@ -56,7 +56,7 @@ export class PresupuestoFormComponent implements OnInit {
 
   esModoEdicion = signal<boolean>(false);
   idPresupuestoEdicion = signal<number | null>(null);
-
+  tabRetorno: number = 0;
   listaProductos = signal<Producto[]>([]);
   listaUbicaciones = signal<Ubicacion[]>([]);
   productosFiltrados = signal<Producto[]>([]);
@@ -75,7 +75,15 @@ export class PresupuestoFormComponent implements OnInit {
   displayedColumns: string[] = ['producto', 'cantidad', 'acciones'];
 
   ngOnInit(): void {
-    this.productoService.getProductosActivos().subscribe(data => {
+
+    this.route.queryParams.subscribe(params => {
+      if (params['returnTab']) {
+        this.tabRetorno = +params['returnTab'];
+      }
+    });
+
+
+    this.productoService.getProductosGenericos().subscribe(data => {
       this.listaProductos.set(data);
       this.productosFiltrados.set(data);
     });
@@ -92,7 +100,6 @@ export class PresupuestoFormComponent implements OnInit {
     }
   }
 
-  // MÉTODO PARA CARGAR DATOS EXISTENTES
   cargarDatosPresupuesto(id: number) {
     this.presupuestoService.obtenerPorId(id).subscribe(presupuesto => {
       this.formCabecera.patchValue({
@@ -120,10 +127,10 @@ export class PresupuestoFormComponent implements OnInit {
       this.productoSeleccionado = null;
     }
 
-    const filtrados = this.listaProductos().filter(p =>
-      p.nombreproducto.toLowerCase().includes(valor) ||
-      (p.skuproducto && p.skuproducto.toLowerCase().includes(valor))
-    );
+    const filtrados = this.listaProductos().filter(p => {
+      return p.nombreproducto.toLowerCase().includes(valor) ||
+        (p.skuproducto && p.skuproducto.toLowerCase().includes(valor));
+    });
 
     this.productosFiltrados.set(filtrados);
   }
@@ -141,7 +148,6 @@ export class PresupuestoFormComponent implements OnInit {
     this.productoSeleccionado = null;
     this.busquedaTexto = '';
     this.cantidadSeleccionada = 1;
-
     this.productosFiltrados.set([...this.listaProductos()]);
   }
 
@@ -175,6 +181,10 @@ export class PresupuestoFormComponent implements OnInit {
     this.detallesAgregados.update(prev => prev.filter((_, i) => i !== index));
   }
 
+  cancelar() {
+    this.router.navigate(['/presupuesto'], { queryParams: { tab: this.tabRetorno } });
+  }
+
   guardarSolicitud() {
     if (this.formCabecera.invalid) {
       this.formCabecera.markAllAsTouched();
@@ -187,16 +197,14 @@ export class PresupuestoFormComponent implements OnInit {
       return;
     }
 
-    const idUsuario = this.authService.getIdUsuarioActual();
-
     const itemsDTO: DetalleItemDTO[] = this.detallesAgregados().map(d => ({
-        idProducto: d.producto.idProducto!,
-        cantidad: d.cantidad
+      idProducto: d.producto.idProducto!,
+      cantidad: d.cantidad
     }));
 
     const dto: PresupuestoCreacionDTO = {
       nombrePresupuesto: this.formCabecera.value.nombresolicitud!,
-      idUsuario: idUsuario,
+      idUsuario: this.authService.getIdUsuarioActual(),
       idUbicacion : this.formCabecera.value.idUbicacion!,
       observaciones : this.formCabecera.value.observaciones!,
       items: itemsDTO
@@ -206,7 +214,7 @@ export class PresupuestoFormComponent implements OnInit {
       this.presupuestoService.actualizarPresupuesto(this.idPresupuestoEdicion()!, dto).subscribe({
         next: () => {
           this.mensaje.open('Presupuesto actualizado exitosamente', 'exito');
-          this.router.navigate(['/presupuesto']);
+          this.router.navigate(['/presupuesto'], { queryParams: { tab: this.tabRetorno } });
         },
         error : (err) => {
           const msg = err.error?.mensaje || 'Error al actualizar Presupuesto';
@@ -217,7 +225,7 @@ export class PresupuestoFormComponent implements OnInit {
       this.presupuestoService.crearPresupuesto(dto).subscribe({
         next: () => {
           this.mensaje.open('Solicitud creada exitosamente', 'exito');
-          this.router.navigate(['/presupuesto']);
+          this.router.navigate(['/presupuesto'], { queryParams: { tab: 0 } });
         },
         error: () => this.mensaje.open('Error al guardar', 'error')
       });

@@ -1,5 +1,6 @@
 package com.sistemainventario.inventario.controller;
 
+import com.sistemainventario.inventario.dto.DespachoPayloadDTO;
 import com.sistemainventario.inventario.dto.DespachoReporteDTO;
 import com.sistemainventario.inventario.dto.PresupuestoCreacionDTO;
 import com.sistemainventario.inventario.dto.PresupuestoRevisionDTO;
@@ -63,8 +64,8 @@ public class PresupuestoController {
     }
 
     @PostMapping("/{id}/despachar")
-    public ResponseEntity<Void> despacharPresupuesto(@PathVariable Long id, @RequestParam Integer idUsuario) {
-        presupuestoService.despacharPresupuesto(id, idUsuario);
+    public ResponseEntity<Void> despacharPresupuesto(@PathVariable Long id, @RequestBody DespachoPayloadDTO payload) {
+        presupuestoService.despacharPresupuesto(id, payload);
         return ResponseEntity.ok().build();
     }
 
@@ -84,6 +85,4 @@ public class PresupuestoController {
         presupuestoService.cancelarPresupuesto(id, idUsuario);
         return ResponseEntity.ok().build();
     }
-
-    
 }

@@ -46,6 +46,9 @@ import {
 } from './components/inventario/inventario-snapshot-diario/inventario-snapshot-diario.component';
 
 import { roles } from './core/roles';
+import {
+  PresupuestoDespachoComponent
+} from './components/presupuesto/presupuesto-despacho/presupuesto-despacho.component';
 
 export const routes: Routes = [
 
@@ -54,7 +57,8 @@ export const routes: Routes = [
    *****************************************************************/
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    title: 'Bodegas UTDI'
   },
 
   /****************************************************************
@@ -72,6 +76,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent,
+        title: 'Dashboard | Bodegas UTDI',
         data: {breadcrumb: 'Dashboard'}
       },
 
@@ -93,41 +98,49 @@ export const routes: Routes = [
           {
             path: 'categorias',
             component: CategoriaComponent,
+            title: 'Categorías',
             data: {breadcrumb: 'Categorías'}
           },
           {
             path: 'proveedores',
             component: ProveedorListComponent,
+            title: 'Proveedores',
             data: {breadcrumb: 'Proveedores'}
           },
           {
             path: 'bodegas',
             component: BodegaListComponent,
+            title: 'Bodegas',
             data: {breadcrumb: 'Bodegas'}
           },
           {
             path: 'unidades',
             component: UnidadesMedidasListComponent,
+            title: 'Unidades de Medida',
             data: {breadcrumb: 'Unidades de Medida'}
           },
           {
             path: 'productos',
             component: ProductoListComponent,
-            data: {breadcrumb: 'Productos'}
+            title: 'Materiales y Equipo',
+            data: {breadcrumb: 'Materiales y Equipo'}
           },
           {
             path: 'marcas',
             component: MarcaListComponent,
+            title: 'Marcas',
             data: {breadcrumb: 'Marcas'}
           },
           {
             path: 'modelos',
             component: ModeloListComponent,
+            title: 'Modelos',
             data: {breadcrumb: 'Modelos'}
           },
           {
             path: 'ubicaciones',
             component: UbicacionListComponent,
+            title: 'Ubicaciones',
             data: {breadcrumb: 'Ubicaciones'}
           },
 
@@ -141,6 +154,7 @@ export const routes: Routes = [
         path: 'usuarios',
         canActivate: [permisosGuard],
         component: UsuarioListComponent,
+        title: 'Usuarios',
         data: {
           breadcrumb: 'Usuarios',
           roles: roles.ADMIN
@@ -156,22 +170,32 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            component: PresupuestoListComponent
+            component: PresupuestoListComponent,
+            title: 'Presupuestos',
           },
           {
             path: 'nuevo_presupuesto',
             component: PresupuestoFormComponent,
+            title: 'Nuevo Presupuesto',
             data: {breadcrumb: 'Nuevo Presupuesto'}
           },
           {
             path: 'editar_presupuesto/:id',
             component: PresupuestoFormComponent,
+            title: ' Editar Presupuesto',
             data: {breadcrumb: 'Editar Presupuesto'}
           },
           {
             path: 'revision/:id',
             component: PresupuestoRevisionComponent,
+            title: 'Revisión Presupuestos',
             data: {breadcrumb: 'Revisión de Stock'}
+          },
+          {
+            path: 'despachar/:id',
+            component: PresupuestoDespachoComponent,
+            title: 'Presupuesto Despacho',
+            data: {breadcrumb: 'Despacho Presupuesto'}
           }
         ]
       },
@@ -182,6 +206,7 @@ export const routes: Routes = [
       {
         path: 'proyecto',
         component: UnderConstructionComponent,
+        title: 'Proyectos',
         data: {breadcrumb: 'Proyectos'}
       },
 
@@ -192,6 +217,7 @@ export const routes: Routes = [
       {
         path: 'diccionario-materiales',
         component: ProductoDiccionarioComponent,
+        title: 'Diccionario de Materiales',
         data: {breadcrumb: 'Diccionario de Materiales y equipos'}
 
       },
@@ -202,6 +228,7 @@ export const routes: Routes = [
       {
         path: 'sugerencia-materiales',
         component: SugerenciasListComponent,
+        title: 'Sugerencia de Materiales',
         data: {breadcrumb: 'Sugerencia de Materiales'}
 
       },
@@ -219,16 +246,19 @@ export const routes: Routes = [
         children: [
           {
             path: '',
-            component: SolicitudListComponent
+            component: SolicitudListComponent,
+            title: 'Solicitud de Compra',
           },
           {
             path: 'nueva_solicitud_compra',
             component: SolicitudFormComponent,
+            title: 'Nueva solicitud de Compra',
             data: {breadcrumb: 'Nueva Solicitud de Compra'}
           },
           {
             path: 'editar_solicitud_compra/:id',
             component: SolicitudFormComponent,
+            title: 'Editar solicitud de Compra',
             data: {breadcrumb: 'Editar Solicitud de Compra'}
           },
         ]
@@ -248,10 +278,12 @@ export const routes: Routes = [
           {
             path: '',
             component: InventarioListComponent,
+            title: 'Inventarios',
           },
           {
             path: 'bodega/:id',
             component: InventarioDetalleComponent,
+            title: 'Inventario Detalle',
             data: {breadcrumb: 'Existencias'}
           },
         ]
@@ -264,6 +296,7 @@ export const routes: Routes = [
         path: 'movimientos',
         canActivate: [permisosGuard],
         component: InventarioMovimientoStockComponent,
+        title: 'Movimientos de Inventario',
         data: {
           breadcrumb: 'Movimientos de Inventario',
           roles: roles.INVENTARIO2
@@ -290,6 +323,7 @@ export const routes: Routes = [
         path: 'descargo',
         canActivate: [permisosGuard],
         component: InventarioDescargoComponent,
+        title: 'Descargo de Inventario',
         data: {
           breadcrumb: 'Descargo de Materiales',
           roles: roles.INVENTARIO2
@@ -300,6 +334,7 @@ export const routes: Routes = [
         path: 'movimientos-historial',
         canActivate: [permisosGuard],
         component: InventarioMovimientoHistorialComponent,
+        title: 'Historial de Movimientos',
         data: {
           breadcrumb: 'Historial de Movimientos',
           roles: roles.INVENTARIO
@@ -310,6 +345,7 @@ export const routes: Routes = [
         path: 'snapshots',
         canActivate: [permisosGuard],
         component: InventarioSnapshotDiarioComponent,
+        title: 'Cierre de Inventario',
         data: {
           breadcrumb: 'Snapshot Diario',
           roles: roles.INVENTARIO

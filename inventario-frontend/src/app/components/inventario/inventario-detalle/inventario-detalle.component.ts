@@ -107,7 +107,6 @@ export class InventarioDetalleComponent implements OnInit {
     this.cargando = true;
     this.inventarioService.listarInventarioPorBodega(id).subscribe({
       next: (data) => {
-        this.dataSource.data = data;
 
         //CAPTURAR EL NOMBRE DE LA BODEGA
         //Si hay productos, tomamos el nombre de la bodega del primer ítem
@@ -115,7 +114,11 @@ export class InventarioDetalleComponent implements OnInit {
           this.nombreBodega = data[0].bodega.nombrebodega;
         }
 
-        this.totalValorizado = data.reduce((acc, item) =>
+        const inventarioFisico = data.filter((item : any) => !item.producto.esGenerico);
+
+        this.dataSource.data = inventarioFisico;
+
+        this.totalValorizado = inventarioFisico.reduce((acc : number, item : any) =>
           acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
 
         this.cargando = false;

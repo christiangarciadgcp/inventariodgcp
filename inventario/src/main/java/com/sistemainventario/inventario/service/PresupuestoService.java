@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-//import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class PresupuestoService {
@@ -49,8 +51,6 @@ public class PresupuestoService {
         this.notificacionService = notificacionService;
     }
 
-    // METODOS PARA LISTAR LOS PRESUPUESTOS
-
     @Transactional(readOnly = true)
     public List<Presupuesto> listarTodos() {
         return presupuestoRepository.findAll();
@@ -72,12 +72,30 @@ public class PresupuestoService {
         Presupuesto presupuesto = presupuestoRepository.findById(idPresupuesto)
             .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado"));
 
-        return presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+        List<PresupuestoDetalle> crudos = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+        Map<Integer, PresupuestoDetalle> consolidados = new HashMap<>();
+
+        for (PresupuestoDetalle d : crudos){
+            Integer idProd = d.getProducto().getIdProducto();
+            if(consolidados.containsKey(idProd)){
+                PresupuestoDetalle existente = consolidados.get(idProd);
+                existente.setCantidad_solicitada(existente.getCantidad_solicitada() + d.getCantidad_solicitada());
+                existente.setCantidad_despachada(existente.getCantidad_despachada() + (d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0));
+            }else{
+                PresupuestoDetalle copia = new PresupuestoDetalle();
+                copia.setIdPresupuestoDetalle(d.getIdPresupuestoDetalle());
+                copia.setPresupuesto(d.getPresupuesto());
+                copia.setProducto(d.getProducto());
+                copia.setProductoFisico(null);
+                copia.setCantidad_solicitada(d.getCantidad_solicitada());
+                copia.setCantidad_despachada(d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0);
+                consolidados.put(idProd, copia);
+            }
+        }
+
+        return new ArrayList<>(consolidados.values());
     }
 
-    // METODOS PARA GESTIONAR LAS SOLICITUDES DE PRESUPUESTO
-
-    //CREAR LA SOLICITUD DE PRESUPUESTO
     @Transactional
     public Presupuesto crearPresupuesto(PresupuestoCreacionDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario())
@@ -115,79 +133,56 @@ public class PresupuestoService {
         return presupuestoGuardado;
     }
 
-
-// EDITAR UN PRESUPUESTO CUANDO YA FUE CREADO O ESTÁ EN PROCESO
     @Transactional
     public Presupuesto actualizarPresupuesto(Long id, PresupuestoCreacionDTO dto) {
         Presupuesto presupuesto = this.obtenerPorId(id);
+        if ("CANCELADO".equals(presupuesto.getEstado())) throw new RuntimeException("No se puede editar.");
 
-        if ("CANCELADO".equals(presupuesto.getEstado())) {
-            throw new RuntimeException("No se pueden editar presupuestos en estado CANCELADO.");
-        }
-
-        Usuario usuarioEditor = usuarioRepository.findById(dto.getIdUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
-                .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
+        Usuario usuarioEditor = usuarioRepository.findById(dto.getIdUsuario()).orElseThrow();
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion()).orElseThrow();
 
         presupuesto.setNombre_presupuesto(dto.getNombrePresupuesto());
         presupuesto.setUbicacion(ubicacion);
         presupuesto.setObservaciones(dto.getObservaciones());
         presupuesto.setFecha_modificacion(Instant.now());
 
-        // 1. RESPALDAR LO QUE YA SE DESPACHÓ ANTES DE BORRAR
         List<PresupuestoDetalle> detallesAntiguos = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
-        java.util.Map<Integer, Integer> despachadosPorProducto = detallesAntiguos.stream()
-                .collect(Collectors.toMap(
+        Map<Integer, Integer> despachadosGenericos = detallesAntiguos.stream()
+                .collect(Collectors.groupingBy(
                         d -> d.getProducto().getIdProducto(),
-                        d -> d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0
+                        Collectors.summingInt(d -> d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0)
                 ));
 
-        // 2. VALIDAR QUE NO SE ELIMINEN PRODUCTOS QUE YA TIENEN ENTREGAS FÍSICAS
-        for (java.util.Map.Entry<Integer, Integer> entry : despachadosPorProducto.entrySet()) {
-            if (entry.getValue() > 0) {
-                boolean aunExiste = dto.getItems().stream().anyMatch(i -> i.getIdProducto().equals(entry.getKey()));
-                if (!aunExiste) {
-                    throw new RuntimeException("No puedes eliminar un producto que ya tiene unidades despachadas. Redúcelo al mínimo entregado si es necesario.");
-                }
+        for (PresupuestoDetalle d : detallesAntiguos) {
+            if (d.getCantidad_despachada() == null || d.getCantidad_despachada() == 0) {
+                presupuestoDetalleRepository.delete(d);
             }
         }
-
-        // 3. LIMPIAR DETALLES ANTERIORES
-        presupuestoDetalleRepository.deleteByPresupuesto(presupuesto);
-        presupuestoDetalleRepository.flush(); // Forzamos el borrado en BD antes de reinsertar
+        presupuestoDetalleRepository.flush();
 
         boolean hayNuevosPendientes = false;
 
-        // 4. INSERTAR LOS NUEVOS DETALLES CON SU HISTORIAL DE DESPACHO
         for (PresupuestoCreacionDTO.DetalleItemDTO item : dto.getItems()) {
-            Producto producto = productoRepository.findById(item.getIdProducto())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado ID: " + item.getIdProducto()));
-
-            PresupuestoDetalle detalle = new PresupuestoDetalle();
-            detalle.setPresupuesto(presupuesto);
-            detalle.setProducto(producto);
-
-            int yaDespachado = despachadosPorProducto.getOrDefault(item.getIdProducto(), 0);
+            Producto producto = productoRepository.findById(item.getIdProducto()).orElseThrow();
+            int yaDespachado = despachadosGenericos.getOrDefault(item.getIdProducto(), 0);
             
-            // Validar que no pidan menos de lo que ya se entregó físicamente
             if (item.getCantidad() < yaDespachado) {
-                throw new RuntimeException("La cantidad solicitada del material '" + producto.getNombreproducto() + 
-                                        "' no puede ser menor a lo que ya se despachó (" + yaDespachado + ").");
+                throw new RuntimeException("La cantidad de '" + producto.getNombreproducto() + "' no puede ser menor a lo despachado (" + yaDespachado + ").");
             }
 
-            detalle.setCantidad_solicitada(item.getCantidad());
-            detalle.setCantidad_despachada(yaDespachado);
-
-            if (item.getCantidad() > yaDespachado) {
+            int cantidadPendiente = item.getCantidad() - yaDespachado;
+            if (cantidadPendiente > 0) {
+                PresupuestoDetalle detalle = new PresupuestoDetalle();
+                detalle.setPresupuesto(presupuesto);
+                detalle.setProducto(producto);
+                detalle.setProductoFisico(null);
+                detalle.setCantidad_solicitada(cantidadPendiente);
+                detalle.setCantidad_despachada(0);
+                presupuestoDetalleRepository.save(detalle);
                 hayNuevosPendientes = true;
             }
-
-            presupuestoDetalleRepository.save(detalle);
         }
 
-        // 5. LÓGICA DE REVERSIÓN DE ESTADO AUTOMÁTICA
         if ("DESPACHADO".equals(presupuesto.getEstado()) && hayNuevosPendientes) {
             presupuesto.setEstado("DESPACHO PARCIAL");
             presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuarioEditor, "REACTIVACION"));
@@ -196,73 +191,124 @@ public class PresupuestoService {
         }
 
         notificacionService.registrar(usuarioEditor.getNombreusuario(), "ha editado el Presupuesto #" + presupuesto.getIdPresupuesto());
-
         return presupuestoRepository.save(presupuesto);
     }
 
-    // VALIDACION DE INVENTARIO PARA LAS EXISTENCIAS
     @Transactional(readOnly = true)
     public List<PresupuestoRevisionDTO> obtenerDetallesConDisponibilidad(Long idPresupuesto) {
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
         List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
 
-        return detalles.stream().map(detalle -> {
-            PresupuestoRevisionDTO dto = new PresupuestoRevisionDTO();
-            dto.setIdDetalle(detalle.getIdPresupuestoDetalle());
-            dto.setIdProducto(detalle.getProducto().getIdProducto().longValue());
-            dto.setNombreProducto(detalle.getProducto().getNombreproducto());
-            dto.setCantidadSolicitada(detalle.getCantidad_solicitada());
+        Map<Integer, PresupuestoRevisionDTO> consolidados = new HashMap<>();
 
-            //VALIDAR LA EXISTENCIA DEL PRODUCTO PARA EL DESPACHO PARCIAL
-            int despachada = detalle.getCantidad_despachada() != null ? detalle.getCantidad_despachada() : 0;
-            dto.setCantidadDespachada(despachada);
-            dto.setCantidadPendiente(detalle.getCantidad_solicitada() - despachada);
+        for (PresupuestoDetalle detalle : detalles) {
+            Integer idProd = detalle.getProducto().getIdProducto();
 
-            // Buscar stock en todas las bodegas
-            List<Inventario> stockEncontrado = inventarioRepository.findByIdIdProducto(detalle.getProducto().getIdProducto());
+            PresupuestoRevisionDTO dto = consolidados.getOrDefault(idProd, new PresupuestoRevisionDTO());
+            if (dto.getIdDetalle() == null) {
+                dto.setIdDetalle(detalle.getIdPresupuestoDetalle());
+                dto.setIdProducto(idProd.longValue());
+                dto.setNombreProducto(detalle.getProducto().getNombreproducto());
+                dto.setEsGenerico(detalle.getProducto().getEsGenerico());
+                dto.setCantidadSolicitada(0);
+                dto.setCantidadDespachada(0);
+            }
 
-            // Calcular stock específico en Bodega Despacho (ID 1)
-            int stockEnDespacho = stockEncontrado.stream()
-                    .filter(inv -> inv.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue()))
-                    .mapToInt(Inventario::getCantidad_actual)
-                    .findFirst()
-                    .orElse(0);
+            dto.setCantidadSolicitada(dto.getCantidadSolicitada() + detalle.getCantidad_solicitada());
+            dto.setCantidadDespachada(dto.getCantidadDespachada() + (detalle.getCantidad_despachada() != null ? detalle.getCantidad_despachada() : 0));
+            dto.setCantidadPendiente(dto.getCantidadSolicitada() - dto.getCantidadDespachada());
             
-            dto.setCantidadEnBodegaDespacho(stockEnDespacho);
+            consolidados.put(idProd, dto);
+        }
 
-            // Calcular desglose general
-            List<StockBodegaDTO> listaBodegas = stockEncontrado.stream()
-                    .map(inv -> new StockBodegaDTO(
-                        inv.getBodega().getNombrebodega(), 
-                        inv.getCantidad_actual()
-                    ))
+        for (PresupuestoRevisionDTO dto : consolidados.values()) {
+            List<PresupuestoRevisionDTO.ProductoFisicoDisponibleDTO> sustitutos = new ArrayList<>();
+            int totalDespachoVirtual = 0;
+            int totalGlobalSustitutos = 0;
+
+            if (dto.getEsGenerico()) {
+                List<Producto> hijosFisicos = productoRepository.findByProductoPadre_IdProductoAndActivoTrue(dto.getIdProducto().intValue());
+                for (Producto hijo : hijosFisicos) {
+                    List<Inventario> stock = inventarioRepository.findByIdIdProducto(hijo.getIdProducto());
+                    int enDespacho = stock.stream().filter(i -> i.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue())).mapToInt(Inventario::getCantidad_actual).sum();
+                    int enGlobal = stock.stream().mapToInt(Inventario::getCantidad_actual).sum();
+                    
+                    List<StockBodegaDTO> desglose = stock.stream()
+                        .filter(i -> !i.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue()) && i.getCantidad_actual() > 0)
+                        .map(i -> new StockBodegaDTO(i.getBodega().getNombrebodega(), i.getCantidad_actual()))
+                        .collect(Collectors.toList());
+
+                    totalDespachoVirtual += enDespacho;
+                    totalGlobalSustitutos += enGlobal;
+                    
+                    if (enGlobal > 0) {
+                        PresupuestoRevisionDTO.ProductoFisicoDisponibleDTO s = new PresupuestoRevisionDTO.ProductoFisicoDisponibleDTO();
+                        s.setIdProducto(hijo.getIdProducto());
+                        s.setNombreProducto(hijo.getNombreproducto());
+                        s.setSkuProducto(hijo.getSkuproducto());
+                        
+                        s.setMarcaProducto(hijo.getModelo() != null && hijo.getModelo().getMarca() != null ? hijo.getModelo().getMarca().getNombremarca() : "SIN ESPECIFICAR");
+                        s.setModeloProducto(hijo.getModelo() != null ? hijo.getModelo().getNombremodelo() : "SIN ESPECIFICAR");
+                        s.setSerieProducto(hijo.getSerieproducto());
+                        s.setInventarioProducto(hijo.getInventarioproducto());
+
+                        s.setStockEnDespacho(enDespacho);
+                        s.setStockGlobal(enGlobal);
+                        s.setDesgloseBodegas(desglose);
+                        sustitutos.add(s);
+                    }
+                }
+            } else {
+                List<Inventario> stock = inventarioRepository.findByIdIdProducto(dto.getIdProducto().intValue());
+                int enDespacho = stock.stream().filter(i -> i.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue())).mapToInt(Inventario::getCantidad_actual).sum();
+                int enGlobal = stock.stream().mapToInt(Inventario::getCantidad_actual).sum();
+                
+                List<StockBodegaDTO> desglose = stock.stream()
+                    .filter(i -> !i.getBodega().getIdBodega().equals(ID_BODEGA_DESPACHO.intValue()) && i.getCantidad_actual() > 0)
+                    .map(i -> new StockBodegaDTO(i.getBodega().getNombrebodega(), i.getCantidad_actual()))
                     .collect(Collectors.toList());
 
-            dto.setDesglosePorBodega(listaBodegas);
-            
-            int totalGlobal = listaBodegas.stream().mapToInt(StockBodegaDTO::getCantidadActual).sum();
-            dto.setTotalStockGlobal(totalGlobal);
+                totalDespachoVirtual += enDespacho;
+                totalGlobalSustitutos += enGlobal;
+                
+                PresupuestoRevisionDTO.ProductoFisicoDisponibleDTO s = new PresupuestoRevisionDTO.ProductoFisicoDisponibleDTO();
+                s.setIdProducto(dto.getIdProducto().intValue());
+                s.setNombreProducto(dto.getNombreProducto());
+                
+                Producto prodFisicoUnico = productoRepository.findById(dto.getIdProducto().intValue()).orElse(null);
+                if (prodFisicoUnico != null) {
+                    s.setSkuProducto(prodFisicoUnico.getSkuproducto());
 
-            return dto;
-        }).collect(Collectors.toList());
+                }
+
+                s.setMarcaProducto(prodFisicoUnico.getModelo() != null && prodFisicoUnico.getModelo().getMarca() != null ? prodFisicoUnico.getModelo().getMarca().getNombremarca() : "SIN ESPECIFICAR");
+                s.setModeloProducto(prodFisicoUnico.getModelo() != null ? prodFisicoUnico.getModelo().getNombremodelo() : "SIN ESPECIFICAR");
+                s.setSerieProducto(prodFisicoUnico.getSerieproducto());
+                s.setInventarioProducto(prodFisicoUnico.getInventarioproducto());
+
+
+                s.setStockEnDespacho(enDespacho);
+                s.setStockGlobal(enGlobal);
+                s.setDesgloseBodegas(desglose);
+                sustitutos.add(s);
+            }
+
+            dto.setCantidadEnBodegaDespacho(totalDespachoVirtual);
+            dto.setTotalStockGlobal(totalGlobalSustitutos);
+            dto.setSustitutosDisponibles(sustitutos);
+        }
+
+        return new ArrayList<>(consolidados.values());
     }
 
     @Transactional
     public void aprobarPresupuesto(Long idPresupuesto, Integer idUsuario){
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow();
-
-        if(!"PENDIENTE".equals(presupuesto.getEstado())){
-            throw new RuntimeException("Solo se pueden aprobar presupuestos PENDIENTES");
-        }
-
         presupuesto.setEstado("APROBADO");
         presupuesto.setFecha_modificacion(Instant.now());
-
         presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "APROBACION"));
-
         notificacionService.registrar(usuario.getNombreusuario(), "ha aprobado el Presupuesto #" + presupuesto.getIdPresupuesto());
-
         presupuestoRepository.save(presupuesto);
     }
 
@@ -270,77 +316,107 @@ public class PresupuestoService {
     public void cancelarPresupuesto(Long idPresupuesto, Integer idUsuario){
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow();
-        if(!"PENDIENTE".equals(presupuesto.getEstado())){
-            throw new RuntimeException("Solo se puede cancelar un presupuesto si está PENDIENTE");
-        }
-
         presupuesto.setEstado("CANCELADO");
         presupuesto.setFecha_modificacion(Instant.now());
-
         presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "CANCELACION"));
-
         notificacionService.registrar(usuario.getNombreusuario(), "ha cancelado el Presupuesto #" + presupuesto.getIdPresupuesto());
-
-
         presupuestoRepository.save(presupuesto);
     }
 
-    // MÉTODO: APROBAR Y DESPACHAR (SOLO ROL INVENTARIO)
     @Transactional
-    public void despacharPresupuesto(Long idPresupuesto, Integer idUsuarioEjecutor) {
+    public void despacharPresupuesto(Long idPresupuesto, DespachoPayloadDTO payload) {
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
-        Usuario usuario = usuarioRepository.findById(idUsuarioEjecutor).orElseThrow();
-        if (!"APROBADO".equals(presupuesto.getEstado()) && !"DESPACHO PARCIAL".equals(presupuesto.getEstado())) {
-            throw new RuntimeException("Solo se pueden despachar presupuestos en estado APROBADO o en DESPACHO PARCIAL.");
+        Usuario usuario = usuarioRepository.findById(payload.getIdUsuario()).orElseThrow();
+        
+        boolean seDespachoAlgo = false;
+
+        // Mantenemos en memoria las líneas actuales para agrupar o añadir
+        List<PresupuestoDetalle> detallesActuales = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+
+        for (DespachoPayloadDTO.ItemDespachoDTO itemReq : payload.getItems()) {
+            if (itemReq.getCantidadADespachar() <= 0) continue;
+
+            PresupuestoDetalle detalleOrigen = presupuestoDetalleRepository.findById(itemReq.getIdDetalle()).orElseThrow();
+            Producto productoFisico = productoRepository.findById(itemReq.getIdProductoFisico()).orElseThrow();
+
+            InventarioId invId = new InventarioId();
+            invId.setIdBodega(ID_BODEGA_DESPACHO.intValue());
+            invId.setIdProducto(productoFisico.getIdProducto());
+            Inventario inv = inventarioRepository.findById(invId).orElseThrow(() -> new RuntimeException("Sin inventario para " + productoFisico.getNombreproducto()));
+
+            if (inv.getCantidad_actual() < itemReq.getCantidadADespachar()) {
+                throw new RuntimeException("Stock insuficiente de " + productoFisico.getNombreproducto() + " en Bodega de Despacho.");
+            }
+
+            // 1. Salida física de bodega de despacho
+            inventarioService.registrarMovimiento(
+                productoFisico.getIdProducto(), 
+                ID_BODEGA_DESPACHO.intValue(), 
+                "DESPACHO", 
+                itemReq.getCantidadADespachar(), 
+                payload.getIdUsuario(), 
+                "Despacho Aut. Presupuesto #" + idPresupuesto);
+
+            // 2. AGRUPACIÓN FÍSICA: Verificamos si ya despachamos antes este producto físico en esta línea
+            PresupuestoDetalle existenteFisico = detallesActuales.stream()
+                .filter(d -> d.getProductoFisico() != null 
+                          && d.getProductoFisico().getIdProducto().equals(productoFisico.getIdProducto())
+                          && d.getProducto().getIdProducto().equals(detalleOrigen.getProducto().getIdProducto()))
+                .findFirst().orElse(null);
+
+            if (existenteFisico != null) {
+                // Si ya existía, sumamos las cantidades para que no cree nuevas líneas repetidas
+                existenteFisico.setCantidad_solicitada(existenteFisico.getCantidad_solicitada() + itemReq.getCantidadADespachar());
+                existenteFisico.setCantidad_despachada(existenteFisico.getCantidad_despachada() + itemReq.getCantidadADespachar());
+                presupuestoDetalleRepository.save(existenteFisico);
+            } else {
+                // Si es la primera vez que se despacha este físico, creamos la línea y la agregamos a memoria
+                PresupuestoDetalle nuevoDespacho = new PresupuestoDetalle();
+                nuevoDespacho.setPresupuesto(presupuesto);
+                nuevoDespacho.setProducto(detalleOrigen.getProducto()); 
+                nuevoDespacho.setProductoFisico(productoFisico); 
+                nuevoDespacho.setCantidad_solicitada(itemReq.getCantidadADespachar());
+                nuevoDespacho.setCantidad_despachada(itemReq.getCantidadADespachar());
+                presupuestoDetalleRepository.save(nuevoDespacho);
+                detallesActuales.add(nuevoDespacho);
+            }
+
+            // 3. Reducimos lo solicitado en la línea original
+            detalleOrigen.setCantidad_solicitada(detalleOrigen.getCantidad_solicitada() - itemReq.getCantidadADespachar());
+            if (detalleOrigen.getCantidad_solicitada() <= 0) {
+                presupuestoDetalleRepository.delete(detalleOrigen);
+                detallesActuales.remove(detalleOrigen);
+            } else {
+                presupuestoDetalleRepository.save(detalleOrigen);
+            }
+            seDespachoAlgo = true;
         }
 
-        List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+        if (!seDespachoAlgo) throw new RuntimeException("No se procesó ningún despacho.");
+        presupuestoDetalleRepository.flush();
 
-        boolean seDespachoAlgo = false;
-        boolean todoCompletado = true;
+        // 4. Evaluar Estado del Presupuesto sumando los despachos agrupados
+        Map<Integer, Integer> solicitadosPorProducto = new HashMap<>();
+        Map<Integer, Integer> despachadosPorProducto = new HashMap<>();
 
-        for(PresupuestoDetalle item : detalles){
-            int despachadoAnteriormente = item.getCantidad_despachada() != null ? item.getCantidad_despachada() : 0;
-            int pendiente = item.getCantidad_solicitada() - despachadoAnteriormente;
+        for (PresupuestoDetalle d : detallesActuales) {
+            Integer idProd = d.getProducto().getIdProducto();
+            solicitadosPorProducto.put(idProd, solicitadosPorProducto.getOrDefault(idProd, 0) + d.getCantidad_solicitada());
+            despachadosPorProducto.put(idProd, despachadosPorProducto.getOrDefault(idProd, 0) + (d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0));
+        }
 
-            if(pendiente > 0){
-                InventarioId invId = new InventarioId();
-                invId.setIdBodega(ID_BODEGA_DESPACHO.intValue());
-                invId.setIdProducto(item.getProducto().getIdProducto());
-
-                Inventario inventario = inventarioRepository.findById(invId).orElse(null);
-                int stockDisponible = inventario != null ? inventario.getCantidad_actual() : 0 ;
-
-                if(stockDisponible > 0 ){
-                    int aDespachar = Math.min(stockDisponible, pendiente);
-
-                    inventarioService.registrarMovimiento(
-                        item.getProducto().getIdProducto(), 
-                        ID_BODEGA_DESPACHO.intValue(), 
-                        "DESPACHO", 
-                        aDespachar, 
-                        idUsuarioEjecutor, 
-                        "Despacho Aut. Presupuesto #" + idPresupuesto);
-
-                    item.setCantidad_despachada(despachadoAnteriormente + aDespachar);
-                    presupuestoDetalleRepository.save(item);
-                    seDespachoAlgo = true;
-
-                    if(item.getCantidad_despachada() < item.getCantidad_solicitada()){
-                        todoCompletado = false;
-                    }
-                }else{
-                    todoCompletado = false;
-                }
+        boolean completado = true;
+        for (Integer idProd : solicitadosPorProducto.keySet()) {
+            int req = solicitadosPorProducto.get(idProd);
+            int desp = despachadosPorProducto.getOrDefault(idProd, 0);
+            
+            if (desp < req) {
+                completado = false;
+                break;
             }
         }
 
-        if (!seDespachoAlgo) {
-            throw new RuntimeException("No hay existencias en Bodega de Despacho para los materiales pendientes.");
-        }
-
-        // Evaluar estado final
-        if (todoCompletado) {
+        if (completado) {
             presupuesto.setEstado("DESPACHADO");
             presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "DESPACHO TOTAL"));
         } else {
@@ -349,16 +425,13 @@ public class PresupuestoService {
         }
 
         presupuesto.setFecha_modificacion(Instant.now());
-
-        notificacionService.registrar(usuario.getNombreusuario(), "ha despachado materiales para el Presupuesto #" + presupuesto.getIdPresupuesto());
-
+        notificacionService.registrar(usuario.getNombreusuario(), "ha despachado materiales para el Presupuesto #" + idPresupuesto);
         presupuestoRepository.save(presupuesto);
     }
 
     @Transactional(readOnly = true)
     public DespachoReporteDTO generarDatosDespacho(Long idPresupuesto) {
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
-        
         DespachoReporteDTO reporte = new DespachoReporteDTO();
         reporte.setIdPresupuesto(presupuesto.getIdPresupuesto());
         reporte.setNombreProyecto(presupuesto.getNombre_presupuesto());
@@ -368,116 +441,100 @@ public class PresupuestoService {
         reporte.setUbicacionDestino(presupuesto.getUbicacion().getSiglasubicacion());
         reporte.setObservaciones(presupuesto.getObservaciones());
 
-        // A. OBTENER USUARIO DESPACHADOR
-        // Buscamos el movimiento que generamos en despacharPresupuesto
         String refDespacho = "Despacho Aut. Presupuesto #" + idPresupuesto;
         List<MovimientoStock> movsDespacho = movimientoStockRepository.findMovimientosDeDespacho(refDespacho);
-
         if (!movsDespacho.isEmpty()) {
-            // Tomamos el usuario del primer movimiento encontrado
             movsDespacho.sort((m1, m2) -> m2.getFecha().compareTo(m1.getFecha()));
             reporte.setUsuarioDespachado(movsDespacho.get(0).getUsuario().getNombreusuario());
-            
-            //System.out.println(movsDespacho.get(0).getUsuario().getNombreusuario());
         } else {
             reporte.setUsuarioDespachado("Sistema");
         }
 
-        //OBTENER ORIGEN FÍSICO DE LOS MATERIALES
-        //Buscamos transferencias previas con "Solicitud #ID"
-        String refOrigen = "para Presupuesto: " + idPresupuesto; 
+        String refOrigen = "Preparación para Presupuesto: " + idPresupuesto; 
         List<MovimientoStock> movimientosOrigen = movimientoStockRepository.findMovimientosDeOrigen(refOrigen);
-        List<PresupuestoDetalle> detalles = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
+        List<PresupuestoDetalle> detallesCrudos = presupuestoDetalleRepository.findByPresupuesto(presupuesto);
 
-        // --- INICIO DE LA NUEVA LÓGICA DE DESGLOSE ---
-        List<DespachoReporteDTO.DetalleDespachoItem> itemsDTO = new java.util.ArrayList<>();
+        Map<Integer, List<PresupuestoDetalle>> detallesPorGenerico = detallesCrudos.stream()
+                .collect(Collectors.groupingBy(d -> d.getProducto().getIdProducto()));
 
-        for (PresupuestoDetalle d : detalles) {
-            int totalSolicitado = d.getCantidad_solicitada() != null ? d.getCantidad_solicitada() : 0;
-            int totalDespachado = d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0;
-            String um = d.getProducto().getUnidadMedida() != null ? d.getProducto().getUnidadMedida().getNombreunidadmedida() : "Unid";
+        List<DespachoReporteDTO.DetalleDespachoItem> itemsDTO = new ArrayList<>();
 
-            if (totalDespachado == 0) {
-                // CASO 1: No ha salido nada, todo va directo a PENDIENTES
-                DespachoReporteDTO.DetalleDespachoItem item = new DespachoReporteDTO.DetalleDespachoItem();
-                item.setSku(d.getProducto().getSkuproducto());
-                item.setNombreProducto(d.getProducto().getNombreproducto());
-                item.setUnidadMedida(um);
-                item.setCantidadSolicitada(totalSolicitado);
-                item.setCantidadDespachada(0);
-                item.setEstadoItem("PENDIENTE");
-                item.setBodegaOrigen("PENDIENTES DE ENTREGAR");
-                itemsDTO.add(item);
-            } else {
-                // CASO 2: Se hicieron despachos, buscamos de qué bodegas salieron
-                List<MovimientoStock> movsProducto = movimientosOrigen.stream()
-                        .filter(m -> m.getProducto().getIdProducto().equals(d.getProducto().getIdProducto()))
-                        .collect(Collectors.toList());
+        for(Map.Entry<Integer, List<PresupuestoDetalle>> entry : detallesPorGenerico.entrySet()) {
+            List<PresupuestoDetalle> lineas = entry.getValue();
+            Producto productoGenerico = lineas.get(0).getProducto();
 
-                // Agrupamos y sumamos lo que se movió de cada bodega específica
-                java.util.Map<String, Integer> despachosPorBodega = movsProducto.stream()
-                        .collect(Collectors.groupingBy(
-                                m -> m.getBodega().getNombrebodega(),
-                                Collectors.summingInt(MovimientoStock::getCantidad)
-                        ));
-
-                int cantidadYaAsignada = 0;
-
-                // Creamos una línea de "ENTREGADO" por cada bodega que aportó material
-                for (java.util.Map.Entry<String, Integer> entry : despachosPorBodega.entrySet()) {
-                    int cantidadMovida = entry.getValue();
-                    
-                    // Aseguramos no sobrepasar el total despachado (por si el usuario movió stock extra que aún no entrega)
-                    int cantidadParaEstaBodega = Math.min(cantidadMovida, totalDespachado - cantidadYaAsignada);
-                    
-                    if (cantidadParaEstaBodega > 0) {
-                        DespachoReporteDTO.DetalleDespachoItem item = new DespachoReporteDTO.DetalleDespachoItem();
-                        item.setSku(d.getProducto().getSkuproducto());
-                        item.setNombreProducto(d.getProducto().getNombreproducto());
-                        item.setUnidadMedida(um);
-                        // Lo requerido y lo despachado en esta línea coinciden con lo que salió de la bodega
-                        item.setCantidadSolicitada(cantidadParaEstaBodega);
-                        item.setCantidadDespachada(cantidadParaEstaBodega);
-                        item.setEstadoItem("ENTREGADO");
-                        item.setBodegaOrigen(entry.getKey());
-                        itemsDTO.add(item);
-                        
-                        cantidadYaAsignada += cantidadParaEstaBodega;
-                    }
-                }
-
-                // Fallback de seguridad: Si no encontramos el origen (ej. Ajuste manual), lo metemos en Bodega Despacho general
-                if (cantidadYaAsignada < totalDespachado) {
-                    int faltante = totalDespachado - cantidadYaAsignada;
-                    DespachoReporteDTO.DetalleDespachoItem item = new DespachoReporteDTO.DetalleDespachoItem();
-                    item.setSku(d.getProducto().getSkuproducto());
-                    item.setNombreProducto(d.getProducto().getNombreproducto());
-                    item.setUnidadMedida(um);
-                    item.setCantidadSolicitada(faltante);
-                    item.setCantidadDespachada(faltante);
-                    item.setEstadoItem("ENTREGADO");
-                    item.setBodegaOrigen("Bodega Despacho"); 
-                    itemsDTO.add(item);
-                }
-
-                // Finalmente, si sobró material por entregar, agregamos la línea "fantasma" de lo pendiente
-                int pendiente = totalSolicitado - totalDespachado;
-                if (pendiente > 0) {
-                    DespachoReporteDTO.DetalleDespachoItem itemPendiente = new DespachoReporteDTO.DetalleDespachoItem();
-                    itemPendiente.setSku(d.getProducto().getSkuproducto());
-                    itemPendiente.setNombreProducto(d.getProducto().getNombreproducto());
-                    itemPendiente.setUnidadMedida(um);
-                    itemPendiente.setCantidadSolicitada(pendiente);
-                    itemPendiente.setCantidadDespachada(0);
-                    itemPendiente.setEstadoItem("PENDIENTE");
-                    itemPendiente.setBodegaOrigen("PENDIENTES DE ENTREGAR");
-                    itemsDTO.add(itemPendiente);
+            int totalReq = lineas.stream().mapToInt(PresupuestoDetalle::getCantidad_solicitada).sum();
+            int totalDesp = lineas.stream().mapToInt(d -> d.getCantidad_despachada() != null ? d.getCantidad_despachada() : 0).sum();
+            int pendiente = totalReq - totalDesp;
+            
+            DespachoReporteDTO.DetalleDespachoItem itemPadre = new DespachoReporteDTO.DetalleDespachoItem();
+            itemPadre.setSkuGenerico(productoGenerico.getSkuproducto());
+            itemPadre.setNombreGenerico(productoGenerico.getNombreproducto());
+            itemPadre.setUnidadMedida(productoGenerico.getUnidadMedida() != null ? productoGenerico.getUnidadMedida().getNombreunidadmedida() : "Unid");
+            itemPadre.setCantidadSolicitada(totalReq);
+            itemPadre.setCantidadDespachada(totalDesp);
+            itemPadre.setCantidadPendiente(pendiente);
+            
+            if (pendiente == 0) itemPadre.setEstadoItem("COMPLETADO");
+            else if (totalDesp > 0) itemPadre.setEstadoItem("PARCIAL");
+            else itemPadre.setEstadoItem("PENDIENTE");
+            
+            List<DespachoReporteDTO.SubItemDespacho> entregasFisicas = new ArrayList<>();
+            
+            // AGRUPACIÓN FÍSICA PARA EL PDF
+            Map<Integer, Producto> mapProductosFisicos = new HashMap<>();
+            Map<Integer, Integer> mapCantidadesFisicas = new HashMap<>();
+            
+            for (PresupuestoDetalle linea : lineas) {
+                if (linea.getCantidad_despachada() != null && linea.getCantidad_despachada() > 0 && linea.getProductoFisico() != null) {
+                    Producto prodFisico = linea.getProductoFisico();
+                    mapProductosFisicos.put(prodFisico.getIdProducto(), prodFisico);
+                    mapCantidadesFisicas.put(prodFisico.getIdProducto(), 
+                        mapCantidadesFisicas.getOrDefault(prodFisico.getIdProducto(), 0) + linea.getCantidad_despachada());
                 }
             }
-        }
 
+            for (Integer idFisico : mapCantidadesFisicas.keySet()) {
+                Producto prodFisico = mapProductosFisicos.get(idFisico);
+                int cantEntregadaFisico = mapCantidadesFisicas.get(idFisico);
+                
+                List<MovimientoStock> movsFisicos = movimientosOrigen.stream()
+                        .filter(m -> m.getProducto().getIdProducto().equals(prodFisico.getIdProducto()))
+                        .collect(Collectors.toList());
+                        
+                Map<String, Integer> agrupadoPorBodega = movsFisicos.stream()
+                        .collect(Collectors.groupingBy(m -> m.getBodega().getNombrebodega(), Collectors.summingInt(MovimientoStock::getCantidad)));
+                        
+                int yaMapeado = 0;
+                for (Map.Entry<String, Integer> bEntry : agrupadoPorBodega.entrySet()) {
+                    int aAsignar = Math.min(bEntry.getValue(), cantEntregadaFisico - yaMapeado);
+                    if (aAsignar > 0) {
+                        DespachoReporteDTO.SubItemDespacho sub = new DespachoReporteDTO.SubItemDespacho();
+                        sub.setSkuFisico(prodFisico.getSkuproducto());
+                        sub.setNombreFisico(prodFisico.getNombreproducto());
+                        sub.setBodegaOrigen(bEntry.getKey());
+                        sub.setCantidad(aAsignar);
+                        entregasFisicas.add(sub);
+                        yaMapeado += aAsignar;
+                    }
+                }
+                
+                // Fallback por si la cantidad transferida no cuadra con el historial de movimientos
+                if (yaMapeado < cantEntregadaFisico) {
+                    DespachoReporteDTO.SubItemDespacho sub = new DespachoReporteDTO.SubItemDespacho();
+                    sub.setSkuFisico(prodFisico.getSkuproducto());
+                    sub.setNombreFisico(prodFisico.getNombreproducto());
+                    sub.setBodegaOrigen("Bodega Despacho");
+                    sub.setCantidad(cantEntregadaFisico - yaMapeado);
+                    entregasFisicas.add(sub);
+                }
+            }
+            
+            itemPadre.setEntregasFisicas(entregasFisicas);
+            itemsDTO.add(itemPadre);
+        }
+        
         reporte.setItems(itemsDTO);
         return reporte;
-        // --- FIN ---
     }
 }

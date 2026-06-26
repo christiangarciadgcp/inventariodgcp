@@ -15,18 +15,28 @@ public class DespachoReporteDTO {
     private String estado;
     private String ubicacionDestino;
     private String observaciones;
+    
     private List<DetalleDespachoItem> items;
 
     @Data
     public static class DetalleDespachoItem {
-        private String sku;
-        private String nombreProducto;
+        private String skuGenerico;
+        private String nombreGenerico;
         private String unidadMedida;
-        private String bodegaOrigen;
-
         private Integer cantidadSolicitada;
         private Integer cantidadDespachada;
+        private Integer cantidadPendiente;
         private String estadoItem;
+        
+        private List<SubItemDespacho> entregasFisicas; 
+    }
+
+    @Data
+    public static class SubItemDespacho {
+        private String skuFisico;
+        private String nombreFisico;
+        private String bodegaOrigen;
+        private Integer cantidad;
     }
 
 }

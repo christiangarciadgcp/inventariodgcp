@@ -8,7 +8,29 @@
 
   <form [formGroup]="form" class="row g-2">
 
-    <div class="col-md-5">
+    <div class="col-md-12 mb-3 mt-1 pb-3 border-bottom">
+      <mat-slide-toggle formControlName="esGenerico" color="primary">
+        <strong>Producto Base</strong> <br>
+        <small class="text-muted">Marque esta opción si este registro solo sirve para que los técnicos soliciten el producto base, pero no manejará existencias reales.</small>
+      </mat-slide-toggle>
+    </div>
+
+    @if (!form.get('esGenerico')?.value) {
+      <div class="col-md-12 mb-2">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Vincular a Producto Base</mat-label>
+          <mat-select formControlName="idProductoPadre">
+            <mat-option [value]="null">--- Ninguno (Producto Independiente) ---</mat-option>
+            @for (g of listaGenericos; track g.idProducto) {
+              <mat-option [value]="g.idProducto">{{ g.nombreproducto }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>Si este producto se puede despachar cuando piden un genérico, selecciónelo aquí.</mat-hint>
+        </mat-form-field>
+      </div>
+    }
+
+    <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>SKU / Código</mat-label>
 
@@ -18,7 +40,7 @@
       </mat-form-field>
     </div>
 
-    <div class="col-md-7">
+    <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Nombre del Producto</mat-label>
         <input matInput formControlName="nombreproducto" (input)="onInputMayusculas($event, 'nombreproducto')">
@@ -28,7 +50,7 @@
       </mat-form-field>
     </div>
 
-    <div class="col-md-12">
+    <div [ngClass]="form.get('esGenerico')?.value ? 'col-md-6' : 'col-md-12'">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Categoría</mat-label>
         <mat-select formControlName="idCategoria">
@@ -42,33 +64,36 @@
       </mat-form-field>
     </div>
 
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <mat-label>Marca</mat-label>
-        <mat-select formControlName="idMarca">
-          @for (u of listaMarcas; track u.idMarca) {
-            <mat-option [value]="u.idMarca">{{u.nombremarca}}</mat-option>
+    <!-- ENVOLVEMOS MARCA Y MODELO EN UN IF -->
+    @if (!form.get('esGenerico')?.value) {
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Marca</mat-label>
+          <mat-select formControlName="idMarca">
+            @for (u of listaMarcas; track u.idMarca) {
+              <mat-option [value]="u.idMarca">{{u.nombremarca}}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idMarca')?.hasError('required') && form.get('idMarca')?.touched) {
+            <mat-error>Marca requerida</mat-error>
           }
-        </mat-select>
-        @if (form.get('idMarca')?.hasError('required') && form.get('idMarca')?.touched) {
-          <mat-error>Marca requerida</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        </mat-form-field>
+      </div>
 
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <mat-label>Modelo</mat-label>
-        <mat-select formControlName="idModelo">
-          @for (u of listaModelos; track u.idModelo) {
-            <mat-option [value]="u.idModelo">{{u.nombremodelo}}</mat-option>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Modelo</mat-label>
+          <mat-select formControlName="idModelo">
+            @for (u of listaModelos; track u.idModelo) {
+              <mat-option [value]="u.idModelo">{{u.nombremodelo}}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('idModelo')?.hasError('required') && form.get('idModelo')?.touched) {
+            <mat-error>Modelo requerido</mat-error>
           }
-        </mat-select>
-        @if (form.get('idModelo')?.hasError('required') && form.get('idModelo')?.touched) {
-          <mat-error>Modelo requerido</mat-error>
-        }
-      </mat-form-field>
-    </div>
+        </mat-form-field>
+      </div>
+
 
     <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
@@ -80,6 +105,7 @@
         </mat-select>
       </mat-form-field>
     </div>
+    }
 
     <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
@@ -95,6 +121,7 @@
       </mat-form-field>
     </div>
 
+    @if (!form.get('esGenerico')?.value) {
     <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>Serie</mat-label>
@@ -108,6 +135,7 @@
         <input matInput formControlName="inventarioproducto" (input)="onInputMayusculas($event, 'inventarioproducto')">
       </mat-form-field>
     </div>
+    }
 
     <div class="col-12">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">

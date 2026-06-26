@@ -41,6 +41,10 @@
   height: 48px;
 }
 
+.bg-selector {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+}
+
 .mat-mdc-header-cell {
   color: #ffffff;
   font-size: 0.75rem;
@@ -137,3 +141,10 @@
 
 ::ng-deep .mat-sort-header-arrow { color: #ffffff !important; }
 ::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition { opacity: 0.9 !important; }
+
+.text-wrap-normal {
+  white-space: normal !important;
+  word-wrap: break-word;
+  word-break: normal;
+  line-height: 1.2;
+}

@@ -1,7 +1,6 @@
 package com.sistemainventario.inventario.dto.productoDTO;
 
 import java.math.BigDecimal;
-
 import lombok.Data;
 
 @Data
@@ -18,5 +17,8 @@ public class ProductoRegistroDTO {
         public Integer idProveedor;
         public Integer idUnidadMedida;
         public Integer idModelo;
+
+        public Boolean esGenerico;
+        public Integer idProductoPadre;
 
 }

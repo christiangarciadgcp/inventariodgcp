@@ -9,11 +9,24 @@
 
       <div>
         <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Configuración</h6>
-        <h2 class="fw-bold text-dark m-0">Catálogo de Productos</h2>
+        <h2 class="fw-bold text-dark m-0">Materiales y Equipo</h2>
       </div>
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3">
+
+      <div class="bg-light rounded-pill p-1 border d-flex align-items-center me-2">
+        <button mat-raised-button class="rounded-pill px-4"
+                [ngClass]="{'bg-selector shadow-sm fw-bold text-white': tipoVista() === 'NORMAL'}"
+                (click)="cambiarVista('NORMAL')">
+          Físicos
+        </button>
+        <button mat-raised-button class="rounded-pill px-4"
+                [ngClass]="{'bg-selector shadow-sm fw-bold text-white': tipoVista() === 'BASE'}"
+                (click)="cambiarVista('BASE')">
+          Base
+        </button>
+      </div>
 
       <input type="file" #fileInput (change)="onFileSelected($event)" accept=".xlsx, .xls" style="display: none;">
 
@@ -69,7 +82,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="nombre">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre Producto </th>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Material / Equipo </th>
                     <td mat-cell *matCellDef="let element">
                         <div class="d-flex align-items-center py-2">
                             <div class="d-flex flex-column">
@@ -85,7 +98,7 @@
 
                 <ng-container matColumnDef="ser-inv">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header> Serie / Inventario </th>
-                    <td mat-cell *matCellDef="let element">
+                    <td mat-cell *matCellDef="let element" >
                         <div class="d-flex align-items-center py-2">
                             @if (element.serieproducto || element.inventarioproducto) {
                             <div class="d-flex flex-column">
@@ -113,24 +126,30 @@
 
               <ng-container matColumnDef="marca">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Marca / Modelo </th>
-                <td mat-cell *matCellDef="let element">
-                  <div class="d-flex flex-column py-2">
+                <td mat-cell *matCellDef="let element" style="max-width: 240px;">
+                  <div class="d-flex flex-column py-2 w-100 text-start">
 
-                    @if (element.modelo?.marca?.nombremarca) {
-                      <div class="d-flex align-items-start">
-                        <mat-icon style="font-size: 14px; width: 14px; height: 14px;" class="me-2 text-dark d-flex align-items-center">
-                          <i class="bi bi-substack"></i> </mat-icon>
-                        <span class="fw-bold text-dark">{{element.modelo?.marca?.nombremarca}}</span>
-                      </div>
-                    }
+                    @if (element.esGenerico) {
+                      <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle" style="width: fit-content;">PRODUCTO BASE</span>
+                    } @else {
 
-                    @if (element.modelo?.nombremodelo) {
-                      <div class="d-flex align-items-start">
-                        <mat-icon style="font-size: 12px; width: 14px; height: 14px;" class="me-2 text-secondary d-flex align-items-center">
-                          <i class="bi bi-ui-checks-grid"></i>
-                        </mat-icon>
-                        <small class="text-secondary">{{element.modelo?.nombremodelo}}</small>
-                      </div>
+                      @if (element.modelo?.marca?.nombremarca) {
+                        <div class="d-flex align-items-start mb-1">
+                          <mat-icon style="font-size: 16px; width: 16px; height: 16px; min-width: 16px; overflow: visible;" class="me-2 text-dark flex-shrink-0 mt-1 d-flex justify-content-center align-items-center">
+                            <i class="bi bi-substack"></i>
+                          </mat-icon>
+                          <span class="fw-bold text-dark text-wrap" style="line-height: 1.3; word-break: break-word;">{{element.modelo?.marca?.nombremarca}}</span>
+                        </div>
+                      }
+
+                      @if (element.modelo?.nombremodelo) {
+                        <div class="d-flex align-items-start">
+                          <mat-icon style="font-size: 14px; width: 14px; height: 14px; min-width: 14px; overflow: visible;" class="me-2 text-secondary flex-shrink-0 mt-1 d-flex justify-content-center align-items-center">
+                            <i class="bi bi-ui-checks-grid"></i>
+                          </mat-icon>
+                          <span class="text-secondary text-wrap" style="font-size: 0.85rem; line-height: 1.3; word-break: break-word;">{{element.modelo?.nombremodelo}}</span>
+                        </div>
+                      }
                     }
                   </div>
                 </td>
@@ -220,7 +239,7 @@
             </table>
       </div>
 
-            <mat-paginator [pageSizeOptions]="[25, 50, 100]"
+            <mat-paginator [pageSizeOptions]="[50, 100, 1000]"
                             showFirstLastButtons
                             aria-label="Seleccionar página">
             </mat-paginator>

@@ -83,6 +83,10 @@
     color: #d59809;
 }
 
+.revision-color{
+  color: #0f8ddc;
+}
+
 .icon-circle mat-icon {
     font-size: 25px;
     margin-bottom: 3px;

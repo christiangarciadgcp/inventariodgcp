@@ -21,11 +21,6 @@ html {
     color: white !important;
 }
 
-/* =========================================
-   ESTILOS GLOBALES PARA TABLAS (Modern Soft UI)
-   ========================================= */
-
-/* Tarjeta Contenedora */
 .custom-card {
     border: none !important;
     border-radius: 16px !important;
@@ -33,16 +28,6 @@ html {
     background: white;
     overflow: hidden;
 }
-
-/* Encabezados de Tabla (Header) */
-
-/* Se ha sustituido por el de abajo
-
-.mat-mdc-header-row {
-    background-color: #ffffff;
-    border-bottom: 2px solid #f1f3f5;
-    height: 60px;
-}*/
 
 .mat-mdc-header-row {
   background: linear-gradient(#031e3f 0%, #153863 100%);
@@ -58,19 +43,11 @@ html {
     letter-spacing: 1px;
 }
 
-/* Filas y Efecto Hover */
 .mat-mdc-row {
     height: 70px;
     border-bottom: 1px solid #f8f9fa;
     transition: all 0.2s ease-in-out;
 }
-
-/*
-Se ha sustituido por el de abajo
-.mat-mdc-row {
-  height: 55px;
-  transition: all 0.2s ease-in-out;
-}*/
 
 .mat-mdc-row:hover {
     background-color: #f8faff !important;
@@ -80,14 +57,12 @@ Se ha sustituido por el de abajo
     position: relative;
 }
 
-/* Texto de las celdas */
 .mat-mdc-cell {
     font-size: 0.9rem;
     color: #344767;
     font-weight: 500;
 }
 
-/*Columna de Acciones */
 .col-acciones {
     width: 120px;
     text-align: right;
@@ -95,7 +70,6 @@ Se ha sustituido por el de abajo
 }
 
 
-/* --- BOTONES DE ACCIÓN --- */
 .action-btn {
   transition: transform 0.2s;
   display: inline-flex !important;
@@ -130,7 +104,6 @@ Se ha sustituido por el de abajo
   height: 32px !important;
 }
 
-/* Botón "Nuevo" Global */
 .btn-global-nuevo {
     background: linear-gradient(#031e3f 0%, #153863 100%);
     box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
@@ -141,7 +114,6 @@ Se ha sustituido por el de abajo
     letter-spacing: 0.5px;
 }
 
-/*Paginador */
 .mat-mdc-paginator {
     background: transparent;
     border-top: 1px solid #f1f3f5;
@@ -149,20 +121,19 @@ Se ha sustituido por el de abajo
 
 .full-screen-modal .mat-mdc-dialog-container .mat-mdc-dialog-surface {
     padding: 0 !important;
-    overflow: hidden !important; /* Evita scroll en el contenedor principal */
-    border-radius: 8px; /* Opcional: si quieres bordes redondeados */
+    overflow: hidden !important;
+    border-radius: 8px;
 }
 
 .container-wide {
-    width: 95%; /* Ocupa casi toda la pantalla */
-    max-width: 1600px; /* Pero pone un límite para que no se vea infinito en monitores 4K */
-    margin-right: auto; /* Centrado automático */
-    margin-left: auto;  /* Centrado automático */
+    width: 95%;
+    max-width: 1600px;
+    margin-right: auto;
+    margin-left: auto;
     padding-right: 2rem;
     padding-left: 2rem;
 }
 
-/* Ajuste opcional para pantallas pequeñas (móviles/tablets) */
 @media (max-width: 768px) {
     .container-wide {
         width: 100%;
@@ -171,11 +142,6 @@ Se ha sustituido por el de abajo
     }
 }
 
-/* =========================================
-   ESTILOS GLOBALES PARA BOTONES DE DIÁLOGOS
-   ========================================= */
-
-/* --- BOTÓN CANCELAR --- */
 .btn-cancel {
     background: #ffffff !important;
     color: #f72828 !important;
@@ -187,13 +153,11 @@ Se ha sustituido por el de abajo
     transition: all 0.3s ease;
 }
 
-/* Efecto al pasar el mouse */
 .btn-cancel:hover {
     background-color: #f72828 !important;
     color: #ffffff !important;
 }
 
-/* --- BOTÓN CONFIRMAR --- */
 .btn-confirm {
     background: linear-gradient(#031e3f 0%, #153863 100%) !important;
     color: #ffffff !important;
@@ -205,14 +169,11 @@ Se ha sustituido por el de abajo
     transition: all 0.3s ease;
 }
 
-/* Efecto Hover */
 .btn-confirm:hover:not(:disabled) {
-/*     transform: translateY(-1px); */
     box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2) !important;
     filter: brightness(105%);
 }
 
-/* Estado Deshabilitado (Cuando el form.invalid es true) */
 .btn-confirm:disabled {
     background: #e0e0e0 !important;
     color: #9e9e9e !important;
@@ -233,9 +194,6 @@ Se ha sustituido por el de abajo
   z-index: 999999 !important;
 }
 
-/* ==================================
-   OPCIÓN 1: MINIMALISTA PREMIUM
-   ================================== */
 .search-elegant {
   display: flex;
   align-items: center;
@@ -244,11 +202,10 @@ Se ha sustituido por el de abajo
   border-radius: 50px;
   padding: 4px 4px 4px 20px;
   max-width: 450px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); /* Sombra súper sutil */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   transition: all 0.3s ease;
 }
 
-/* Efecto al hacer clic para escribir */
 .search-elegant:focus-within {
   border-color: #153863;
   box-shadow: 0 4px 15px rgba(21, 56, 99, 0.12);
@@ -261,17 +218,16 @@ Se ha sustituido por el de abajo
   background: transparent;
   width: 100%;
   font-size: 0.95rem;
-  color: #2d3748; /* Texto gris oscuro elegante */
+  color: #2d3748;
   font-weight: 500;
   letter-spacing: 0.5px;
 }
 
 .search-input::placeholder {
-  color: #3f4750; /* Gris claro para el placeholder */
+  color: #3f4750;
   font-weight: 400;
 }
 
-/* El círculo se vuelve del color corporativo */
 .search-btn-circle {
   background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
   border-radius: 50%;
@@ -292,11 +248,13 @@ Se ha sustituido por el de abajo
 }
 
 .search-btn-circle mat-icon {
-  color: #ffffff; /* Lupa en blanco */
+  color: #ffffff;
   font-size: 20px;
   width: 20px;
   height: 20px;
 }
 
-/* ESTILO PARA EL BOTÓN DE EXCEL */
+.bg-base{
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+}
 

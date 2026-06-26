@@ -21,4 +21,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     //PRODUCTOS SOLAMENTE ACTIVOS
     List<Producto> findByActivoTrue(Sort sort);
     // List<Producto> findByActivoTrue();
+
+
+    // NUEVOS METODOS PARA PRODUCTOS
+        // NUEVO: Para llenar el selector de padres en el formulario
+        List<Producto> findByEsGenericoTrueAndActivoTrue();
+
+        // NUEVO: Para buscar sustitutos físicos cuando se despacha un genérico
+        List<Producto> findByProductoPadre_IdProductoAndActivoTrue(Integer idProductoPadre);
 }

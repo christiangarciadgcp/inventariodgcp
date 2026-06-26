@@ -20,6 +20,10 @@ export class ProductoService {
     return this.http.get<Producto[]>(`${this.apiUrl}/activos`);
   }
 
+  getProductosGenericos(): Observable<Producto[]> {
+    return this.http.get<Producto[]>(`${this.apiUrl}/genericos`);
+  }
+
   buscarPorNombre(nombre: string): Observable<Producto[]> {
     return this.http.get<Producto[]>(`${this.apiUrl}/buscar?nombre=${nombre}`);
   }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, inject, effect, signal, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -26,6 +26,7 @@ import { DespachoService } from '../../../services/reportes/despacho.service';
 import { Mensaje } from '../../../core/mensaje';
 import { PresupuestoDetalleComponent } from '../presupuesto-detalle/presupuesto-detalle.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import { PresupuestoAprobacionComponent } from '../presupuesto-aprobacion/presupuesto-aprobacion.component';
 import {Utils} from '../../../core/utils';
 
 @Injectable()
@@ -71,7 +72,8 @@ export const MY_DATE_FORMATS = {
 export class PresupuestoListComponent implements OnInit {
 
   private presupuestoService = inject(PresupuestoService);
-
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private dialog = inject(MatDialog);
   private authService = inject(AuthService);
   private despachoService = inject(DespachoService);
@@ -82,6 +84,7 @@ export class PresupuestoListComponent implements OnInit {
   dataSource = new MatTableDataSource<Presupuesto>([]);
   presupuestos = signal<Presupuesto[]>([]);
   esEncargadoInventario = signal<boolean>(false);
+  esJefeUTDI = signal<boolean>(false);
 
   todasLasSolicitudes : Presupuesto[] = [];
   currentTab : number = 0;
@@ -103,7 +106,7 @@ export class PresupuestoListComponent implements OnInit {
 
     // Filtro personalizado: Busca por ID, Nombre de Presupuesto o Estado
     this.dataSource.filterPredicate = (data: Presupuesto, filter: string) => {
-      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.idusuariopresupuesto.nombreusuario).toLowerCase();
+      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.idusuariopresupuesto.nombreusuario + data.ubicacion?.nombreubicacion).toLowerCase();
       return searchStr.includes(filter);
     };
 
@@ -128,12 +131,19 @@ export class PresupuestoListComponent implements OnInit {
   ngOnInit(): void {
 
     const rolActual = this.authService.getRolUsuario();
+
     this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
+
+    this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador');
+
+    const tabParam = this.route.snapshot.queryParamMap.get('tab');
+    if (tabParam) {
+      this.currentTab = +tabParam;
+    }
 
     const hoy = new Date();
     const intervaloSolicitudes = new Date();
     intervaloSolicitudes.setDate(hoy.getDate() - 30); // SOLO SE PODRAN VER SOLICITUDES CON 30 DIAS DE ANTIGUEDAD
-
     this.rangoFechas.setValue({start : intervaloSolicitudes, end : hoy});
 
     this.rangoFechas.valueChanges.subscribe(() => {
@@ -159,6 +169,13 @@ export class PresupuestoListComponent implements OnInit {
 
   onTabChange(index : number){
     this.currentTab = index;
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: index },
+      queryParamsHandling: 'merge' // Mantiene otros parámetros si existieran
+    });
+
     this.filtrarDatos();
   }
 
@@ -325,6 +342,28 @@ export class PresupuestoListComponent implements OnInit {
       this.recepcionarSolicitud(result.id, false);
       console.log('Recepcionar ID:', result.id);
     } */
+    });
+  }
+
+  evaluarPresupuesto(idPresupuesto : number, nombreusuario : string) {
+    const dialogRef = this.dialog.open(PresupuestoAprobacionComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      data: { idPresupuesto: idPresupuesto, nombreusuario : nombreusuario }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.accion === 'recargar') {
+        this.currentTab = result.tabDestino;
+        this.cargarPresupuestos();
+
+        // Actualizamos también la URL de una vez
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { tab: this.currentTab },
+          queryParamsHandling: 'merge'
+        });
+      }
     });
   }
 

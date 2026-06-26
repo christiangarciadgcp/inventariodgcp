@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { jsPDF } from 'jspdf';
-import { autoTable } from 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { DespachoReporteDTO } from '../../models/presupuesto';
 import { Utils } from '../../core/utils';
 
@@ -39,32 +39,19 @@ export class DespachoService {
     doc.text('Control de Salida de Materiales', 14, 28);
     doc.text(`Fecha Impresión: ${new Date().toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}`, 14, 33);
 
-// ========================================================
-    // Calcular el tamaño de las observaciones
-    // ========================================================
+    // Observaciones
     const textoObservaciones = data.observaciones || 'No hay Observaciones';
-    const maxWidth = 130; // Ancho máximo para el texto
+    const maxWidth = 130;
     const lineasObservaciones = doc.splitTextToSize(textoObservaciones, maxWidth);
-
-    // Altura aproximada por cada línea de texto
     const altoDeLinea = 5;
-    // Altura total que ocupará el bloque de texto
     const alturaTotalObservaciones = (lineasObservaciones.length - 1) * altoDeLinea;
 
-    // ========================================================
-    // Dibujar la tarjeta con altura DINÁMICA
-    // ========================================================
-    // La tarjeta base mide unos 34 de alto. Le sumamos el exceso de las observaciones.
     const alturaDinamicaTarjeta = 34 + alturaTotalObservaciones;
 
     // CARD DE PROYECTO
     doc.setDrawColor(220);
     doc.setFillColor(248, 249, 250);
     doc.roundedRect(14, 38, 182, alturaDinamicaTarjeta, 3, 3, 'FD');
-
-    // ========================================================
-    // Imprimir todos los textos encima de la tarjeta
-    // ========================================================
 
     // DATOS DE CABECERA
     doc.setFontSize(10);
@@ -97,75 +84,51 @@ export class DespachoService {
     doc.text(`${data.nombreProyecto}`, 55, 62);
     doc.text(lineasObservaciones, 55, 68);
 
-    // La tabla empezará justo debajo de donde termina nuestra tarjeta dinámica + un margen de 5
     const startYTabla = 38 + alturaDinamicaTarjeta + 5;
 
-// Agrupar por bodega
-const groupbyBodegas = data.items.reduce((acc, item) => {
-  const nombreBodega = item.bodegaOrigen || 'N/A';
-  if (!acc[nombreBodega]){
-    acc[nombreBodega] = [];
-  }
-  acc[nombreBodega].push(item);
-  return acc;
-}, {} as { [key: string]: typeof data.items });
+    const columnas = ['#', 'SKU', 'Material', 'u.m.', 'Req.', 'Desp.', 'Estado'];
+    const bodyData: any[] = [];
+    let indexGlobal = 1;
 
-// --- NUEVO: Ordenar para que "PENDIENTES DE ENTREGAR" salga siempre de primero ---
-const bodegasOrdenadas = Object.keys(groupbyBodegas).sort((a, b) => {
-    if (a === 'PENDIENTES DE ENTREGAR') return -1;
-    if (b === 'PENDIENTES DE ENTREGAR') return 1;
-    return a.localeCompare(b); // Ordena el resto alfabéticamente
-});
+    // --- CONSTRUCCIÓN DE LA TABLA JERÁRQUICA ---
+    data.items.forEach((itemPadre) => {
 
-const columnas = ['#', 'SKU', 'Producto', 'U.M.', 'Req.', 'Desp.', 'Estado'];
-const bodyData: any[] = [];
-let indexGlobal = 1;
+      // Control de color para el estado
+      let colorEstado: [number, number, number] = [100, 100, 100]; // Gris por defecto
+      if (itemPadre.estadoItem === 'COMPLETADO') colorEstado = [25, 135, 84]; // Verde
+      if (itemPadre.estadoItem === 'PENDIENTE') colorEstado = [220, 53, 69]; // Rojo
+      if (itemPadre.estadoItem === 'PARCIAL') colorEstado = [253, 126, 20]; // Naranja
 
-// Iteramos sobre el arreglo ordenado
-for (const bodega of bodegasOrdenadas) {
-  const itemsDeBodega = groupbyBodegas[bodega];
-
-  // Colores por defecto para las cabeceras de Bodega
-  let fillColor: [number, number, number] = [236, 240, 241];
-  let textColor: [number, number, number] = [44, 62, 80];
-
-  // Destacar la sección de pendientes con un color rojizo suave
-/*   if (bodega === 'PENDIENTES DE ENTREGAR') {
-      fillColor = [253, 237, 237];
-      textColor = [220, 53, 69];
-  } */
-
-  bodyData.push([
-      {
-          content: ` ${bodega.toUpperCase()}`,
-          colSpan: 7,
-          styles: {
-              fillColor: fillColor,
-              textColor: textColor,
-              fontStyle: 'bold',
-              halign: 'center',
-              cellPadding: 1.5
-          }
-      }
-  ]);
-
-  itemsDeBodega.forEach((item) => {
+      // 1. FILA DEL MATERIAL SOLICITADO (Padre - Color Gris Claro)
       bodyData.push([
-          indexGlobal++,
-          item.sku || 'N/A',
-          item.nombreProducto,
-          item.unidadMedida,
-          item.cantidadSolicitada,
-          item.cantidadDespachada,
-          item.estadoItem
+        { content: indexGlobal++, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 242, 245] } },
+        { content: '', styles: { fillColor: [240, 242, 245] } },
+        { content: itemPadre.nombreGenerico, styles: { halign: 'center', fontStyle: 'italic', fillColor: [240, 242, 245] } },
+        { content: itemPadre.unidadMedida, styles: { halign: 'center', fillColor: [240, 242, 245] } },
+        { content: itemPadre.cantidadSolicitada, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 242, 245] } },
+        { content: itemPadre.cantidadDespachada, styles: { halign: 'center', fontStyle: 'bold', textColor: [25, 135, 84], fillColor: [240, 242, 245] } },
+        { content: itemPadre.estadoItem, styles: { halign: 'center', fontStyle: 'bold', textColor: colorEstado, fillColor: [240, 242, 245] } }
       ]);
-  });
-}
 
-autoTable(doc, {
-  startY: startYTabla,
-  head: [columnas],
-//... (El resto de tu configuración de autoTable queda igual)
+      // 2. FILAS FÍSICAS DESPACHADAS (Hijas - Fondo Blanco y letra Normal)
+      if (itemPadre.entregasFisicas && itemPadre.entregasFisicas.length > 0) {
+        itemPadre.entregasFisicas.forEach(sub => {
+          bodyData.push([
+            '', // Columna # vacía
+            { content: sub.skuFisico, styles: { textColor: [80, 80, 80], fontStyle: 'bold' } }, // SKU FÍSICO
+            { content: `${sub.nombreFisico}\n${sub.bodegaOrigen}`, styles: { textColor: [80, 80, 80], fontStyle: 'normal' } },
+            '', // U.M. vacía
+            '', // Req. vacía
+            { content: sub.cantidad, styles: { halign: 'center', textColor: [25, 135, 84], fontStyle: 'bold' } }, // DESPACHADO
+            ''  // Estado vacío para los hijos
+          ]);
+        });
+      }
+    });
+
+    autoTable(doc, {
+      startY: startYTabla,
+      head: [columnas],
       body: bodyData,
       theme: 'grid',
       margin: { bottom: 45 },
@@ -181,18 +144,9 @@ autoTable(doc, {
         1: { halign: 'left', cellWidth: 30 },
         2: { halign: 'left', cellWidth: 'auto' },
         3: { halign: 'center', cellWidth: 15 },
-        4: { halign: 'center', cellWidth: 12, fontStyle: 'bold' },
-        5: { halign: 'center', cellWidth: 12, fontStyle: 'bold' },
-        6: { halign: 'center', cellWidth: 22, fontStyle: 'bold' }
-      },
-      didParseCell: function (data) {
-        if (data.section === 'body' && data.column.index === 6 && data.cell.raw !== undefined) {
-            if (data.cell.raw === 'ENTREGADO') {
-                data.cell.styles.textColor = [25, 135, 84]; // Verde
-            } else if (data.cell.raw === 'PENDIENTE') {
-                data.cell.styles.textColor = [220, 53, 69]; // Rojo
-            }
-        }
+        4: { halign: 'center', cellWidth: 12 },
+        5: { halign: 'center', cellWidth: 12 },
+        6: { halign: 'center', cellWidth: 25 }
       }
     });
 
@@ -217,10 +171,10 @@ autoTable(doc, {
     // --- PIE DE PÁGINA ---
     const pageCount = doc.getNumberOfPages();
     for(let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text(`Página ${i} de ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      doc.text(`Página ${i} de ${pageCount}`, pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: 'center' });
     }
 
     const nombreArchivo = `Solicitud #${data.nombreProyecto}`;
@@ -228,9 +182,7 @@ autoTable(doc, {
       title: nombreArchivo
     });
 
-
     const blob = doc.output('blob');
     return URL.createObjectURL(blob);
   }
 }
-

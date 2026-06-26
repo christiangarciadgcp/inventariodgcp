@@ -38,6 +38,11 @@ public class ProductoController {
         return productoService.listarProductosActivos();
     }
 
+    @GetMapping("/genericos")
+    public List<Producto>listarProductosGenericos(){
+        return productoService.listarProductosGenericos();
+    }
+
     @GetMapping("/{id}")
     public Optional<Producto> buscarProductoPorId(@PathVariable Integer id){
         return productoService.buscarProductoPorId(id);
@@ -84,7 +89,6 @@ public class ProductoController {
     @PostMapping("/carga-masiva")
     public ResponseEntity<?> cargaMasiva(@RequestParam("file") MultipartFile file) {
         try {
-            // Capturamos la lista de productos devuelta por el servicio
             List<com.sistemainventario.inventario.model.Producto> guardados = productoExcelService.procesarCargaMasiva(file);
             
             // Retornamos un mapa estructurado con la cantidad real procesada

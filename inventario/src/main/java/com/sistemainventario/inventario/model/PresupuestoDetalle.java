@@ -1,14 +1,6 @@
 package com.sistemainventario.inventario.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -31,7 +23,13 @@ public class PresupuestoDetalle {
     @JoinColumn(name = "idpresupuesto", nullable = false)
     private Presupuesto presupuesto;
 
+    // LO QUE PIDIÓ EL TÉCNICO (Puede ser genérico)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idproductopresupuesto", nullable = false)
     private Producto producto;
+
+    // LO QUE REALMENTE SALIÓ FÍSICAMENTE DE BODEGA
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_producto_fisico")
+    private Producto productoFisico;
 }

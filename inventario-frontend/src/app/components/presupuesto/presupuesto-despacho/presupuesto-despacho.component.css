@@ -1,0 +1,145 @@
+:host {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0 !important;
+}
+
+.container-wide {
+  max-width: 100%;
+  margin-top: 24px;
+}
+
+.custom-card {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  background: white;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+/* Scroll para la tabla */
+.table-responsive {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0 !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mat-mdc-table {
+  background: transparent;
+  min-width: 800px;
+  width: 100% !important;
+}
+
+/* Cabecera degradada */
+.mat-mdc-header-row {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-bottom: 2px solid #f1f3f5;
+  height: 48px;
+}
+
+.mat-mdc-header-cell {
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Filas y Hover */
+.mat-mdc-row {
+  height: 55px;
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-row:hover {
+  background-color: #f8faff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  z-index: 1;
+  position: relative;
+}
+
+.mat-mdc-cell {
+  font-size: 0.9rem;
+  color: #344767;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb !important;
+}
+
+.col-acciones {
+  width: 250px;
+  min-width: 200px;
+  max-width: 250px;
+  text-align: center;
+  padding-right: 24px !important;
+  overflow: visible !important;
+}
+
+/* Círculo inicial de producto */
+.avatar-item {
+  width: 36px;
+  height: 36px;
+  background-color: #e8eaf6;
+  color: #3f51b5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* Botones y fondos primarios */
+.bg-selector {
+  background: linear-gradient(#031e3f 0%, #153863 100%) !important;
+}
+
+.btn-nuevo {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+  border: none;
+  height: 40px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.btn-cancelar {
+  color: #6c757d !important;
+  border-color: #dee2e6 !important;
+}
+
+/* Badges de Estatus */
+.badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-success-subtle { background-color: #d1e7dd; }
+.text-success { color: #0f5132; }
+.border-success-subtle { border-color: #badbcc; }
+
+.bg-danger-subtle { background-color: #f8d7da; }
+.text-danger { color: #842029; }
+.border-danger-subtle { border-color: #f5c2c7; }
+
+.icon-tiny {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.icon-success {
+  color: #2e7d32 !important;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}

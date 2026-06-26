@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { DespachoReporteDTO, Presupuesto, PresupuestoCreacionDTO, PresupuestoRevisionItem,PresupuestoDetalle } from '../models/presupuesto';
+import { DespachoReporteDTO, Presupuesto, DespachoPayloadDTO, PresupuestoCreacionDTO, PresupuestoRevisionItem,PresupuestoDetalle } from '../models/presupuesto';
 import { environment } from '../../environments/environment.development';
 
 
@@ -58,8 +58,8 @@ export class PresupuestoService {
     return this.http.get<Presupuesto[]>(`${this.apiUrl}/estado/${estado}`);
   }
 
-  despacharPresupuesto(idPresupuesto: number, idUsuario: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${idPresupuesto}/despachar?idUsuario=${idUsuario}`, {});
+  despacharPresupuesto(idPresupuesto: number, payload: DespachoPayloadDTO): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${idPresupuesto}/despachar`, payload);
   }
 
   obtenerDatosReporte(id: number): Observable<DespachoReporteDTO> {

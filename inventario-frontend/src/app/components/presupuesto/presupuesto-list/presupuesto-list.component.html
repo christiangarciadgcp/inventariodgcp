@@ -33,7 +33,7 @@
   <div class="d-flex flex-wrap align-items-center gap-3 mb-4 px-2">
 
     <div class="flex-grow-1" style="min-width: 350px;">
-      <mat-tab-group mat-align-tabs="start" (selectedIndexChange)="onTabChange($event)">
+      <mat-tab-group mat-align-tabs="start" [selectedIndex]="currentTab" (selectedIndexChange)="onTabChange($event)">
         <mat-tab>
           <ng-template mat-tab-label>
             <mat-icon class="me-2 text-warning">pending_actions</mat-icon>PENDIENTES
@@ -154,14 +154,18 @@
                   <mat-icon>format_list_bulleted</mat-icon>
                 </button>
 
-                @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO') && esEncargadoInventario())) {
+                <!--SI SE REQUIERE EDITAR DESPUES DE DESPACHADO-->
+               <!-- @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO') && esEncargadoInventario())) {-->
+
+                @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO'  && esEncargadoInventario())) {
                   <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
-                          [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]">
+                          [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
+                          [queryParams]="{ returnTab: currentTab }">
                     <mat-icon>edit</mat-icon>
                   </button>
                 }
 
-                @if (element.estado === 'PENDIENTE' && esEncargadoInventario()) {
+<!--                @if (element.estado === 'PENDIENTE' && esJefeUTDI()) {
                   <button mat-icon-button class="action-btn text-success" matTooltip="Aprobar Solicitud"
                           (click)="aprobarSolicitud(element.idPresupuesto)">
                     <mat-icon>check_circle_outline</mat-icon>
@@ -171,11 +175,24 @@
                           (click)="cancelarSolicitud(element.idPresupuesto)">
                     <mat-icon>block_outline</mat-icon>
                   </button>
+                }-->
+                @if (element.estado === 'PENDIENTE' && esJefeUTDI()) {
+                  <button mat-icon-button class="action-btn revision-color" matTooltip="Evaluar Presupuesto"
+                          (click)="evaluarPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
+                    <mat-icon>fact_check</mat-icon>
+                  </button>
                 }
+
+<!--                @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
+                  <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
+                          (click)="revisionPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
+                    <mat-icon>inventory</mat-icon>
+                  </button>
+                }-->
 
                 @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
                   <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
-                          (click)="revisionPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
+                          [routerLink]="['/presupuesto/despachar', element.idPresupuesto]">
                     <mat-icon>inventory</mat-icon>
                   </button>
                 }
