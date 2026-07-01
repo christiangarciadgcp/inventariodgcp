@@ -94,7 +94,7 @@ export class InventarioAjusteComponent {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '400px',
       data: {
         titulo: '¿Está seguro de realizar este ajuste?',
         mensaje: 'Esta acción no se puede deshacer',

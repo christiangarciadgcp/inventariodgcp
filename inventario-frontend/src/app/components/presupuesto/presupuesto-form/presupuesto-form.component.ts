@@ -84,13 +84,18 @@ export class PresupuestoFormComponent implements OnInit {
 
 
     this.productoService.getProductosGenericos().subscribe(data => {
-      this.listaProductos.set(data);
-      this.productosFiltrados.set(data);
+
+      const dataOrdenada = data.sort((a, b) =>
+        a.nombreproducto.localeCompare(b.nombreproducto, 'es', { sensitivity: 'base' })
+      );
+
+      this.listaProductos.set(dataOrdenada);
+      this.productosFiltrados.set(dataOrdenada);
     });
 
     this.ubicacionService.getUbicacionesActivas().subscribe(data => {
       this.listaUbicaciones.set(data);
-    })
+    });
 
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {

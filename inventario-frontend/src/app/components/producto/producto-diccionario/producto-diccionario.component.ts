@@ -50,7 +50,14 @@ export class ProductoDiccionarioComponent implements OnInit {
     });
 
     this.dataSource.filterPredicate = (data: Producto, filter: string) => {
-      const searchStr = (data.nombreproducto + data.skuproducto + data.categoria?.nombrecategoria + data.modelo?.marca?.nombremarca).toLowerCase();
+
+      const searchStr = (
+        data.nombreproducto +
+        data.skuproducto +
+        (data.categoria?.nombrecategoria ?? '') +
+        (data.modelo?.marca?.nombremarca ?? '')
+      ).toLowerCase();
+
       return searchStr.includes(filter);
     };
 
@@ -80,7 +87,16 @@ export class ProductoDiccionarioComponent implements OnInit {
 
   cargarProductos() {
     this.productoService.getProductosActivos().subscribe({
-      next: (data) => this.productos.set(data),
+      next: (data) => {
+
+        const productosGenericos = data.filter(producto => producto.esGenerico);
+
+        const dataOrdenada = productosGenericos.sort((a, b) =>
+          a.nombreproducto.localeCompare(b.nombreproducto, 'es', { sensitivity: 'base' })
+        );
+
+        this.productos.set(dataOrdenada);
+      },
       error: (err) => {
         const msg = err.error?.mensaje || 'Error al cargar los materiales/equipos';
         this.mensaje.open(msg, 'warning');

@@ -100,7 +100,8 @@
                                 @for (p of productosFiltrados(); track p.idProducto) {
                                     <mat-option [value]="p">
                                         <span class="text-muted">{{ p.nombreproducto }}</span>
-                                        <small class="fw-bold  ms-2">{{ p.skuproducto }}</small>
+                                      <!--PARA QUE APAREZCA EL SKU DEL PRODUCTO-->
+                                        <!--<small class="fw-bold  ms-2">{{ p.skuproducto }}</small>-->
                                     </mat-option>
                                 }
 
@@ -152,7 +153,8 @@
                                 </div>
                                 <div>
                                     <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
-                                    <div class="small text-muted">{{ element.producto.skuproducto || 'GEN-001' }}</div>
+                                  <!--PARA QUE APAREZCA EL SKU DEL PRODUCTO-->
+                                    <!--<div class="small text-muted">{{ element.producto.skuproducto || 'GEN-001' }}</div>-->
                                 </div>
                             </div>
                         </td>

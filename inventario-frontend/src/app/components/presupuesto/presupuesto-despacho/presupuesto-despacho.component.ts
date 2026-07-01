@@ -138,7 +138,7 @@ export class PresupuestoDespachoComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '400px',
       data: {
         titulo: '¿Desea confirmar este despacho?',
         mensaje: 'Los materiales seleccionados saldrán físicamente de Bodega de Despacho.',

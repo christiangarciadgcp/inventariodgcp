@@ -70,7 +70,6 @@ export class InventarioDetalleComponent implements OnInit {
           case 'producto':
             return item.producto?.nombreproducto;
           case 'categoria':
-            // Si no hay categoría, devolvemos un string vacío para que no falle al ordenar
             return item.producto?.categoria?.nombrecategoria || '';
           case 'cantidad':
             return item.cantidad_actual;
@@ -165,10 +164,16 @@ export class InventarioDetalleComponent implements OnInit {
       return;
     }
 
+    const datosConStock = this.dataSource.data.filter((item: any) => item.cantidad_actual > 0);
+    if (datosConStock.length === 0) {
+      this.mensaje.open('No hay productos con existencias reales para imprimir.', 'warning');
+      return;
+    }
+
     const nombre = this.nombreBodega ? this.nombreBodega : 'Bodega #' + this.idBodega;
 
     // Le pasamos la data que YA está en la tabla (this.dataSource.data)
-    const urlBlob = this.reporteInventario.generarPdfInventarioBodega(nombre, this.dataSource.data);
+    const urlBlob = this.reporteInventario.generarPdfInventarioBodega(nombre, datosConStock);
 
     // Abrimos el modal tal cual lo haces en Solicitudes
     this.dialog.open(PdfViewerDialogComponent, {

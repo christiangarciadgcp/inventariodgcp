@@ -27,6 +27,9 @@ import {Utils} from '../../../../core/utils';
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>Nombre Sugerido del Producto</mat-label>
             <input matInput formControlName="nombreSugerido" (input)="onInputMayusculas($event, 'nombreSugerido')" placeholder="Ej. Monitor Dell 24 pulgadas">
+            @if (form.get('nombreSugerido')?.hasError('required') && form.get('nombreSugerido')?.touched) {
+              <mat-error>Este campo es obligatorio</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -45,14 +48,17 @@ import {Utils} from '../../../../core/utils';
           <mat-form-field appearance="outline" class="w-100">
             <mat-label>¿Para qué se necesita? (Justificación)</mat-label>
             <textarea matInput formControlName="justificacion" rows="3" placeholder="Explique brevemente el motivo de la sugerencia..."></textarea>
+            @if (form.get('justificacion')?.hasError('required') && form.get('justificacion')?.touched) {
+              <mat-error>Este campo es obligatorio</mat-error>
+            }
           </mat-form-field>
         </div>
       </form>
     </mat-dialog-content>
 
     <mat-dialog-actions align="end" class="pb-3 pe-3">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-flat-button color="primary" [disabled]="form.invalid || guardando" (click)="guardar()">
+      <button mat-button class="btn-cancel" (click)="dialogRef.close()">Cancelar</button>
+      <button mat-flat-button class="btn-confirm" color="primary" [disabled]="form.invalid || guardando" (click)="guardar()">
         {{ guardando ? 'Enviando...' : 'Enviar Sugerencia' }}
       </button>
     </mat-dialog-actions>

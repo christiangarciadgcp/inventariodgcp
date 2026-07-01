@@ -69,7 +69,7 @@ export class PresupuestoAprobacionComponent implements OnInit {
   aprobarSolicitud(){
     const idUsuario = this.authService.getIdUsuarioActual();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '400px',
       data: {
         titulo: '¿Desea aprobar este presupuesto?',
         mensaje: 'La solicitud pasará a estado APROBADO',
@@ -97,7 +97,7 @@ export class PresupuestoAprobacionComponent implements OnInit {
   cancelarSolicitud(){
     const idUsuario = this.authService.getIdUsuarioActual();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '400px',
       data: {
         titulo: '¿Desea cancelar este presupuesto?',
         mensaje: 'La solicitud pasará a estado CANCELADO.',
