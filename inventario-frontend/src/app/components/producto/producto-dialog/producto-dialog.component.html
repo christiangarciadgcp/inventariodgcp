@@ -2,10 +2,6 @@
 
 <mat-dialog-content class="dialog-scroll-container">
 
-  <p class="text-secondary small mb-3">
-    {{esEdicion ? 'Modificar los datos de este producto' : 'Ingrese los datos para registrar un Nuevo Producto en el sistema'}}
-  </p>
-
   <form [formGroup]="form" class="row g-2">
 
     <div class="col-md-12 mb-3 mt-1 pb-3 border-bottom">
@@ -20,12 +16,11 @@
         <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <mat-label>Vincular a Producto Base</mat-label>
           <mat-select formControlName="idProductoPadre">
-            <mat-option [value]="null">--- Ninguno (Producto Independiente) ---</mat-option>
+            <mat-option [value]="null">Ninguno</mat-option>
             @for (g of listaGenericos; track g.idProducto) {
               <mat-option [value]="g.idProducto">{{ g.nombreproducto }}</mat-option>
             }
           </mat-select>
-          <mat-hint>Si este producto se puede despachar cuando piden un genérico, selecciónelo aquí.</mat-hint>
         </mat-form-field>
       </div>
     }

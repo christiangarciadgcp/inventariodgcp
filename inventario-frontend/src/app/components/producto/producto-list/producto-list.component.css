@@ -120,6 +120,9 @@
 .text-danger { color: #842029; }
 .border-danger-subtle { border-color: #f5c2c7; }
 
+.bg-warning-subtle { background-color: #fff8dd; }
+.text-warning { color: #d6a800 !important; }
+
 .icon-tiny {
   font-size: 14px;
   width: 14px;

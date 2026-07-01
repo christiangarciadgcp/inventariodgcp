@@ -74,9 +74,11 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>SKU </th>
                     <td mat-cell *matCellDef="let element">
                         <div class="d-flex align-items-center">
-                            <span class="badge bg-light text-dark border font-monospace" style="font-size: 0.85rem; letter-spacing: 1px;">
-                                {{element.skuproducto}}
-                            </span>
+                          <span class="badge border font-monospace"
+                              [ngClass]="(element.productoPadre !== null || element.esGenerico) ? 'bg-dark-subtle text-dark border-dark-subtle' : 'bg-light text-dark border-dark-subtle'"
+                              style="font-size: 0.85rem; letter-spacing: 2px;">
+                              {{element.skuproducto}}
+                          </span>
                         </div>
                     </td>
                 </ng-container>

@@ -86,8 +86,8 @@
                   <span class="badge-soft"
                         [ngClass]="{
                           'stock-high': element.cantidad_actual > 10,
-                          'stock-low': element.cantidad_actual <= 10 && element.cantidad_actual >=3,
-                          'stock-empty': element.cantidad_actual < 3
+                          'stock-info': element.cantidad_actual <= 10 && element.cantidad_actual >=3,
+                          'stock-low': element.cantidad_actual < 3
                         }">
                       {{ element.cantidad_actual }} {{ element.producto.unidadMedida?.abreviaturaunidadmedida | lowercase }}
                   </span>

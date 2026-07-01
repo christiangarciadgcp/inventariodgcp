@@ -64,6 +64,12 @@
     border-color: #d1fbe4;
 }
 
+.stock-info {
+  background-color: #e8fffc;
+  color: #0fa0ba;
+  border-color: #d1fbfb;
+}
+
 /* Amarillo (Estilo Pendiente) -> Stock Bajo */
 .stock-low {
     background-color: #fff8dd;
