@@ -127,11 +127,13 @@ public class ProductoService {
         producto.setModelo(modelo);
         producto.setProveedor(proveedor);
 
+        
         producto.setEsGenerico(dto.getEsGenerico() != null ? dto.getEsGenerico() : false);
         if (dto.getIdProductoPadre() != null) {
             producto.setProductoPadre(productoRepository.findById(dto.getIdProductoPadre()).orElse(null));
         }
-
+        producto.setEsNuevo(dto.getEsNuevo() != null ? dto.getEsNuevo() : true);
+        
         producto.setSkuproducto("TMP-" + java.util.UUID.randomUUID().toString().substring(0,8));
 
         Producto productoGuardado = productoRepository.save(producto);
@@ -219,6 +221,8 @@ public class ProductoService {
         } else {
             productoActual.setProductoPadre(null);
         }
+
+        productoActual.setEsNuevo(dto.getEsNuevo() != null ? dto.getEsNuevo() : true);
 
         productoActual.setSkuproducto(generarSku(productoActual));
 

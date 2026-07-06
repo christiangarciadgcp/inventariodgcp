@@ -67,6 +67,9 @@ public class Producto {
     @Column(name = "es_generico")
     private Boolean esGenerico = false;
 
+    @Column(name = "esnuevo", columnDefinition = "boolean default false")
+    private Boolean esNuevo = true;
+
     // --- RELACIÓN PADRE (Genérico) -> HIJO (Físico) ---
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto_padre")

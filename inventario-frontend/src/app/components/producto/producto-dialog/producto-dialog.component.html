@@ -4,11 +4,28 @@
 
   <form [formGroup]="form" class="row g-2">
 
-    <div class="col-md-12 mb-3 mt-1 pb-3 border-bottom">
-      <mat-slide-toggle formControlName="esGenerico" color="primary">
-        <strong>Producto Base</strong> <br>
-        <small class="text-muted">Marque esta opción si este registro solo sirve para que los técnicos soliciten el producto base, pero no manejará existencias reales.</small>
-      </mat-slide-toggle>
+    <div class="col-12 mb-3 mt-1 pb-3 border-bottom">
+      <div class="row align-items-center">
+
+        <div class="col-md-6">
+          <mat-slide-toggle formControlName="esGenerico" color="primary">
+            <strong>Producto Base</strong> <br>
+          </mat-slide-toggle>
+        </div>
+
+        @if (!form.get('esGenerico')?.value) {
+          <div class="col-md-6">
+            <mat-slide-toggle formControlName="esNuevo" color="primary">
+              <strong>Condición</strong>
+              <span class="badge ms-2"
+                    [ngClass]="form.get('esNuevo')?.value ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'">
+            {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
+          </span>
+            </mat-slide-toggle>
+          </div>
+        }
+
+      </div>
     </div>
 
     @if (!form.get('esGenerico')?.value) {
@@ -138,6 +155,7 @@
         <textarea matInput formControlName="descripcionproducto" rows="4"></textarea>
       </mat-form-field>
     </div>
+
 
     <div class="col-12 mt-1 mb-1">
       <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>

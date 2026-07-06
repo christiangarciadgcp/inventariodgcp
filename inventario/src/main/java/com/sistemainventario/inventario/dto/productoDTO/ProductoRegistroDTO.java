@@ -18,6 +18,7 @@ public class ProductoRegistroDTO {
         public Integer idUnidadMedida;
         public Integer idModelo;
 
+        public Boolean esNuevo;
         public Boolean esGenerico;
         public Integer idProductoPadre;
 

@@ -82,7 +82,8 @@ export class ProductoDialogComponent implements OnInit {
     idMarca : [null, Validators.required],
     idModelo : [null, Validators.required],
     esGenerico: [false],
-    idProductoPadre: [null]
+    idProductoPadre: [null],
+    esNuevo: [false]
   });
 
 
@@ -249,7 +250,8 @@ export class ProductoDialogComponent implements OnInit {
         idUnidadMedida: p.unidadMedida?.idUnidadMedida,
         idMarca : p.modelo?.marca?.idMarca,
         esGenerico: p.esGenerico,
-        idProductoPadre: p.productoPadre?.idProducto
+        idProductoPadre: p.productoPadre?.idProducto,
+        esNuevo: p.esNuevo !== undefined ? p.esNuevo : false
       });
 
       setTimeout(() => {
@@ -381,7 +383,8 @@ export class ProductoDialogComponent implements OnInit {
       idUnidadMedida: valores.idUnidadMedida,
       idModelo: valores.idModelo,
       esGenerico: valores.esGenerico,
-      idProductoPadre: valores.esGenerico ? null : valores.idProductoPadre
+      idProductoPadre: valores.esGenerico ? null : valores.idProductoPadre,
+      esNuevo: valores.esNuevo
     };
 
     //console.log(valores);
