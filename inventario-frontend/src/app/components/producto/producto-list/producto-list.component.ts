@@ -142,6 +142,12 @@ export class ProductoListComponent implements OnInit {
       data: producto ? { producto: producto } : null
     });
 
+    dialogRef.keydownEvents().subscribe(event => {
+      if (event.key === 'Escape') {
+        dialogRef.close(false);
+      }
+    });
+
     dialogRef.afterClosed().subscribe(exito => {
 
       if (exito === true) {
