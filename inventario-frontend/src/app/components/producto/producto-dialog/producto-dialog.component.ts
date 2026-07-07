@@ -235,7 +235,7 @@ export class ProductoDialogComponent implements OnInit {
         this.imagenesActuales = [...p.imagenes];
       }
 
-      console.log("IMÁGENES DESDE EL BACKEND:", this.imagenesActuales);
+      //console.log("IMÁGENES DESDE EL BACKEND:", this.imagenesActuales);
 
       this.form.patchValue({
         nombreproducto: p.nombreproducto,

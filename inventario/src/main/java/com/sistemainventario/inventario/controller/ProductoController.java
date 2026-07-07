@@ -89,7 +89,7 @@ public class ProductoController {
     @PostMapping("/carga-masiva")
     public ResponseEntity<?> cargaMasiva(@RequestParam("file") MultipartFile file) {
         try {
-            List<com.sistemainventario.inventario.model.Producto> guardados = productoExcelService.procesarCargaMasiva(file);
+            List<Producto> guardados = productoExcelService.procesarCargaMasiva(file);
             
             // Retornamos un mapa estructurado con la cantidad real procesada
             return ResponseEntity.ok().body(java.util.Map.of(

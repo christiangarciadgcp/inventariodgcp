@@ -251,7 +251,7 @@ public class PresupuestoService {
                         s.setModeloProducto(hijo.getModelo() != null ? hijo.getModelo().getNombremodelo() : "SIN ESPECIFICAR");
                         s.setSerieProducto(hijo.getSerieproducto());
                         s.setInventarioProducto(hijo.getInventarioproducto());
-
+                        s.setEsNuevo(hijo.getEsNuevo());
                         s.setStockEnDespacho(enDespacho);
                         s.setStockGlobal(enGlobal);
                         s.setDesgloseBodegas(desglose);
@@ -285,7 +285,7 @@ public class PresupuestoService {
                 s.setModeloProducto(prodFisicoUnico.getModelo() != null ? prodFisicoUnico.getModelo().getNombremodelo() : "SIN ESPECIFICAR");
                 s.setSerieProducto(prodFisicoUnico.getSerieproducto());
                 s.setInventarioProducto(prodFisicoUnico.getInventarioproducto());
-
+                s.setEsNuevo(prodFisicoUnico.getEsNuevo());
 
                 s.setStockEnDespacho(enDespacho);
                 s.setStockGlobal(enGlobal);

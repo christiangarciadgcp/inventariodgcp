@@ -35,6 +35,7 @@ export interface ProductoFisicoDisponibleDTO {
   skuProducto: string;
   stockEnDespacho: number;
   stockGlobal: number;
+  esNuevo?: boolean;
   desgloseBodegas: StockBodega[];
 }
 

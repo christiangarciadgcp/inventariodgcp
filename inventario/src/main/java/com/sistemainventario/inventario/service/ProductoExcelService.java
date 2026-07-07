@@ -55,13 +55,14 @@ public class ProductoExcelService {
                 if (nombreProducto.isEmpty()) break; // Fin del archivo
 
                 String nombreCategoria = obtenerValorCelda(row, 1, formatter);
-                String nombreMarca = obtenerValorCelda(row, 2, formatter); // <-- SOLUCIÓN 2: Capturamos la Marca
+                String nombreMarca = obtenerValorCelda(row, 2, formatter); 
                 String nombreModelo = obtenerValorCelda(row, 3, formatter);
                 String nombreProveedor = obtenerValorCelda(row, 4, formatter);
                 String nombreUnidad = obtenerValorCelda(row, 5, formatter);
                 String serie = obtenerValorCelda(row, 6, formatter);
                 String inventarioStr = obtenerValorCelda(row, 7, formatter);
                 String descripcion = obtenerValorCelda(row, 8, formatter);
+                String condicion = obtenerValorCelda(row, 9, formatter);
 
                 // 1. BÚSQUEDAS EN LA BASE DE DATOS
                 Categoria categoria = categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreCategoria)
@@ -80,6 +81,11 @@ public class ProductoExcelService {
                             .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Proveedor no encontrado -> " + nombreProveedor));
                 }
 
+                boolean esNuevo = true;
+                if (condicion.equalsIgnoreCase("USADO") || condicion.equalsIgnoreCase("NO")) {
+                    esNuevo = false;
+                }
+
                 // 2. ARMAR EL DTO
                 ProductoRegistroDTO dto = new ProductoRegistroDTO();
                 dto.setNombreproducto(nombreProducto);
@@ -94,6 +100,9 @@ public class ProductoExcelService {
                 dto.setSerieproducto(serie);
                 dto.setInventarioproducto(inventarioStr);
                 dto.setDescripcionproducto(descripcion);
+
+                dto.setEsNuevo(esNuevo);
+                dto.setEsGenerico(false);
                 
                 // Precios en Cero
                 dto.setPreciocostoproducto(java.math.BigDecimal.ZERO);

@@ -1,4 +1,4 @@
-import { Component, inject, Inject, OnInit, ChangeDetectorRef } from '@angular/core'; // <-- 1. Agregado ChangeDetectorRef
+import { Component, inject, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -46,10 +46,17 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
     if (!this.searchTerm) {
       this.sustitutosFiltrados = [...this.itemGenerico.sustitutosDisponibles];
     } else {
-      this.sustitutosFiltrados = this.itemGenerico.sustitutosDisponibles.filter((sust: any) =>
-        sust.nombreProducto.toLowerCase().includes(this.searchTerm) ||
-        sust.skuProducto.toLowerCase().includes(this.searchTerm)
-      );
+      this.sustitutosFiltrados = this.itemGenerico.sustitutosDisponibles.filter((sust: any) => {
+
+        const condicionStr = sust.esNuevo ? 'nuevo' : 'usado';
+
+        return (
+          (sust.nombreProducto && sust.nombreProducto.toLowerCase().includes(this.searchTerm)) ||
+          (sust.skuProducto && sust.skuProducto.toLowerCase().includes(this.searchTerm)) ||
+          condicionStr.includes(this.searchTerm)
+        );
+
+      });
     }
 
     this.cdr.detectChanges();
@@ -96,9 +103,13 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
   }
 
   verDetalles(sust: any) {
+
+    const condicionTexto = sust.esNuevo ? '<span style="color: #198754; font-weight: bold;">NUEVO</span>' : '<span style="color: #ffc107; font-weight: bold;">USADO</span>';
+
     let mensajeHTML = `
       <div style="text-align: left; font-size: 0.95rem; line-height: 1;">
         <p class="mb-2 fs-6 text-dark text-center"><strong>Detalles Técnicos</strong></p>
+        <p class="mb-1"><strong>Condición:</strong> ${condicionTexto}</p>
         <p class="mb-1"><strong>Marca:</strong> ${sust.marcaProducto || 'SIN ESPECIFICAR'}</p>
         <p class="mb-2"><strong>Modelo:</strong> ${sust.modeloProducto || 'SIN ESPECIFICAR'}</p>
         <div style="border-top: 1px solid #dee2e6; padding-top: 1px;">

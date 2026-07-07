@@ -29,7 +29,7 @@ public class PresupuestoRevisionDTO {
         private String inventarioProducto;
         private Integer stockEnDespacho;
         private Integer stockGlobal;
-
+        private Boolean esNuevo;
         private List<StockBodegaDTO> desgloseBodegas;
     }
 }
