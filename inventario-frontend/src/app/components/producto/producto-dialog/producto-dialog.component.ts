@@ -156,7 +156,12 @@ export class ProductoDialogComponent implements OnInit {
     this.provService.getProveedoresActivos().subscribe(data => this.listaProveedores = data);
     this.unitService.getUnidadesMedidaActivas().subscribe(data => this.listaUnidades = data);
 
-    this.productoService.getProductosGenericos().subscribe(data => this.listaGenericos = data);
+    this.productoService.getProductosGenericos().subscribe(data => {
+      // Ordenar la lista alfabéticamente por nombreproducto antes de asignarla a la variable
+      this.listaGenericos = data.sort((a, b) =>
+        a.nombreproducto.localeCompare(b.nombreproducto, 'es', { sensitivity: 'base' })
+      );
+    });
 
     this.marcaService.getMarcasActivas().subscribe(data => {
       this.listaMarcas = data;
