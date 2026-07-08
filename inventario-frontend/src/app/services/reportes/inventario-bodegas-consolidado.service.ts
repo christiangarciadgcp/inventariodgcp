@@ -57,7 +57,7 @@ export class InventarioBodegasConsolidadoService {
       headStyles: { fillColor: [21, 56, 99], textColor: 255, fontStyle: 'bold', halign: 'center' },
       styles: { fontSize: 8, cellPadding: 2.5 },
       columnStyles: {
-        0: { cellWidth: 8, halign: 'center' },
+        0: { cellWidth: 'auto', halign: 'center' },
         1: { cellWidth: 'auto' },
         2: { cellWidth: 'wrap', halign: 'left' },
         5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
