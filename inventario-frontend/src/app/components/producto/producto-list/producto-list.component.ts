@@ -34,7 +34,7 @@ import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/product
 })
 export class ProductoListComponent implements OnInit {
 
-  displayedColumns: string[] = ['id', 'sku', 'ser-inv', 'nombre', 'categoria', 'marca', 'proveedor', 'estado', 'acciones'];
+  displayedColumns: string[] = ['id', 'sku', 'nombre', 'categoria', 'marca', 'ser-inv', 'proveedor', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
   cargandoExcel = false;
