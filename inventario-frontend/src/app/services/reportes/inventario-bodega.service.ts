@@ -73,7 +73,7 @@ export class InventarioBodegaService {
       headStyles: { fillColor: [21, 56, 99], textColor: 255, fontStyle: 'bold',halign: 'center' },
       styles: { fontSize: 8, cellPadding: 3 },
       columnStyles: {
-        0: { cellWidth: 10, halign: 'center' },
+        0: { cellWidth: 'auto', halign: 'center' },
         4: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
       }
     });
