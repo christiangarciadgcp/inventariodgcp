@@ -41,10 +41,16 @@ export class InventarioAjusteComponent {
   // Control del Tipo de Acción
   tipoAccion = signal<'ENTRADA' | 'SALIDA'>('ENTRADA');
 
+  private fechaHoy = new Date().toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
   // Formulario
   form = this.fb.group({
-    cantidad: [null, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
-    motivo: ['', [Validators.required]]
+    cantidad: [1, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
+    motivo: [`Carga de Datos Inventario ${this.fechaHoy}`, [Validators.required]]
   });
 
   // --- SOLUCIÓN DE REACTIVIDAD ---
