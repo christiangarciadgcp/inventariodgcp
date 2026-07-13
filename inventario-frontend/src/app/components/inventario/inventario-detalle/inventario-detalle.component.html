@@ -1,34 +1,77 @@
 <div class="container-wide px-5 mt-4">
 
-    <div class="d-flex align-items-center gap-3 mb-4">
-        <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/inventario">
-            <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/inventario">
+      <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+    </button>
+
+    <div>
+      <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Detalle de Existencias</h6>
+      <h2 class="fw-bold text-dark m-0">
+        {{ nombreBodega ? nombreBodega : 'Bodega #' + idBodega }}
+      </h2>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+
+      <button mat-raised-button class="rounded-pill px-4" style="height: 48px;" (click)="toggleBuscadorMaestro()">
+        <mat-icon class="me-2">add_box</mat-icon> Ingresar Material
+      </button>
+
+      <button mat-raised-button class="rounded-pill px-4" style="height: 48px;" (click)="imprimirReporte()">
+        <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon> Reporte Existencias
+      </button>
+
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar en bodega..." #input autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  @if (mostrarBuscador) {
+    <div class="mb-4 animate-fade-in">
+
+      <label class="fw-bold text-dark mb-2 ms-3" style="font-size: 0.80rem; letter-spacing: 1px; text-transform: uppercase;">
+        Agregar al inventario
+      </label>
+
+      <div class="search-elegant-master shadow-sm">
+
+        <input type="text" class="search-input-master"
+               placeholder="Escriba el SKU, Nombre o número de serie del Equipo o Material..."
+               [formControl]="buscadorCtrl" [matAutocomplete]="auto" autocomplete="off" autofocus>
+
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="productoMaestroSeleccionado($event)">
+          @for (producto of (productosFiltrados | async) ?? []; track producto.idProducto) {
+            <mat-option [value]="producto">
+              <div class="d-flex align-items-center w-100">
+                <span class="badge border font-monospace bg-light text-dark border-dark-subtle me-3" style="font-size: 0.75rem;">
+                  {{ producto.skuproducto }}
+                </span>
+                <span class="fw-bold text-dark me-2">{{ producto.nombreproducto }}</span>
+                @if(producto.serieproducto) {
+                  <small class="text-muted fst-italic"> (Serie: {{producto.serieproducto}})</small>
+                }
+              </div>
+            </mat-option>
+          }
+        </mat-autocomplete>
+
+        <button mat-icon-button class="text-muted me-2" (click)="toggleBuscadorMaestro()" matTooltip="Cancelar">
+          <mat-icon style="margin-bottom: 5px;">close</mat-icon>
         </button>
 
-        <div>
-            <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Detalle de Existencias</h6>
-            <h2 class="fw-bold text-dark m-0">
-                {{ nombreBodega ? nombreBodega : 'Bodega #' + idBodega }}
-            </h2>
+        <div class="search-btn-circle-master">
+          <mat-icon>search</mat-icon>
         </div>
 
-
-
-        <div class="ms-auto d-flex align-items-center gap-3">
-
-            <button mat-raised-button class="rounded-pill px-4" style="height: 48px;" (click)="imprimirReporte()">
-                <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon> Reporte Existencias
-            </button>
-
-          <div class="search-elegant m-0" style="width: 300px;">
-            <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
-            <div class="search-btn-circle">
-              <mat-icon>search</mat-icon>
-            </div>
-          </div>
-
-        </div>
+      </div>
     </div>
+  }
 
 <!--     <div class="row mb-4">
         <div class="col-md-4">

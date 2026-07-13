@@ -10,13 +10,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { startWith, map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { InventarioService } from '../../../services/inventario.service';
+import { ProductoService } from '../../../services/producto.service';
 import { InventarioAjusteComponent } from '../inventario-ajuste/inventario-ajuste.component';
 import { MatDialog } from '@angular/material/dialog';
 import { InventarioBodegaService } from '../../../services/reportes/inventario-bodega.service';
 import { Mensaje } from '../../../core/mensaje';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
+import { Producto } from '../../../models/producto';
 
 @Component({
   selector: 'app-inventario-detalle',
@@ -24,7 +30,7 @@ import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dia
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatSortModule,
     MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule,
-    MatCardModule, MatTooltipModule, RouterLink
+    MatCardModule, MatTooltipModule, RouterLink, MatAutocompleteModule, ReactiveFormsModule
   ],
   templateUrl: './inventario-detalle.component.html',
   styleUrl: './inventario-detalle.component.css',
@@ -32,13 +38,13 @@ import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dia
 export class InventarioDetalleComponent implements OnInit {
 
   private inventarioService = inject(InventarioService);
+  private productoService = inject(ProductoService);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private reporteInventario = inject(InventarioBodegaService);
   private mensaje = inject(Mensaje);
 
-  //displayedColumns: string[] = ['sku', 'producto', 'categoria', 'cantidad', 'costo', 'total'];
   displayedColumns: string[] = ['sku', 'producto', 'ser-inv', 'categoria', 'cantidad', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
@@ -50,7 +56,13 @@ export class InventarioDetalleComponent implements OnInit {
   totalValorizado: number = 0;
   cargando: boolean = true;
 
+  buscadorCtrl = new FormControl('');
+  productosMaestros: Producto[] = [];
+  productosFiltrados: Observable<Producto[]>;
+  mostrarBuscador = false;
+
   constructor() {
+
     effect(() => {
       const paginadorActual = this.paginator();
       const sortActual = this.sort();
@@ -65,25 +77,28 @@ export class InventarioDetalleComponent implements OnInit {
 
     this.dataSource.sortingDataAccessor = (item: any,property : string) => {
       switch(property){
-          case 'sku':
-            return item.producto?.skuproducto;
-          case 'producto':
-            return item.producto?.nombreproducto;
-          case 'ser-inv':
-            return item.producto?.serieproducto;
-          case 'categoria':
-            return item.producto?.categoria?.nombrecategoria || '';
-          case 'cantidad':
-            return item.cantidad_actual;
-          default:
-            return item[property];
+        case 'sku': return item.producto?.skuproducto;
+        case 'producto': return item.producto?.nombreproducto;
+        case 'ser-inv': return item.producto?.serieproducto;
+        case 'categoria': return item.producto?.categoria?.nombrecategoria || '';
+        case 'cantidad': return item.cantidad_actual;
+        default: return item[property];
       }
     };
+
+    // Filtro para el Autocomplete
+    this.productosFiltrados = this.buscadorCtrl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      map(value => {
+        const nombre = typeof value === 'string' ? value : (value as any)?.nombreproducto;
+        return nombre ? this._filtrarProductos(nombre) : this.productosMaestros.slice();
+      })
+    );
   }
 
   ngOnInit(): void {
-
-    //CONFIGURACIÓN DEL FILTRO PERSONALIZADO
     this.dataSource.filterPredicate = (data: any, filter: string) => {
       const datosAString = (
         data.producto.skuproducto +
@@ -92,11 +107,9 @@ export class InventarioDetalleComponent implements OnInit {
         data.producto.serieproducto +
         data.producto.inventarioproducto
       ).toLowerCase();
-
       return datosAString.includes(filter);
     };
 
-    //Obtener ID y cargar
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -104,26 +117,64 @@ export class InventarioDetalleComponent implements OnInit {
         this.cargarProductos(this.idBodega);
       }
     });
+
+    this.productoService.getProductosActivos().subscribe(data => {
+      this.productosMaestros = data.filter(p => !p.esGenerico);
+    });
+  }
+
+  private _filtrarProductos(nombre: string): Producto[] {
+    const filterValue = nombre.toLowerCase();
+    return this.productosMaestros.filter(p =>
+      p.nombreproducto.toLowerCase().includes(filterValue) ||
+      p.skuproducto.toLowerCase().includes(filterValue) ||
+      (p.serieproducto && p.serieproducto.toLowerCase().includes(filterValue))
+    );
+  }
+
+  displayFn(producto: Producto): string {
+    return producto && producto.nombreproducto ? `${producto.skuproducto} - ${producto.nombreproducto}` : '';
+  }
+
+  toggleBuscadorMaestro() {
+    this.mostrarBuscador = !this.mostrarBuscador;
+    if (!this.mostrarBuscador) {
+      this.buscadorCtrl.setValue('');
+    }
+  }
+
+  productoMaestroSeleccionado(event: any) {
+    const productoSeleccionado: Producto = event.option.value;
+    const existeEnBodega = this.dataSource.data.find((item: any) => item.producto.idProducto === productoSeleccionado.idProducto);
+
+    if (existeEnBodega) {
+      this.mensaje.open('El producto ya tiene registros en esta bodega. Utilice la tabla de abajo para ajustarlo.', 'info');
+      this.buscadorCtrl.setValue('');
+      return;
+    }
+
+    const elementoSimulado = {
+      producto: productoSeleccionado,
+      cantidad_actual: 0
+    };
+
+    this.abrirAjuste(elementoSimulado);
+
+    this.buscadorCtrl.setValue('');
+    this.mostrarBuscador = false;
   }
 
   cargarProductos(id: number) {
     this.cargando = true;
     this.inventarioService.listarInventarioPorBodega(id).subscribe({
       next: (data) => {
-
-        //CAPTURAR EL NOMBRE DE LA BODEGA
-        //Si hay productos, tomamos el nombre de la bodega del primer ítem
         if (data.length > 0) {
           this.nombreBodega = data[0].bodega.nombrebodega;
         }
-
         const inventarioFisico = data.filter((item : any) => !item.producto.esGenerico);
-
         this.dataSource.data = inventarioFisico;
-
         this.totalValorizado = inventarioFisico.reduce((acc : number, item : any) =>
           acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
-
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -160,26 +211,19 @@ export class InventarioDetalleComponent implements OnInit {
     });
   }
 
-
   imprimirReporte() {
-    // Validamos que haya datos
     if (!this.dataSource.data || this.dataSource.data.length === 0) {
       this.mensaje.open('No hay existencias para generar el reporte', 'warning');
       return;
     }
-
     const datosConStock = this.dataSource.data.filter((item: any) => item.cantidad_actual > 0);
     if (datosConStock.length === 0) {
       this.mensaje.open('No hay productos con existencias reales para imprimir.', 'warning');
       return;
     }
-
     const nombre = this.nombreBodega ? this.nombreBodega : 'Bodega #' + this.idBodega;
-
-    // Le pasamos la data que YA está en la tabla (this.dataSource.data)
     const urlBlob = this.reporteInventario.generarPdfInventarioBodega(nombre, datosConStock);
 
-    // Abrimos el modal tal cual lo haces en Solicitudes
     this.dialog.open(PdfViewerDialogComponent, {
       width: '100%',
       maxWidth: '60vw',
@@ -191,6 +235,4 @@ export class InventarioDetalleComponent implements OnInit {
       }
     });
   }
-
 }
-

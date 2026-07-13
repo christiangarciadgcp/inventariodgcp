@@ -240,7 +240,7 @@ export class InventarioMovimientoStockComponent implements OnInit{
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '450px',
       data: {
         titulo: '¿Está seguro de realizar este movimiento?',
         mensaje: 'Esta acción no se puede deshacer',

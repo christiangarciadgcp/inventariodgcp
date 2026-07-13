@@ -148,6 +148,9 @@ public class ProductoService {
             guardarImagenesFisicas(productoGuardado, imagenes);
         }
 
+        /* LOGICA DE CREACION DE INVENTARIOS CON VALOR CERO*/
+        /* 
+
         // Lógica de inventario automático
         List<Bodega> bodegas = bodegaRepository.findAll();
         List<Inventario> inventariosIniciales = new ArrayList<>();
@@ -169,6 +172,8 @@ public class ProductoService {
         if (!inventariosIniciales.isEmpty()) {
             inventarioRepository.saveAll(inventariosIniciales);
         }
+
+         */
 
         return productoGuardado;
     }

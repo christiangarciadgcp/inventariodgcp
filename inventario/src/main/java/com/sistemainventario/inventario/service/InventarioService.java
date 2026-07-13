@@ -134,8 +134,16 @@ public class InventarioService {
             nuevaCantidad += cantidad;
         }
 
-        inventario.setCantidad_actual(nuevaCantidad);
-        inventarioRepository.save(inventario);
+        if (nuevaCantidad == 0) {
+            // Si el producto se quedó sin existencias y existe en la base de datos, se elimina físicamente de esta bodega
+            if (inventarioOpt.isPresent()) {
+                inventarioRepository.delete(inventario);
+            }
+        } else {
+            // Si aún queda stock (o es un ingreso nuevo), se actualiza y guardamos
+            inventario.setCantidad_actual(nuevaCantidad);
+            inventarioRepository.save(inventario);
+        }
     }
 
 
