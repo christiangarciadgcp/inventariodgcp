@@ -69,6 +69,8 @@ export class InventarioDetalleComponent implements OnInit {
             return item.producto?.skuproducto;
           case 'producto':
             return item.producto?.nombreproducto;
+          case 'ser-inv':
+            return item.producto?.serieproducto;
           case 'categoria':
             return item.producto?.categoria?.nombrecategoria || '';
           case 'cantidad':
@@ -86,7 +88,9 @@ export class InventarioDetalleComponent implements OnInit {
       const datosAString = (
         data.producto.skuproducto +
         data.producto.nombreproducto +
-        (data.producto.categoria?.nombrecategoria || '')
+        (data.producto.categoria?.nombrecategoria || '') +
+        data.producto.serieproducto +
+        data.producto.inventarioproducto
       ).toLowerCase();
 
       return datosAString.includes(filter);
