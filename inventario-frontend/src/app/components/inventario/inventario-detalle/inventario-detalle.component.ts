@@ -39,7 +39,7 @@ export class InventarioDetalleComponent implements OnInit {
   private mensaje = inject(Mensaje);
 
   //displayedColumns: string[] = ['sku', 'producto', 'categoria', 'cantidad', 'costo', 'total'];
-  displayedColumns: string[] = ['sku', 'producto', 'categoria', 'cantidad', 'acciones'];
+  displayedColumns: string[] = ['sku', 'producto', 'ser-inv', 'categoria', 'cantidad', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   paginator = viewChild(MatPaginator);
