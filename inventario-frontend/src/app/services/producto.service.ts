@@ -68,9 +68,10 @@ export class ProductoService {
     return this.http.delete<void>(`${this.apiUrl}/imagen/${idImagen}`);
   }
 
-  subirExcelMasivo(file: File): Observable<any> {
+  subirExcelMasivo(file: File, idUsuario: number): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('idUsuario', idUsuario.toString());
     return this.http.post<any>(`${this.apiUrl}/carga-masiva`, formData);
   }
 }

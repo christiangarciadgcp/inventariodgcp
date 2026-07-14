@@ -22,18 +22,25 @@ public class ProductoExcelService {
     private final ModeloRepository modeloRepository;
     private final ProductoService productoService;
 
+    private final InventarioService inventarioService;
+    private final BodegaRepository bodegaRepository;
+
     public ProductoExcelService(CategoriaRepository categoriaRepository, ProveedorRepository proveedorRepository,
                                 UnidadMedidaRepository unidadMedidaRepository, ModeloRepository modeloRepository,
-                                ProductoService productoService) {
+                                ProductoService productoService,
+                                InventarioService inventarioService,
+                                BodegaRepository bodegaRepository) {
         this.categoriaRepository = categoriaRepository;
         this.proveedorRepository = proveedorRepository;
         this.unidadMedidaRepository = unidadMedidaRepository;
         this.modeloRepository = modeloRepository;
         this.productoService = productoService;
+        this.inventarioService = inventarioService;
+        this.bodegaRepository = bodegaRepository;
     }
 
     @Transactional
-    public List<Producto> procesarCargaMasiva(MultipartFile archivoExcel) {
+    public List<Producto> procesarCargaMasiva(MultipartFile archivoExcel, Integer idUsuario) {
         List<Producto> productosGuardados = new ArrayList<>();
         DataFormatter formatter = new DataFormatter(); 
 
@@ -43,16 +50,13 @@ public class ProductoExcelService {
             Sheet sheet = workbook.getSheetAt(0); 
             
             for (Row row : sheet) {
-                // LECTURA SEGURA (Columna A)
                 String nombreProducto = obtenerValorCelda(row, 0, formatter);
                 
-                // SOLUCIÓN 1: Salto inteligente de encabezados
-                // Si la fila 0 es un encabezado real, se la salta. Si ya son datos, la procesa.
                 if (row.getRowNum() == 0 && nombreProducto.equalsIgnoreCase("Nombre del Producto")) {
                     continue;
                 }
 
-                if (nombreProducto.isEmpty()) break; // Fin del archivo
+                if (nombreProducto.isEmpty()) break; // Termina el ciclo de la carga 
 
                 String nombreCategoria = obtenerValorCelda(row, 1, formatter);
                 String nombreMarca = obtenerValorCelda(row, 2, formatter); 
@@ -64,11 +68,13 @@ public class ProductoExcelService {
                 String descripcion = obtenerValorCelda(row, 8, formatter);
                 String condicion = obtenerValorCelda(row, 9, formatter);
 
-                // 1. BÚSQUEDAS EN LA BASE DE DATOS
+                String cantidadStr = obtenerValorCelda(row, 10, formatter); // Columna K
+                String nombreBodega = obtenerValorCelda(row, 11, formatter); // Columna L
+
+                // BÚSQUEDAS EN LA BASE DE DATOS
                 Categoria categoria = categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreCategoria)
                         .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Categoría no encontrada -> " + nombreCategoria));
 
-                // SOLUCIÓN 2: Búsqueda cruzada de Modelo + Marca
                 Modelo modelo = modeloRepository.findFirstByNombremodeloIgnoreCaseAndMarca_NombremarcaIgnoreCase(nombreModelo, nombreMarca)
                         .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": El modelo '" + nombreModelo + "' no fue encontrado bajo la marca '" + nombreMarca + "'"));
 
@@ -111,10 +117,30 @@ public class ProductoExcelService {
                 // 3. GUARDAR
                 Producto producto = productoService.guardarProducto(dto, null);
                 productosGuardados.add(producto);
+
+                if (!cantidadStr.isEmpty() && !nombreBodega.isEmpty()) {
+                    try {
+                        int cantidadInicial = Integer.parseInt(cantidadStr);
+                        if (cantidadInicial > 0) {
+                            Bodega bodegaDestino = bodegaRepository.findFirstByNombrebodegaIgnoreCase(nombreBodega)
+                                    .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Bodega destino no encontrada -> " + nombreBodega));
+
+                            inventarioService.registrarMovimiento(
+                                    producto.getIdProducto(),
+                                    bodegaDestino.getIdBodega(),
+                                    "ENTRADA",
+                                    cantidadInicial,
+                                    idUsuario,
+                                    "Carga inicial de inventario vía plantilla Excel"
+                            );
+                        }
+                    } catch (NumberFormatException e) {
+                        throw new RuntimeException("Fila " + (row.getRowNum() + 1) + ": La Cantidad Inicial debe ser un número entero válido.");
+                    }
+                }
             }
 
         } catch (Exception e) {
-            // El mensaje encapsulado subirá a Angular
             throw new RuntimeException(e.getMessage());
         }
 

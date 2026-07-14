@@ -16,4 +16,6 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer>{
 
     Optional<Bodega> findByNombrebodega(String nombrebodega);
 
+    Optional<Bodega> findFirstByNombrebodegaIgnoreCase(String nombrebodega);
+
 }

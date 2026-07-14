@@ -20,6 +20,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
 import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/producto-galeria-dialog.component';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-producto-list',
@@ -45,6 +46,7 @@ export class ProductoListComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   private productoService = inject(ProductoService);
+  private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
 
@@ -272,15 +274,12 @@ export class ProductoListComponent implements OnInit {
     if (file) {
       this.cargandoExcel = true;
       this.mensaje.open('Procesando archivo, por favor espere...', 'info');
-
-      this.productoService.subirExcelMasivo(file).subscribe({
+      const idActual = this.authService.getIdUsuarioActual();
+      this.productoService.subirExcelMasivo(file, idActual).subscribe({
         next: (res) => {
           this.cargandoExcel = false;
-
           const totalProductos = res.cantidad || 0;
-
           this.mensaje.open(`Se agregaron ${totalProductos} productos exitosamente`, 'exito');
-
           this.cargarProductos();
           event.target.value = '';
         },
