@@ -176,7 +176,7 @@
                     <mat-icon>block_outline</mat-icon>
                   </button>
                 }-->
-                @if (element.estado === 'PENDIENTE' && esJefeUTDI()) {
+                @if (element.estado === 'PENDIENTE' && esEncargadoInventario() ) {
                   <button mat-icon-button class="action-btn revision-color" matTooltip="Evaluar Presupuesto"
                           (click)="evaluarPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
                     <mat-icon>fact_check</mat-icon>

@@ -80,10 +80,12 @@
   </div>
 </mat-dialog-content>
 
+@if (esJefeUTDI() ) {
 <div class="modal-footer p-3 bg-light border-top d-flex justify-content-between align-items-center">
   <div class="d-flex align-items-center gap-2">
     <span class="text-muted small fw-bold"> </span>
   </div>
+
 
   <div class="d-flex gap-2">
     <button mat-stroked-button color="warn" class=" btn-cancel  shadow-sm" (click)="cancelarSolicitud()">
@@ -93,4 +95,6 @@
       <mat-icon class="me-2">check_circle</mat-icon> APROBAR PRESUPUESTO
     </button>
   </div>
+
 </div>
+}

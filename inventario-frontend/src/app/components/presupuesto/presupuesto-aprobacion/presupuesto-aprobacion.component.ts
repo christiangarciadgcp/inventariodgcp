@@ -35,12 +35,16 @@ export class PresupuestoAprobacionComponent implements OnInit {
 
   itemsSolicitados = signal<PresupuestoRevisionItem[]>([]);
   cargando = signal<boolean>(true);
+  esJefeUTDI = signal<boolean>(false);
 
   idPresupuesto : number = 0;
   usuarioPresupuesto : string = '';
   displayedColumns: string[] = ['producto', 'solicitado', 'stockGlobal', 'viabilidad'];
 
   ngOnInit() {
+    const rolActual = this.authService.getRolUsuario();
+    this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador');
+
     if(this.data && this.data.idPresupuesto){
       this.idPresupuesto = this.data.idPresupuesto;
       this.usuarioPresupuesto = this.utils.formatearNombre(this.data.nombreusuario);
