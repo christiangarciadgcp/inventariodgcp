@@ -212,6 +212,7 @@ public class PresupuestoService {
                 dto.setEsGenerico(detalle.getProducto().getEsGenerico());
                 dto.setCantidadSolicitada(0);
                 dto.setCantidadDespachada(0);
+                dto.setUnidadMedida(detalle.getProducto().getUnidadMedida().getAbreviaturaunidadmedida());
             }
 
             dto.setCantidadSolicitada(dto.getCantidadSolicitada() + detalle.getCantidad_solicitada());

@@ -8,6 +8,7 @@ public class PresupuestoRevisionDTO {
     private Long idDetalle;
     private Long idProducto;
     private String nombreProducto;
+    private String unidadMedida;
     private Boolean esGenerico;
     private Integer cantidadSolicitada;
     private Integer cantidadDespachada;

@@ -19,6 +19,7 @@ export interface PresupuestoRevisionItem {
   idDetalle: number;
   idProducto: number;
   nombreProducto: string;
+  unidadMedida: string;
   esGenerico: boolean;
   cantidadSolicitada: number;
   cantidadDespachada : number;

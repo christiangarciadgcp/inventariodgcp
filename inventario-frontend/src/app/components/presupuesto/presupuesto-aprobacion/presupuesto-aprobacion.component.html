@@ -45,7 +45,7 @@
           <th mat-header-cell *matHeaderCellDef class="text-center fw-bold text-dark"> REQUERIDO </th>
           <td mat-cell *matCellDef="let item" class="text-center border-bottom">
                 <span class="badge rounded-pill bg-light text-dark border px-3 py-2 fs-6 shadow-sm">
-                    {{ item.cantidadSolicitada }}
+                    {{ item.cantidadSolicitada }} {{ item.unidadMedida | lowercase }}
                 </span>
           </td>
         </ng-container>
@@ -54,7 +54,7 @@
           <th mat-header-cell *matHeaderCellDef class="text-center fw-bold text-dark"> STOCK TOTAL </th>
           <td mat-cell *matCellDef="let item" class="text-center border-bottom">
                 <span class="fw-bold fs-6 text-primary">
-                    {{ item.totalStockGlobal }}
+                    {{ item.totalStockGlobal }} {{ item.unidadMedida | lowercase }}
                 </span>
           </td>
         </ng-container>
