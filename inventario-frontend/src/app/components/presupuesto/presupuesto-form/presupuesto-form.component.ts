@@ -120,6 +120,12 @@ export class PresupuestoFormComponent implements OnInit {
         cantidad: d.cantidad_solicitada,
         cantidadDespachada: d.cantidad_despachada || 0
       }));
+
+      // Ordenar alfabéticamente los datos
+      itemsMapeados.sort((a, b) =>
+        a.producto.nombreproducto.localeCompare(b.producto.nombreproducto, 'es', { sensitivity: 'base' })
+      );
+
       this.detallesAgregados.set(itemsMapeados);
     });
   }
@@ -162,24 +168,30 @@ export class PresupuestoFormComponent implements OnInit {
     const itemsActuales = this.detallesAgregados();
     const existe = itemsActuales.find(d => d.producto.idProducto === this.productoSeleccionado?.idProducto);
 
+    let nuevaLista: DetalleVista[];
+
     if (existe) {
-      const itemsActualizados = itemsActuales.map(item => {
+      nuevaLista = itemsActuales.map(item => {
         if (item.producto.idProducto === this.productoSeleccionado?.idProducto) {
           return { ...item, cantidad: item.cantidad + this.cantidadSeleccionada };
         }
         return item;
       });
-      this.detallesAgregados.set(itemsActualizados);
     } else {
       const nuevoDetalle: DetalleVista = {
         producto: this.productoSeleccionado,
         cantidad: this.cantidadSeleccionada
       };
-      this.detallesAgregados.update(prev => [...prev, nuevoDetalle]);
+      nuevaLista = [...itemsActuales, nuevoDetalle];
     }
 
-    this.limpiarInputsProducto();
+    nuevaLista.sort((a, b) =>
+      a.producto.nombreproducto.localeCompare(b.producto.nombreproducto, 'es', { sensitivity: 'base' })
+    );
 
+    this.detallesAgregados.set(nuevaLista);
+
+    this.limpiarInputsProducto();
   }
 
   eliminarDetalle(index: number) {

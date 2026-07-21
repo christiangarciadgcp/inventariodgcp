@@ -56,7 +56,10 @@ export class PresupuestoAprobacionComponent implements OnInit {
     this.cargando.set(true);
     this.presupuestoService.obtenerDetalleRevision(id).subscribe({
       next: (data) => {
-        this.itemsSolicitados.set(data);
+        const dataOrdenada = [...data].sort((a, b) =>
+          a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
+        );
+        this.itemsSolicitados.set(dataOrdenada);
         this.cargando.set(false);
       },
       error: (error) => {
