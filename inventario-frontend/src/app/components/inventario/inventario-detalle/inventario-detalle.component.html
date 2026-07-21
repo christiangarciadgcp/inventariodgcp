@@ -23,7 +23,7 @@
       </button>
 
       <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar en bodega..." #input autocomplete="off">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" (focus)="actualizarInventarioSilencioso()" placeholder="Buscar en bodega..." #input autocomplete="off">
         <div class="search-btn-circle">
           <mat-icon>search</mat-icon>
         </div>
@@ -43,7 +43,7 @@
 
         <input type="text" class="search-input-master"
                placeholder="Escriba el SKU, Nombre o número de serie del Equipo o Material..."
-               [formControl]="buscadorCtrl" [matAutocomplete]="auto" autocomplete="off" autofocus>
+               [formControl]="buscadorCtrl" [matAutocomplete]="auto" autocomplete="off" autofocus (focus)="actualizarMaestroSilencioso()">
 
         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="productoMaestroSeleccionado($event)">
           @for (producto of (productosFiltrados | async) ?? []; track producto.idProducto) {

@@ -118,9 +118,6 @@ export class InventarioDetalleComponent implements OnInit {
       }
     });
 
-    this.productoService.getProductosActivos().subscribe(data => {
-      this.productosMaestros = data.filter(p => !p.esGenerico);
-    });
   }
 
   private _filtrarProductos(nombre: string): Producto[] {
@@ -233,6 +230,35 @@ export class InventarioDetalleComponent implements OnInit {
         url: urlBlob,
         titulo: `Reporte de Existencias - ${nombre}`
       }
+    });
+  }
+
+
+  actualizarInventarioSilencioso() {
+    if (this.idBodega === 0) return;
+
+    this.inventarioService.listarInventarioPorBodega(this.idBodega).subscribe({
+      next: (data) => {
+        const inventarioFisico = data.filter((item : any) => !item.producto.esGenerico);
+
+        this.dataSource.data = inventarioFisico;
+
+        this.totalValorizado = inventarioFisico.reduce((acc : number, item : any) =>
+          acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error actualizando tabla silenciosamente', err)
+    });
+  }
+
+  actualizarMaestroSilencioso() {
+    this.productoService.getProductosActivos().subscribe({
+      next: (data) => {
+        this.productosMaestros = data.filter(p => !p.esGenerico);
+        this.buscadorCtrl.setValue(this.buscadorCtrl.value);
+      },
+      error: (err) => console.error('Error actualizando catálogo maestro silenciosamente', err)
     });
   }
 }

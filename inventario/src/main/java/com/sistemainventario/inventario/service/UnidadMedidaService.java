@@ -19,11 +19,11 @@ public class UnidadMedidaService {
     }
 
     public List<UnidadMedida> listarUnidadesMedidas() {
-        return unidadMedidaRepository.findAll(Sort.by(Sort.Direction.ASC,"idUnidadMedida"));
+        return unidadMedidaRepository.findAll(Sort.by(Sort.Direction.ASC,"nombreunidadmedida"));
     }
 
     public List<UnidadMedida> listarUnidadMedidasActivas(){
-        return unidadMedidaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"idUnidadMedida"));
+        return unidadMedidaRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC,"nombreunidadmedida"));
     }
 
     public Optional<UnidadMedida> obtenerUnidadMedidaPorId(Integer id) {

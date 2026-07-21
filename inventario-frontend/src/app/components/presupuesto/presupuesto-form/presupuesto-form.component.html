@@ -100,6 +100,7 @@
                                 @for (p of productosFiltrados(); track p.idProducto) {
                                     <mat-option [value]="p">
                                         <span class="text-muted">{{ p.nombreproducto }}</span>
+                                        <small class="fw-bold  ms-2"> [ {{ p.unidadMedida?.nombreunidadmedida }} ]</small>
                                       <!--PARA QUE APAREZCA EL SKU DEL PRODUCTO-->
                                         <!--<small class="fw-bold  ms-2">{{ p.skuproducto }}</small>-->
                                     </mat-option>
@@ -164,7 +165,7 @@
                         <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-white text-uppercase small fw-bold">CANT.</th>
                         <td mat-cell *matCellDef="let element" class="text-center">
                             <span class="badge-pill-qty">
-                                {{ element.cantidad }}
+                                {{ element.cantidad }} {{ element.producto.unidadMedida?.abreviaturaunidadmedida }}
                             </span>
                         </td>
                     </ng-container>
