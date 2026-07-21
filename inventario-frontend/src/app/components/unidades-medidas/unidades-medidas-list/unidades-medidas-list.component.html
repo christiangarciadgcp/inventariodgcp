@@ -15,18 +15,16 @@
 
     <div class="d-flex flex-wrap align-items-center gap-3">
 
-      <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
-
-        <div class="search-btn-circle">
-          <mat-icon>search</mat-icon>
-        </div>
-      </div>
-
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" (click)="abrirFormulario()">
         <mat-icon class="me-2">library_add</mat-icon> Nueva Unidad
       </button>
 
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
     </div>
 
   </div>

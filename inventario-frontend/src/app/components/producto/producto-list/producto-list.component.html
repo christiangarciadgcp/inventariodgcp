@@ -32,14 +32,6 @@
 
 
 
-      <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input
-               autocomplete="off">
-        <div class="search-btn-circle">
-          <mat-icon>search</mat-icon>
-        </div>
-      </div>
-
       <button mat-raised-button class="rounded-pill px-4" style=" color: royalblue;" (click)="fileInput.click()" [disabled]="cargandoExcel">
         <mat-icon class="me-2 text-success">{{ cargandoExcel ? 'hourglass_empty' : 'table_view' }}</mat-icon>
         {{ cargandoExcel ? 'Cargando...' : 'Cargar Productos' }}
@@ -48,6 +40,14 @@
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo" (click)="abrirFormulario()">
         <mat-icon class="me-2">inventory_2</mat-icon>Nuevo Producto
       </button>
+
+      <div class="search-elegant m-0" style="width: 300px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input
+               autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
     </div>
   </div>
 
