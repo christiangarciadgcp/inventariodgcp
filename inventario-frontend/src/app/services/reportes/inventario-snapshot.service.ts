@@ -29,11 +29,12 @@ export class InventarioSnapshotService {
     doc.text(`Bodega: ${nombreBodega}`, 14,26);
     doc.text(`Fecha: ${fechaFiltro}`, 14,32);
 
-    const columnas = ['N°', 'SKU', 'Producto', 'Categoria', 'Stock'];
+    const columnas = ['N°', 'SKU', 'Producto', 'Inventario', 'Categoria', 'Stock'];
     const data = snapshot.map((s, index) => [
       index + 1,
       s.producto?.skuproducto || 'NA',
       s.producto?.nombreproducto || 'NA',
+      s.producto?.inventarioproducto,
       s.producto?.categoria?.nombrecategoria || 'NA',
       `${s.cantidadactual} ${s.producto?.unidadMedida?.abreviaturaunidadmedida?.toLowerCase() || ''}`
     ]);
@@ -46,9 +47,9 @@ export class InventarioSnapshotService {
       headStyles: { fillColor : [21,56,99], textColor : 255, fontStyle: 'bold', halign: 'center' },
       styles : {fontSize : 8, cellPadding: 2.5},
       columnStyles : {
-        0 : {cellWidth: 10, halign:'center'},
-        1 : {cellWidth: 'auto', halign:'center'},
-        4 : {cellWidth: 25, halign:'center', fontStyle : 'bold'}
+        0 : { cellWidth: 'auto', halign:'center'}, //#
+        1 : { cellWidth: 'wrap', halign:'center'}, // SKU
+        5:  { cellWidth: 'wrap', halign: 'center', fontStyle: 'bold' } //cantidad
       }
     });
 
@@ -74,13 +75,25 @@ export class InventarioSnapshotService {
       'Fecha': fechaFiltro,
       'SKU': cleanStr(s.producto?.skuproducto, 'N/A'),
       'Producto': cleanStr(s.producto?.nombreproducto, 'N/A'),
+      'Serie': cleanStr(s.producto?.serieproducto, ''),
+      'Inventario': cleanStr(s.producto?.inventarioproducto, ''),
       'Categoría': cleanStr(s.producto?.categoria?.nombrecategoria, 'N/A'),
       'Stock al Corte': getNum(s.cantidadactual),
       'U. Medida': cleanStr(s.producto?.unidadMedida?.abreviaturaunidadmedida, 'N/A')
     }));
 
     const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data);
-    ws['!cols'] = [{ wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 20 }, { wch: 45 }, { wch: 20 }, { wch: 12 }, { wch: 10 }];
+    ws['!cols'] = [
+      { wch: 5 },   //N
+      { wch: 25 },  //Bodega
+      { wch: 15 },  //Fecha
+      { wch: 20 },  //SKU
+      { wch: 55 },  //Producto
+      { wch: 25 },  //Serie
+      { wch: 20 },  //Inventario
+      { wch: 20 },  //Categoria
+      { wch: 12 },  //Stock
+      { wch: 10 }]; //Unidad de Medida
 
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Snapshot');

@@ -11,6 +11,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // Modelos y Servicios
 import { ProductoService } from '../../../services/producto.service';
@@ -28,7 +29,7 @@ import { AuthService } from '../../../services/auth.service';
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
     MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule,
-    MatSnackBarModule, MatFormFieldModule, MatInputModule, RouterLink,MatSortModule
+    MatSnackBarModule, MatFormFieldModule, MatInputModule, RouterLink,MatSortModule, MatProgressSpinnerModule
   ],
   templateUrl: './producto-list.component.html',
   styleUrl: './producto-list.component.css',
@@ -39,6 +40,7 @@ export class ProductoListComponent implements OnInit {
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
   cargandoExcel = false;
+  cargando: boolean = true;
 
   tipoVista = signal<'NORMAL' | 'BASE'>('NORMAL');
 
@@ -111,9 +113,14 @@ export class ProductoListComponent implements OnInit {
   }
 
   cargarProductos() {
+    this.cargando = true;
     this.productoService.getProductos().subscribe({
-      next: (data) => this.productos.set(data),
+      next: (data) => {
+        this.productos.set(data)
+        this.cargando = false;
+      },
       error: (err) => {
+        this.cargando = false;
         const msg = err.error?.mensaje || err.error?.message || 'Error al cargar productos';
         this.mensaje.open(msg, 'warning');
       }

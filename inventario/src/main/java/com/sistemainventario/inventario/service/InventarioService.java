@@ -51,11 +51,11 @@ public class InventarioService {
     @Transactional(readOnly = true)
     public List<Inventario> listarInventarioPorBodega(Integer idBodega){
         
-        Sort stockbajo = Sort.by(Sort.Direction.DESC,"cantidad_actual");
         Sort nombreProducto = Sort.by(Sort.Direction.ASC, "producto.nombreproducto");
+        Sort stock = Sort.by(Sort.Direction.DESC,"cantidad_actual");
         Sort sku = Sort.by(Sort.Direction.ASC, "producto.skuproducto");
 
-        Sort filtro = stockbajo.and(nombreProducto).and(sku);
+        Sort filtro = nombreProducto.and(stock).and(sku);
 
         return inventarioRepository.findByBodega_IdBodega(idBodega, filtro);
     }

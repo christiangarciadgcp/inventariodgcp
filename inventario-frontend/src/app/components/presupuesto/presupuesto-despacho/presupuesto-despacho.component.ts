@@ -37,6 +37,7 @@ export class PresupuestoDespachoComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   itemsRevision = signal<PresupuestoRevisionItem[]>([]);
+  nombrePresupuesto = signal<string>('');
   todoListoParaDespacho = signal<boolean>(false);
   hayAlgoParaDespachar = signal<boolean>(false);
   esEncargadoInventario = signal<boolean>(false);
@@ -64,6 +65,13 @@ export class PresupuestoDespachoComponent implements OnInit {
         this.evaluarBotonDespacho();
       },
       error: (err) => console.error(err)
+    });
+
+    this.presupuestoService.obtenerPorId(id).subscribe({
+      next: (presupuesto) => {
+        this.nombrePresupuesto.set(presupuesto.nombre_presupuesto);
+      },
+      error: (err) => console.error('Error al obtener el nombre del presupuesto', err)
     });
   }
 

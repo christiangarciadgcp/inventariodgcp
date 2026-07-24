@@ -8,7 +8,9 @@
 
       <div>
         <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Asignación de Materiales</h6>
-        <h2 class="fw-bold text-dark m-0">Despacho para Presupuesto {{ idPresupuesto }}</h2>
+        <h2 class="fw-bold text-dark m-0">
+          Presupuesto {{ idPresupuesto }}: {{ nombrePresupuesto() ? nombrePresupuesto() : 'Cargando presupuesto...' }}
+        </h2>
       </div>
     </div>
   </div>

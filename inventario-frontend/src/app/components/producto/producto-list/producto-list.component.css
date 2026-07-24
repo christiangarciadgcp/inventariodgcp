@@ -151,3 +151,19 @@
   word-break: normal;
   line-height: 1.2;
 }
+
+.spinner-elegant {
+  width: 45px;
+  height: 45px;
+  /* Borde base semi-transparente */
+  border: 3px solid rgba(21, 56, 99, 0.1);
+  /* Color principal animado */
+  border-left-color: #153863;
+  border-radius: 50%;
+  animation: spin-elegant 1s linear infinite;
+}
+
+@keyframes spin-elegant {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

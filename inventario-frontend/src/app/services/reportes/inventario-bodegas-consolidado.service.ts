@@ -37,13 +37,14 @@ export class InventarioBodegasConsolidadoService {
     doc.text('Solo productos con existencias reales a nivel global.', 14, 36);
 
     // PREPARAR DATOS DE LA TABLA (Añadiendo la columna de Bodega)
-    const columnas = ['#', 'Bodega', 'SKU', 'Producto', 'Categoría', 'Stock'];
+    const columnas = ['#', 'Bodega', 'SKU', 'Producto', 'Inventario', 'Categoría', 'Stock'];
 
     const data = inventario.map((item, index) => [
       index + 1,
       item.bodega?.nombrebodega || 'N/A',
       item.producto?.skuproducto,
       item.producto?.nombreproducto,
+      item.producto?.inventarioproducto,
       item.producto?.categoria?.nombrecategoria || 'N/A',
       `${item.cantidad_actual} ${item.producto?.unidadMedida?.abreviaturaunidadmedida?.toLowerCase() || ''}`
     ]);
@@ -60,7 +61,7 @@ export class InventarioBodegasConsolidadoService {
         0: { cellWidth: 'auto', halign: 'center' },
         1: { cellWidth: 'auto' },
         2: { cellWidth: 'wrap', halign: 'left' },
-        5: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
+        6: { cellWidth: 'wrap', halign: 'center', fontStyle: 'bold' }
       }
     });
 
@@ -93,6 +94,8 @@ export class InventarioBodegasConsolidadoService {
       'Bodega': cleanStr(item.bodega?.nombrebodega, 'N/A'),
       'SKU': cleanStr(item.producto?.skuproducto, 'N/A'),
       'Producto': cleanStr(item.producto?.nombreproducto, 'N/A'),
+      'Serie': cleanStr(item.producto?.serieproducto, ''),
+      'Inventario': cleanStr(item.producto?.inventarioproducto, ''),
       'Categoria': cleanStr(item.producto?.categoria?.nombrecategoria, 'N/A'),
       'Stock Actual': getNum(item.cantidad_actual),
       'U. Medida': cleanStr(item.producto?.unidadMedida?.abreviaturaunidadmedida, 'N/A')
@@ -104,7 +107,9 @@ export class InventarioBodegasConsolidadoService {
       { wch: 5 },   // N°
       { wch: 25 },  // Bodega
       { wch: 20 },  // SKU
-      { wch: 45 },  // Producto
+      { wch: 55 },  // Producto
+      { wch: 25 },  // Serie
+      { wch: 20 },  // Inventario
       { wch: 20 },  // Categoría
       { wch: 12 },  // Stock
       { wch: 12 }  // Unidad de Medida

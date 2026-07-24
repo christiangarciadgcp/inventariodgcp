@@ -125,11 +125,21 @@ export class InventarioDetalleComponent implements OnInit {
     return this.productosMaestros.filter(p =>
       p.nombreproducto.toLowerCase().includes(filterValue) ||
       p.skuproducto.toLowerCase().includes(filterValue) ||
-      (p.serieproducto && p.serieproducto.toLowerCase().includes(filterValue))
+      (p.serieproducto && p.serieproducto.toLowerCase().includes(filterValue)) ||
+      (p.inventarioproducto && p.inventarioproducto.toLowerCase().includes(filterValue))
     );
   }
 
-  displayFn(producto: Producto): string {
+  displayFn(producto: any): string {
+
+    if (!producto) {
+      return '';
+    }
+
+    if (typeof producto === 'string') {
+      return producto;
+    }
+
     return producto && producto.nombreproducto ? `${producto.skuproducto} - ${producto.nombreproducto}` : '';
   }
 

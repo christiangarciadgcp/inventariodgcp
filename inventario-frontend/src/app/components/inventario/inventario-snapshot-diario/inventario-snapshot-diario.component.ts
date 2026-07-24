@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, effect, OnInit } from '@angular/core';
+import {Component, inject, signal, ViewChild, effect, OnInit, viewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -46,7 +46,9 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
   dataSource = new MatTableDataSource<any>([]);
   snapshots = signal<any[]>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  paginator = viewChild(MatPaginator);
 
   filtroForm = new FormGroup({
     idBodega: new FormControl<number | null>(null, Validators.required),
@@ -68,7 +70,10 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
 
     effect(() => {
       this.dataSource.data = this.snapshots();
-      if(this.paginator) this.dataSource.paginator = this.paginator;
+
+      const paginadorActual = this.paginator();
+
+      if(paginadorActual) this.dataSource.paginator = paginadorActual;
     });
   }
 

@@ -47,12 +47,13 @@ export class InventarioBodegaService {
     // PREPARAR DATOS DE LA TABLA
 /*     const columnas = ['#', 'SKU', 'Producto', 'Categoría', 'Stock', 'Costo Unit.', 'Valor Total']; */
 
-    const columnas = ['#', 'SKU', 'Producto', 'Categoría', 'Stock'];
+    const columnas = ['#', 'SKU', 'Producto', 'Inventario', 'Categoría', 'Stock'];
 
     const data = inventario.map((item, index) => [
       index + 1,
       item.producto.skuproducto,
       item.producto.nombreproducto,
+      item.producto?.inventarioproducto,
       item.producto.categoria?.nombrecategoria || 'N/A',
       `${item.cantidad_actual} ${item.producto.unidadMedida?.abreviaturaunidadmedida?.toLowerCase() || ''}`
 /*       `$${item.producto.preciocostoproducto.toFixed(2)}`,
@@ -73,8 +74,9 @@ export class InventarioBodegaService {
       headStyles: { fillColor: [21, 56, 99], textColor: 255, fontStyle: 'bold',halign: 'center' },
       styles: { fontSize: 8, cellPadding: 3 },
       columnStyles: {
-        0: { cellWidth: 'auto', halign: 'center' },
-        4: { halign: 'center', cellWidth: 20, fontStyle: 'bold' }
+        0: { cellWidth: 'auto', halign: 'center' }, //#
+        1: { cellWidth: 'wrap', halign: 'left' }, // SKU
+        5: { cellWidth: 'wrap', halign: 'center', fontStyle: 'bold' } //cantidad
       }
     });
 

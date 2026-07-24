@@ -1,4 +1,4 @@
-import {Component, inject, signal, ViewChild, effect, input} from '@angular/core';
+import {Component, inject, signal, ViewChild, effect, input, viewChild} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -47,7 +47,9 @@ export class InventarioMovimientoHistorialComponent {
   // Lista de tipos de movimientos disponibles para el select
   tiposMovimiento: string[] = ['TODOS', 'ENTRADA', 'SALIDA', 'DESPACHO', 'DESCARGO']; // SE PUEDE AGREGAR 'AJUSTE' SI SE REQUIERE
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  paginator = viewChild(MatPaginator);
 
   // Formulario unificado de filtros
   filtroForm = new FormGroup({
@@ -73,7 +75,10 @@ export class InventarioMovimientoHistorialComponent {
 
     effect(() => {
       this.dataSource.data = this.movimientos();
-      if (this.paginator) this.dataSource.paginator = this.paginator;
+
+      const paginadorActual = this.paginator();
+
+      if (paginadorActual) this.dataSource.paginator = paginadorActual;
     });
   }
 

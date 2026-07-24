@@ -42,7 +42,7 @@
       <div class="search-elegant-master shadow-sm">
 
         <input type="text" class="search-input-master"
-               placeholder="Escriba el SKU, Nombre o número de serie del Equipo o Material..."
+               placeholder="Escriba el SKU, Nombre, Serie o Inventario del Equipo o Material..."
                [formControl]="buscadorCtrl" [matAutocomplete]="auto" autocomplete="off" autofocus (focus)="actualizarMaestroSilencioso()">
 
         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="productoMaestroSeleccionado($event)">
@@ -53,9 +53,9 @@
                   {{ producto.skuproducto }}
                 </span>
                 <span class="fw-bold text-dark me-2">{{ producto.nombreproducto }}</span>
-                @if(producto.serieproducto) {
-                  <small class="text-muted fst-italic"> (Serie: {{producto.serieproducto}})</small>
-                }
+
+                  <small class="text-muted fst-italic"> [ <span class="fw-bold text-dark">Serie:</span> {{producto.serieproducto}} ] - [ <span class="fw-bold text-dark">Inventario:</span> {{producto.inventarioproducto}} ]</small>
+
               </div>
             </mat-option>
           }
