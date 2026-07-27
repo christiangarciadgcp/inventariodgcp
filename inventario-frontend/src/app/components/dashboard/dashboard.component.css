@@ -20,8 +20,8 @@
 .border-warning { border-left-color: #ffc107 !important; }
 .border-success { border-left-color: #198754 !important; }
 .border-primary { border-left-color: #0d6efd !important; }
-.border-orange { border-left-color: #f36739 !important; } 
-.border-indigo { border-left-color: #6610f2 !important; } 
+.border-orange { border-left-color: #f36739 !important; }
+.border-indigo { border-left-color: #6610f2 !important; }
 
 /* Caja del Icono */
 .icon-box {
@@ -82,72 +82,122 @@
 
 /* --- CONTENEDOR SCROLL --- */
 .table-scroll-container {
-    max-height: 480px; /* Ajustado para pantallas estándar */
-    overflow-y: auto;
-    padding-bottom: 20px; /* <--- ESPACIO CLAVE PARA VER EL FINAL */
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+  max-height: 480px;
+  overflow-y: auto;
+  /* --- AJUSTES ANTI SCROLL HORIZONTAL --- */
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  /* -------------------------------------- */
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
+
 .table-scroll-container::-webkit-scrollbar { width: 6px; }
 .table-scroll-container::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 
+/* Ocultar específicamente la barra HORIZONTAL */
+.table-scroll-container::-webkit-scrollbar:horizontal {
+  height: 0px !important;
+  display: none !important;
+}
+
+/* Permitir scroll táctil solo en móviles si hace falta */
+@media (max-width: 768px) {
+  .table-scroll-container {
+    overflow-x: auto;
+  }
+}
+
 /* --- ESTILOS DE LA TABLA MODERNA (MÁS COMPACTA) --- */
 .table-modern {
-    background: transparent;
-    border-collapse: separate;
-    border-spacing: 0 8px; /* <--- REDUCIDO DE 8px a 4px PARA SER MÁS COMPACTO */
+  background: transparent;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  /* --- AJUSTES ANTI SCROLL HORIZONTAL --- */
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100%;
+  table-layout: fixed;
+  /* -------------------------------------- */
 }
 
 /* Cabecera */
 .table-modern .mat-mdc-header-row {
-    height: 35px; /* <--- CABECERA MÁS FINA */
-    background-color: white;
-    z-index: 100 !important;
+  height: 35px;
+  background-color: white;
+  z-index: 100 !important;
 }
 
 .table-modern .mat-mdc-header-cell {
-    border-bottom: none !important;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  border-bottom: none !important;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .tracking-wide {
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 /* Filas (Rows) */
 .table-modern .mat-mdc-row {
-    background-color: #ffffff;
-    border-radius: 8px; /* Bordes ligeramente menos curvos */
-    transition: all 0.2s ease-in-out;
+  background-color: #ffffff;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
 }
 
 .table-modern .mat-mdc-cell {
-    border-bottom: 1px solid #f1f5f9 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
 }
 
-/* Hover de Fila */
+/* Hover de Fila (Corrección a translateY) */
 .hover-row-modern:hover {
-    background-color: #f8fafc !important;
-    transform: translateX(2px); /* Movimiento más sutil */
+  background-color: #f8fafc !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 .hover-row-modern:hover .mat-mdc-cell { border-bottom-color: transparent !important; }
 
 /* --- ICONOS CIRCULARES DINÁMICOS COMPACTOS --- */
 .avatar-icon-compact {
-    width: 34px; /* <--- REDUCIDO DE 42px a 34px */
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar-icon-compact mat-icon {
-    font-size: 18px; /* <--- ICONO MÁS PEQUEÑO */
-    width: 18px;
-    height: 18px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* --- PROPORCIONES DE COLUMNAS PARA DASHBOARD --- */
+.table-modern .mat-column-icono {
+  width: 65px !important;
+  padding-left: 10px;
+}
+
+.table-modern .mat-column-detalle {
+  width: 45% !important;
+  white-space: normal !important; /* Obliga al texto largo a bajar de línea */
+  padding-right: 20px;
+}
+
+.table-modern .mat-column-bodega {
+  width: 25% !important;
+}
+
+.table-modern .mat-column-cantidad {
+  width: 15% !important;
+}
+
+.table-modern .mat-column-fecha {
+  width: 15% !important;
 }
 
 /* Utilidades de color */

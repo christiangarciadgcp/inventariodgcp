@@ -59,7 +59,15 @@
     <div class="card-body p-4">
 
       <div class="table-scroll-container">
-        <table mat-table [dataSource]="dataSource" class="w-100 table-modern mb-3">
+        @if (cargando) {
+          <div class="d-flex flex-column justify-content-center align-items-center py-5">
+            <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
+
+            <!-- Texto apilado abajo con un pequeño margen y estilo -->
+            <h6 class="mt-2 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+          </div>
+        } @else {
+        <table mat-table [dataSource]="dataSource" class="w-100 table-modern">
 
           <ng-container matColumnDef="icono">
             <th mat-header-cell *matHeaderCellDef></th>
@@ -132,6 +140,7 @@
             </td>
           </tr>
         </table>
+        }
       </div>
 
       @if (movimientos().length > 0) {

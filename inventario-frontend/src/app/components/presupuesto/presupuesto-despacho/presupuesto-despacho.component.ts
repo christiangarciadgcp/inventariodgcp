@@ -61,7 +61,12 @@ export class PresupuestoDespachoComponent implements OnInit {
   cargarDatos(id: number) {
     this.presupuestoService.obtenerDetalleRevision(id).subscribe({
       next: (data) => {
-        this.itemsRevision.set(data);
+        // Los tres puntos [...] fuerzan a la tabla a repintarse al instante
+
+        const dataOrdenada = data.sort((a,b) =>
+        a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
+        );
+        this.itemsRevision.set([...dataOrdenada]);
         this.evaluarBotonDespacho();
       },
       error: (err) => console.error(err)
@@ -79,18 +84,37 @@ export class PresupuestoDespachoComponent implements OnInit {
     const dialogRef = this.dialog.open(PresupuestoSeleccionFisicoComponent, {
       width: '850px',
       maxWidth: '95vw',
-      disableClose: false,
+      disableClose: true,
       data: {
         item: item,
         idPresupuesto: this.idPresupuesto
       }
     });
 
-    dialogRef.afterClosed().subscribe(realizoMovimiento => {
-      if (realizoMovimiento) {
+    dialogRef.afterClosed().subscribe(resultado => {
+      // Si el modal devuelve un arreglo (datos frescos), actualizamos instantáneamente
+      if (resultado && Array.isArray(resultado)) {
+
+        const resultadoOrdenado = resultado.sort((a, b) => a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' }));
+        this.itemsRevision.set([...resultadoOrdenado]);
+        this.evaluarBotonDespacho();
+      }
+      // Si solo devuelve 'true', hacemos la recarga normal por seguridad
+      else if (resultado === true) {
         this.cargarDatos(this.idPresupuesto);
       }
     });
+  }
+
+  // Agrega esta función para calcular si ya hay material separado
+  getCantidadLista(item: PresupuestoRevisionItem): number {
+    let totalPreparado = 0;
+    if (item.sustitutosDisponibles) {
+      item.sustitutosDisponibles.forEach(sust => {
+        totalPreparado += sust.stockEnDespacho;
+      });
+    }
+    return totalPreparado;
   }
 
   evaluarBotonDespacho() {

@@ -19,6 +19,7 @@ import { Utils } from '../../../core/utils';
 import { Mensaje } from '../../../core/mensaje';
 import { InventarioMovimientosService } from '../../../services/reportes/inventario-movimientos.service';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario-movimiento-historial',
@@ -26,7 +27,7 @@ import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dia
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
-    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink
+    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner
   ],
   templateUrl: './inventario-movimiento-historial.component.html',
   styleUrl: './inventario-movimiento-historial.component.css',
@@ -40,6 +41,7 @@ export class InventarioMovimientoHistorialComponent {
 
   textoBusqueda = '';
   buscando = false;
+  cargando: boolean = false;
   displayedColumns: string[] = ['icono', 'detalle', 'bodega', 'cantidad', 'fecha'];
   dataSource = new MatTableDataSource<any>([]);
   movimientos = signal<any[]>([]);
@@ -90,7 +92,7 @@ export class InventarioMovimientoHistorialComponent {
     }
 
     this.buscando = true;
-
+    this.cargando = true;
     const fechaInicio = new Date(this.filtroForm.value.inicio!);
     fechaInicio.setHours(0, 0, 0, 0);
 
@@ -107,13 +109,14 @@ export class InventarioMovimientoHistorialComponent {
       next: (data) => {
         this.movimientos.set(data);
         this.buscando = false;
-
+        this.cargando = false;
         if(data.length === 0) {
           this.mensaje.open('No se encontraron movimientos con los criterios aplicados.', 'info');
         }
       },
       error: () => {
         this.buscando = false;
+        this.cargando = false;
         this.mensaje.open('Error al consultar el servidor', 'error');
       }
     });

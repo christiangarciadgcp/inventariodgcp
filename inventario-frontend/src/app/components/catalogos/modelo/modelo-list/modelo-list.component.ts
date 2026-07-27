@@ -8,6 +8,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {RouterLink} from '@angular/router';
 import {MatSort, MatSortHeader} from '@angular/material/sort';
 import {Modelo} from '../../../../models/modelo';
@@ -23,7 +24,8 @@ import {Marca} from '../../../../models/marca';
   standalone: true,
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
-    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink, MatSort, MatSortHeader
+    MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule, MatSnackBarModule, RouterLink, MatSort, MatSortHeader,
+    MatProgressSpinnerModule
   ],
   templateUrl: './modelo-list.component.html',
   styleUrl: './modelo-list.component.css',
@@ -40,6 +42,7 @@ export class ModeloListComponent {
   private modeloService = inject(ModeloService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
+  cargando: boolean = true;
 
   constructor() {
     effect(() => {
@@ -83,12 +86,15 @@ export class ModeloListComponent {
   }
 
   private cargarModelos() {
+    this.cargando = true;
     this.modeloService.getModelos().subscribe({
       next: (data) => {
         const modelosL = data.filter(m => m.nombremodelo !== 'SIN ESPECIFICAR');
         this.modelos.set(modelosL)
+        this.cargando = false;
       },
       error: (err) => {
+        this.cargando = false;
         const msg = err.error?.mensaje || err.error?.message || 'Error al cargar los modelos';
         this.mensaje.open(msg, 'warning');
       }

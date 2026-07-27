@@ -22,7 +22,7 @@
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-0 fade-in"
-            aria-labelledby="dropdownNotif" style="width: 340px; max-height: 400px; overflow-y: auto;">
+            aria-labelledby="dropdownNotif" style="width: 340px; max-height: 400px; overflow-y: auto; overflow-x: hidden;">
 
           <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center sticky-top" style="z-index: 10;">
             <h6 class="m-0 fw-bold text-dark">Notificaciones</h6>
@@ -30,11 +30,14 @@
 
           @for (notif of notificaciones(); track notif.idNotificacion) {
             <li>
-              <a class="dropdown-item py-3 px-3 border-bottom text-wrap d-flex align-items-start gap-3" href="#"
+              <a class="dropdown-item py-3 px-3 border-bottom text-wrap d-flex align-items-start gap-3"
+                 style="cursor: pointer;"
+                 (click)="$event.preventDefault(); $event.stopPropagation()"
                  [ngStyle]="{'background-color': notif.leida ? '#ffffff' : '#f0f4f8'}">
 
-                <div class="bg-primary-subtle text-dark rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
-                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">campaign</mat-icon>
+                <div class="notif-icon-elegant flex-shrink-0">
+                  <!-- notifications_active es mucho más limpio para alertas -->
+                  <mat-icon>notifications_active</mat-icon>
                 </div>
 
                 <div>

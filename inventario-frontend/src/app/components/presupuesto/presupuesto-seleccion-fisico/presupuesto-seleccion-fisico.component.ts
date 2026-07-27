@@ -29,6 +29,8 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
   itemGenerico = this.data.item;
   idPresupuesto = this.data.idPresupuesto;
   seHizoMovimiento = false;
+  datosFrescos: any[] | null = null;
+  procesando = false;
 
   sustitutosFiltrados: any[] = [];
   searchTerm: string = '';
@@ -53,6 +55,8 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
         return (
           (sust.nombreProducto && sust.nombreProducto.toLowerCase().includes(this.searchTerm)) ||
           (sust.skuProducto && sust.skuProducto.toLowerCase().includes(this.searchTerm)) ||
+          (sust.marcaProducto && sust.marcaProducto.toLowerCase().includes(this.searchTerm)) ||
+          (sust.descripcionProducto && sust.descripcionProducto.toLowerCase().includes(this.searchTerm)) ||
           condicionStr.includes(this.searchTerm)
         );
 
@@ -63,7 +67,8 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
   }
 
   cerrarModal() {
-    this.dialogRef.close(this.seHizoMovimiento);
+    // Al cerrar, le enviamos toda la data fresca al padre (así el padre no carga de nuevo)
+    this.dialogRef.close(this.datosFrescos || this.seHizoMovimiento);
   }
 
   transferirStock(sustitutoFisico: any) {
@@ -82,6 +87,8 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
     dialogMovimiento.afterClosed().subscribe(resultado => {
       if (resultado === true) {
         this.seHizoMovimiento = true;
+        this.procesando = true; // Activa el estado de carga visual
+        this.cdr.detectChanges();
         this.recargarDatos();
       }
     });
@@ -90,29 +97,45 @@ export class PresupuestoSeleccionFisicoComponent implements OnInit {
   recargarDatos() {
     this.presupuestoService.obtenerDetalleRevision(this.idPresupuesto).subscribe({
       next: (detalles: any[]) => {
+        // Guardamos TODA la lista fresca para el componente padre
+        this.datosFrescos = detalles;
+
         const itemActualizado = detalles.find(d => d.idProducto === this.itemGenerico.idProducto);
 
         if (itemActualizado) {
-          this.itemGenerico = itemActualizado;
+          // Clonar el objeto desvincula la memoria y obliga al HTML a actualizarse
+          this.itemGenerico = { ...itemActualizado };
+          this.itemGenerico.sustitutosDisponibles = [...itemActualizado.sustitutosDisponibles];
           this.filtrarLista();
-          this.cdr.detectChanges();
         }
+
+        this.procesando = false; // Apaga el estado de carga
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error recargando inventario físico:', err)
+      error: (err) => {
+        console.error('Error recargando inventario físico:', err);
+        this.procesando = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
   verDetalles(sust: any) {
 
+    console.log('Datos del producto físico:', sust);
+
     const condicionTexto = sust.esNuevo ? '<span style="color: #198754; font-weight: bold;">NUEVO</span>' : '<span style="color: #ffc107; font-weight: bold;">USADO</span>';
 
     let mensajeHTML = `
-      <div style="text-align: left; font-size: 0.95rem; line-height: 1;">
-        <p class="mb-2 fs-6 text-dark text-center"><strong>Detalles Técnicos</strong></p>
+      <div style="text-align: left; font-size: 0.95rem; line-height: 1.3;">
+        <p class="mb-3 fs-6 text-dark text-center"><strong>Detalles Técnicos</strong></p>
+
         <p class="mb-1"><strong>Condición:</strong> ${condicionTexto}</p>
         <p class="mb-1"><strong>Marca:</strong> ${sust.marcaProducto || 'SIN ESPECIFICAR'}</p>
-        <p class="mb-2"><strong>Modelo:</strong> ${sust.modeloProducto || 'SIN ESPECIFICAR'}</p>
-        <div style="border-top: 1px solid #dee2e6; padding-top: 1px;">
+        <p class="mb-1"><strong>Modelo:</strong> ${sust.modeloProducto || 'SIN ESPECIFICAR'}</p>
+        <p class="mb-1"><strong>Descripción:</strong> <span class="text-muted">${sust.descripcionProducto || '---'}</span></p>
+
+        <div style="border-top: 1px solid #dee2e6; padding-top: 10px; margin-top: 10px;">
           <p class="mb-1"><strong>Número de Serie:</strong> ${sust.serieProducto || '---'}</p>
           <p class="mb-0"><strong>N° Inventario:</strong> ${sust.inventarioProducto || '---'}</p>
         </div>

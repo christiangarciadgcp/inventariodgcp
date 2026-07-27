@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { ProductoService } from '../../../services/producto.service';
 import { Producto } from '../../../models/producto';
@@ -23,17 +24,17 @@ import {RouterLink} from '@angular/router';
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
     MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSortModule, RouterLink
+    MatFormFieldModule, MatInputModule, MatSortModule, RouterLink, MatProgressSpinnerModule
   ],
   templateUrl: './producto-diccionario.component.html',
   styleUrl: './producto-diccionario.component.css',
 })
 export class ProductoDiccionarioComponent implements OnInit {
 
-  // Tabla simplificada: Quitamos columnas administrativas como Proveedor o Estado
-  displayedColumns: string[] = ['sku', 'nombre', 'categoria', 'marca', 'acciones'];
+  displayedColumns: string[] = ['sku', 'nombre', 'categoria', 'acciones'];
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
+  cargando: boolean = true;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -86,6 +87,7 @@ export class ProductoDiccionarioComponent implements OnInit {
   }
 
   cargarProductos() {
+    this.cargando = true;
     this.productoService.getProductosActivos().subscribe({
       next: (data) => {
 
@@ -96,8 +98,10 @@ export class ProductoDiccionarioComponent implements OnInit {
         );
 
         this.productos.set(dataOrdenada);
+        this.cargando = false;
       },
       error: (err) => {
+        this.cargando = false;
         const msg = err.error?.mensaje || 'Error al cargar los materiales/equipos';
         this.mensaje.open(msg, 'warning');
       }

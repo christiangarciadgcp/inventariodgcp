@@ -58,57 +58,66 @@
   <mat-card class="activity-card shadow-sm h-100 mb-5">
     <div class="card-body p-4">
       <div class="table-scroll-container">
-        <table mat-table [dataSource]="dataSource" class="w-100 table-modern mb-3">
+        @if (cargando) {
+          <div class="d-flex flex-column justify-content-center align-items-center py-5">
+            <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
 
-          <ng-container matColumnDef="sku">
-            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide"> SKU </th>
-            <td mat-cell *matCellDef="let element">
-              <span class="badge bg-light text-dark border font-monospace" style="font-size: 0.85rem; letter-spacing: 1px;">{{ element.producto.skuproducto }}</span>
-            </td>
-          </ng-container>
+            <!-- Texto apilado abajo con un pequeño margen y estilo -->
+            <h6 class="mt-2 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="dataSource" class="w-100 table-modern">
 
-          <ng-container matColumnDef="producto">
-            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">PRODUCTO</th>
-            <td mat-cell *matCellDef="let element" class="py-2 fw-bold text-dark">
-              {{ element.producto?.nombreproducto }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="sku">
+              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide"> SKU </th>
+              <td mat-cell *matCellDef="let element">
+                <span class="badge bg-light text-dark border font-monospace" style="font-size: 0.85rem; letter-spacing: 1px;">{{ element.producto.skuproducto }}</span>
+              </td>
+            </ng-container>
 
-          <ng-container matColumnDef="categoria">
-            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">CATEGORÍA</th>
-            <td mat-cell *matCellDef="let element" class="py-2 text-muted">
-              <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">category</mat-icon>
-              {{ element.producto?.categoria?.nombrecategoria }}
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="producto">
+              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">PRODUCTO</th>
+              <td mat-cell *matCellDef="let element" class="py-2 fw-bold text-dark">
+                {{ element.producto?.nombreproducto }}
+              </td>
+            </ng-container>
 
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">STOCK AL CORTE</th>
-            <td mat-cell *matCellDef="let element" class="text-center py-2">
-                            <span class="badge rounded-pill bg-primary-subtle text-primary border px-3 py-1 fw-bold shadow-sm" style="font-size: 0.85rem;">
-                                {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
-                            </span>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="categoria">
+              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">CATEGORÍA</th>
+              <td mat-cell *matCellDef="let element" class="py-2 text-muted">
+                <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">category</mat-icon>
+                {{ element.producto?.categoria?.nombrecategoria }}
+              </td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row-modern"></tr>
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">STOCK AL CORTE</th>
+              <td mat-cell *matCellDef="let element" class="text-center py-2">
+                              <span class="badge rounded-pill bg-primary-subtle text-primary border px-3 py-1 fw-bold shadow-sm" style="font-size: 0.85rem;">
+                                  {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
+                              </span>
+              </td>
+            </ng-container>
 
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell text-center py-5 text-muted" colspan="4">
-              <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">inventory</mat-icon>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row-modern"></tr>
 
-              @if (textoBusqueda){
-                <h5 class="fw-bold m-0">No se encontraron registros</h5>
-                <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
-              }
-              @else{
-                <h5 class="fw-bold m-0">Cierre de Inventario</h5>
-                <p class="m-0 small">Seleccione una Bodega y Fecha para ver el cierre del día.</p>
-              }
-            </td>
-          </tr>
-        </table>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell text-center py-5 text-muted" colspan="4">
+                <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">inventory</mat-icon>
+
+                @if (textoBusqueda){
+                  <h5 class="fw-bold m-0">No se encontraron registros</h5>
+                  <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
+                }
+                @else{
+                  <h5 class="fw-bold m-0">Cierre de Inventario</h5>
+                  <p class="m-0 small">Seleccione una Bodega y Fecha para ver el cierre del día.</p>
+                }
+              </td>
+            </tr>
+          </table>
+        }
       </div>
 
       @if (snapshots().length > 0) {

@@ -23,6 +23,7 @@ import { InventarioBodegaService } from '../../../services/reportes/inventario-b
 import { Mensaje } from '../../../core/mensaje';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 import { Producto } from '../../../models/producto';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario-detalle',
@@ -30,7 +31,7 @@ import { Producto } from '../../../models/producto';
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatSortModule,
     MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule,
-    MatCardModule, MatTooltipModule, RouterLink, MatAutocompleteModule, ReactiveFormsModule
+    MatCardModule, MatTooltipModule, RouterLink, MatAutocompleteModule, ReactiveFormsModule, MatProgressSpinner
   ],
   templateUrl: './inventario-detalle.component.html',
   styleUrl: './inventario-detalle.component.css',

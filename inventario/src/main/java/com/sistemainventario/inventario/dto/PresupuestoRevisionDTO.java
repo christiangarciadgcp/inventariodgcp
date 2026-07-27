@@ -28,6 +28,7 @@ public class PresupuestoRevisionDTO {
         private String modeloProducto;
         private String serieProducto;
         private String inventarioProducto;
+        private String descripcionProducto;
         private Integer stockEnDespacho;
         private Integer stockGlobal;
         private Boolean esNuevo;

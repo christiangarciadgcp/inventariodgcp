@@ -12,14 +12,15 @@ import { PresupuestoRevisionItem } from '../../../models/presupuesto';
 import { Mensaje } from '../../../core/mensaje';
 import { Utils } from '../../../core/utils';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-presupuesto-aprobacion',
   standalone: true,
   imports: [
     CommonModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatDialogModule, MatTooltipModule
-    ],
+    MatDialogModule, MatTooltipModule, MatProgressSpinner
+  ],
   templateUrl: './presupuesto-aprobacion.component.html',
   styleUrl: './presupuesto-aprobacion.component.css',
 })

@@ -24,7 +24,7 @@
           <span class="text-dark fw-bold">Pendiente por asignar:</span>
         </div>
         <span class="badge bg-danger text-white fs-6 px-3 py-2 rounded-pill shadow-sm">
-        {{ itemGenerico.cantidadPendiente }}
+        {{ itemGenerico.cantidadPendiente }} {{ itemGenerico.unidadMedida }}
       </span>
       </div>
     </div>
@@ -71,8 +71,13 @@
 
 
               @if (sust.stockGlobal > sust.stockEnDespacho) {
-                <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3" style="height: 32px; line-height: 32px;" matTooltip="Realizar Movimiento" (click)="transferirStock(sust)">
-                  <mat-icon class="icon-tiny me-1 text-white">swap_horiz</mat-icon> Mover
+                <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3"
+                        style="height: 32px; line-height: 32px;"
+                        matTooltip="Realizar Movimiento"
+                        [disabled]="procesando"
+                        (click)="transferirStock(sust)">
+                  <mat-icon class="icon-tiny me-1 text-white">{{ procesando ? 'sync' : 'swap_horiz' }}</mat-icon>
+                  {{ procesando ? 'Guardando...' : 'Mover' }}
                 </button>
               } @else {
                 <span class="badge bg-light text-muted border px-2 py-2"><mat-icon class="icon-tiny me-1 align-middle">info</mat-icon>Sin existencias</span>
@@ -136,5 +141,5 @@
 </mat-dialog-content>
 
 <div class="modal-footer p-3 bg-white border-top d-flex justify-content-end">
-  <button mat-button class="btn-cancel px-4 rounded-pill" (click)="cerrarModal()">Cerrar</button>
+  <button mat-button class="btn-nuevo px-4 rounded-pill" (click)="cerrarModal()">Aceptar</button>
 </div>

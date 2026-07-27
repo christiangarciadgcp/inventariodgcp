@@ -18,6 +18,7 @@ import {Mensaje} from '../../../core/mensaje';
 import {InventarioSnapshotService} from '../../../services/reportes/inventario-snapshot.service';
 import {Bodega} from '../../../models/bodega';
 import {PdfViewerDialogComponent} from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario-snapshot-diario',
@@ -25,7 +26,7 @@ import {PdfViewerDialogComponent} from '../../pdf-viewer-dialog/pdf-viewer-dialo
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
-    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink
+    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner
   ],
   templateUrl: './inventario-snapshot-diario.component.html',
   styleUrl: './inventario-snapshot-diario.component.css',
@@ -40,6 +41,7 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
   textoBusqueda = '';
   buscando = false;
   generandoExcel = false;
+  cargando = false;
   bodegas: Bodega[]  = [];
 
   displayedColumns : string[] = ['sku', 'producto', 'categoria', 'cantidad'];
@@ -89,7 +91,7 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
     }
 
     this.buscando = true;
-
+    this.cargando = true;
     const fechaInicio = new Date(this.filtroForm.value.fecha!);
     fechaInicio.setHours(0, 0, 0, 0);
     const fechaFin = new Date(this.filtroForm.value.fecha!);
@@ -101,12 +103,14 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
       next: (data) => {
         this.snapshots.set(data);
         this.buscando = false;
+        this.cargando = false;
         if(data.length === 0) {
           this.mensaje.open('No se encontró snapshot para esta bodega en la fecha seleccionada.', 'info');
         }
       },
       error: () => {
         this.buscando = false;
+        this.cargando = false;
         this.mensaje.open('Error al consultar el servidor', 'error');
       }
     });

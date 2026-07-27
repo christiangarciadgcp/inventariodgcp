@@ -60,22 +60,29 @@
 
 /* --- DROPDOWN MENU VERTICAL Y ALINEADO A LA DERECHA --- */
 .dropdown-menu {
-    display: block !important;
-    position: absolute !important;
-    right: 0 !important;
-    left: auto !important;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    margin-top: 0px !important;
-    transform: translateY(-10px);
-    transition: all 0.2s ease-in;
-    min-width: 240px;
-    background-color: white;
-    border-radius: 16px;
-    border: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
-    padding: 8px;
+  display: block !important;
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  margin-top: 0px !important;
+  transform: translateY(-10px);
+  transition: all 0.2s ease-in;
+  min-width: 240px;
+  background-color: white;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+  padding: 8px;
+  overflow-x: hidden !important;
+}
+
+/* Ocultar barra horizontal si el navegador intenta forzarla */
+.dropdown-menu::-webkit-scrollbar:horizontal {
+  height: 0px !important;
+  display: none !important;
 }
 
 
@@ -116,4 +123,29 @@
 .dropdown-divider {
     margin: 8px 0;
     border-top: 1px solid #f0f0f0;
+}
+
+/* --- ÍCONO DE NOTIFICACIÓN ELEGANTE --- */
+.notif-icon-elegant {
+  width: 36px; /* Ligeramente más grande para que respire */
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Fondo gris-azulado muy tenue */
+  background-color: #f0f4f8;
+  /* Color del ícono: El azul oscuro elegante de tu tema */
+  color: #0d386e;
+
+  /* Borde blanco y sombra suave para un efecto 3D muy delicado */
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 6px rgba(21, 56, 99, 0.08);
+}
+
+.notif-icon-elegant mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }

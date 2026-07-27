@@ -39,15 +39,79 @@
 
 /* TABLA MODERNA */
 .activity-card { border: 1px solid #f1f3f5 !important; border-radius: 16px !important; background-color: #ffffff; }
-.table-scroll-container { max-height: 550px; overflow-y: auto; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;}
-.table-modern { background: transparent; border-collapse: separate; border-spacing: 0 4px; }
+
+.table-scroll-container {
+  max-height: 550px;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.table-scroll-container::-webkit-scrollbar:horizontal {
+  height: 0px !important;
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .table-scroll-container {
+    overflow-x: auto;
+  }
+}
+
+.table-modern {
+  background: transparent;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
 .table-modern .mat-mdc-header-row { height: 35px; background-color: white; z-index: 100 !important; }
 .table-modern .mat-mdc-header-cell { border-bottom: none !important; padding-top: 4px; padding-bottom: 4px; }
 .tracking-wide { letter-spacing: 0.8px; text-transform: uppercase; }
 .table-modern .mat-mdc-row { background-color: #ffffff; border-radius: 8px; transition: all 0.2s ease-in-out; }
 .table-modern .mat-mdc-cell { border-bottom: 1px solid #f1f5f9 !important; }
-.hover-row-modern:hover { background-color: #f8fafc !important; transform: translateX(2px); }
+/* --- PROPORCIONES DE COLUMNAS PARA HISTORIAL --- */
+
+/* 1. Columna del ícono: Ancho fijo pequeño */
+.table-modern .mat-column-icono {
+  width: 60px !important;
+  padding-left: 10px;
+}
+
+/* 2. Columna del Detalle (TIPO / PRODUCTO): La más ancha */
+.table-modern .mat-column-detalle {
+  width: 45% !important; /* Le damos casi la mitad de la tabla */
+  white-space: normal !important; /* ¡CLAVE! Obliga al texto largo a bajar a la siguiente línea */
+  padding-right: 20px;
+}
+
+/* 3. Columna Bodega (ORIGEN / DESTINO) */
+.table-modern .mat-column-bodega {
+  width: 25% !important;
+}
+
+/* 4. Columna Cantidad */
+.table-modern .mat-column-cantidad {
+  width: 15% !important;
+}
+
+/* 5. Columna Fecha */
+.table-modern .mat-column-fecha {
+  width: 15% !important;
+}
+.hover-row-modern:hover {
+  background-color: #f8fafc !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
 .hover-row-modern:hover .mat-mdc-cell { border-bottom-color: transparent !important; }
+
 .avatar-icon-compact { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .avatar-icon-compact mat-icon { font-size: 18px; width: 18px; height: 18px; }
 

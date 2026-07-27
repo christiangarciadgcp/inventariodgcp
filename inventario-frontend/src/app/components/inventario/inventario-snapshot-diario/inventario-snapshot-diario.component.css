@@ -39,8 +39,51 @@
 
 /* TABLA MODERNA */
 .activity-card { border: 1px solid #f1f3f5 !important; border-radius: 16px !important; background-color: #ffffff; }
-.table-scroll-container { max-height: 550px; overflow-y: auto; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;}
-.table-modern { background: transparent; border-collapse: separate; border-spacing: 0 4px; }
+.table-scroll-container {
+  max-height: 550px;
+  overflow-y: auto;
+  /* APAGAMOS el scroll horizontal por defecto para matar la línea fantasma */
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+@media (max-width: 768px) {
+  .table-scroll-container {
+    overflow-x: auto;
+  }
+}
+
+.hover-row-modern:hover {
+  background-color: #f8fafc !important;
+  /* Cambiamos translateX(2px) por translateY(-2px).
+     Esto mueve la fila hacia arriba como si flotara, evitando desbordar a los lados */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.hover-row-modern:hover .mat-mdc-cell {
+  border-bottom-color: transparent !important;
+}
+
+.table-modern {
+  background: transparent;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+.table-scroll-container::-webkit-scrollbar:horizontal {
+  height: 0px !important;
+  display: none !important;
+}
+
 .table-modern .mat-mdc-header-row { height: 35px; background-color: white; z-index: 100 !important; }
 .table-modern .mat-mdc-header-cell { border-bottom: none !important; padding-top: 4px; padding-bottom: 4px; }
 .tracking-wide { letter-spacing: 0.8px; text-transform: uppercase; }
