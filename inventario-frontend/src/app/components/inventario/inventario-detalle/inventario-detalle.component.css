@@ -8,7 +8,11 @@
     overflow: hidden;
 }
 
-.mat-mdc-table { background: transparent; }
+.mat-mdc-table {
+  background: transparent;
+  table-layout: fixed;
+  width: 100%;
+}
 
 .mat-mdc-header-row {
     background: linear-gradient(#031e3f 0%, #153863 100%);
@@ -197,4 +201,23 @@
 }
 ::ng-deep .mat-mdc-option:last-child {
   border-bottom: none;
+}
+
+/* Ancho de cada columna para mantener la estética con el paginado */
+.mat-column-sku { width: 15%; }
+.mat-column-producto { width: 35%; }
+.mat-column-ser-inv { width: 17%; }
+.mat-column-categoria { width: 13%; }
+.mat-column-cantidad { width: 10%; }
+.mat-column-acciones { width: 10%; }
+
+/* Sirve para controlar la anchura del texto largo y salto de linea */
+.mat-column-producto span {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
 }

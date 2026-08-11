@@ -53,7 +53,7 @@ export class InventarioDescargoComponent implements OnInit{
   busquedaTexto: string = '';
 
   form = this.fb.group({
-    bodega: [null, Validators.required], // Solo una bodega
+    bodega: [null, Validators.required],
     motivo: ['', Validators.required],
     producto: [{ value: null, disabled: true }],
     cantidad: [null]
@@ -117,7 +117,7 @@ export class InventarioDescargoComponent implements OnInit{
     this.inventarioService.listarInventarioPorBodega(idBodega).subscribe(data => {
       const disponibles = data.filter(item => item.cantidad_actual > 0);
       this.productosOrigen.set(disponibles);
-      this.productosFiltrados.set(disponibles); // Inicializar filtro
+      this.productosFiltrados.set(disponibles);
     });
   }
 
@@ -181,7 +181,6 @@ export class InventarioDescargoComponent implements OnInit{
       this.form.get('cantidad')?.setErrors(null);
       this.stockDisponible = 0;
 
-      // Limpieza visual del autocomplete
       this.busquedaTexto = '';
       this.productosFiltrados.set(this.productosOrigen());
     }

@@ -18,4 +18,6 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer>{
 
     Optional<Bodega> findFirstByNombrebodegaIgnoreCase(String nombrebodega);
 
+    Long countByActivoTrue();
+
 }

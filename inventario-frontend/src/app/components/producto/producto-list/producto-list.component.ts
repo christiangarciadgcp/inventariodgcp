@@ -44,13 +44,29 @@ export class ProductoListComponent implements OnInit {
 
   tipoVista = signal<'NORMAL' | 'BASE'>('NORMAL');
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+/*  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;*/
 
   private productoService = inject(ProductoService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
+
+  private _paginator!: MatPaginator;
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    if (mp) {
+      this._paginator = mp;
+      this.dataSource.paginator = this._paginator;
+    }
+  }
+
+  private _sort!: MatSort;
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    if (ms) {
+      this._sort = ms;
+      this.dataSource.sort = this._sort;
+    }
+  }
 
   constructor() {
     effect(() => {
@@ -59,8 +75,8 @@ export class ProductoListComponent implements OnInit {
       );
 
       //this.dataSource.data = filtrados;
-      if (this.paginator) this.dataSource.paginator = this.paginator;
-      if (this.sort) this.dataSource.sort = this.sort;
+/*      if (this.paginator) this.dataSource.paginator = this.paginator;
+      if (this.sort) this.dataSource.sort = this.sort;*/
     });
 
     // CONFIGURACIÓN DE BÚSQUEDA LOCAL
@@ -97,9 +113,12 @@ export class ProductoListComponent implements OnInit {
     this.cargarProductos();
   }
 
+
   cambiarVista(tipo: 'NORMAL' | 'BASE') {
     this.tipoVista.set(tipo);
-    if (this.paginator) this.paginator.firstPage();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   // Se activa al escribir en la barra de búsqueda

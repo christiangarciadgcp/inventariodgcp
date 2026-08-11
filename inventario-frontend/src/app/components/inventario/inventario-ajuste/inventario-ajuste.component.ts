@@ -49,12 +49,10 @@ export class InventarioAjusteComponent {
 
   // Formulario
   form = this.fb.group({
-    cantidad: [1, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
-    motivo: [`Carga de Datos Inventario ${this.fechaHoy}`, [Validators.required]]
+    cantidad: [null, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
+    motivo: ['', [Validators.required]]
   });
 
-  // --- SOLUCIÓN DE REACTIVIDAD ---
-  // Convertimos el flujo de valores del formulario en una Signal
   cantidadSignal = toSignal(
     this.form.get('cantidad')!.valueChanges.pipe(
       map(valor => Number(valor) || 0) // Si es null/undefined, devuelve 0

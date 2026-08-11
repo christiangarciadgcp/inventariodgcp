@@ -53,7 +53,6 @@ export class LoginComponent {
           // Si es exitoso, el servicio redirige.
         },
         error: (err) => {
-          // SI OCURRE UN ERROR (403, 401, 500)
           //console.warn('Error en login:', err.status);
 
           // Usamos setTimeout para salir del ciclo de detección de cambios actual
@@ -67,7 +66,6 @@ export class LoginComponent {
             if (err.error && err.error.mensaje) {
               mensajeError = err.error.mensaje;
             }
-            // 2. Si no hay mensaje del backend pero es un error de autenticación
             else if (err.status === 403 || err.status === 401) {
               mensajeError = 'Credenciales Incorrectas';
             }
@@ -75,7 +73,7 @@ export class LoginComponent {
             this.mensaje.open(mensajeError, 'error');
 
 
-          }, 300); // Validar que las credenciales estan incorrectas
+          }, 300);
         }
       });
     } else {

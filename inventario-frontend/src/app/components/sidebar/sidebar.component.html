@@ -14,9 +14,8 @@
         </a>
 
         <button mat-icon-button class="toggle-btn ms-auto" (click)="layoutService.toggleSidebar()">
-            <mat-icon>{{ layoutService.sidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+            <mat-icon style="margin-bottom: 5px;">{{ layoutService.sidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
         </button>
-
     </div>
 
     @if (!layoutService.sidebarCollapsed()) {
@@ -188,7 +187,6 @@
                 }
             }
 
-
             @if (permiso(rolesPermitidos.INVENTARIO)) {
                 <a routerLink="/solicitud_compra" routerLinkActive="active"
                     class="nav-link" [matTooltip]="layoutService.sidebarCollapsed() ? 'Solicitud de Compra' : ''"
@@ -212,6 +210,9 @@
                 </a>
             }
 
+
+
+          <!-- MOVIMIENTO ENTRE BODEGAS-->
             @if (permiso(rolesPermitidos.INVENTARIO2)) {
                 <a routerLink="/movimientos" routerLinkActive="active" class="nav-link"
                     [matTooltip]="layoutService.sidebarCollapsed() ? 'Movimientos' : ''" matTooltipPosition="right">
@@ -223,6 +224,7 @@
                 </a>
             }
 
+          <!-- DESCARGO DE MATERIALES-->
             @if (permiso(rolesPermitidos.INVENTARIO2)) {
                 <a routerLink="/descargo" routerLinkActive="active" class="nav-link"
                     [matTooltip]="layoutService.sidebarCollapsed() ? 'Descargo' : ''" matTooltipPosition="right">

@@ -104,13 +104,7 @@
 }
 
 /* --- BADGES Y ESTADOS (Específicos de Productos) --- */
-.badge {
-  font-weight: 600;
-  font-size: 0.75rem;
-  padding: 6px 12px;
-  display: inline-flex;
-  align-items: center;
-}
+
 
 .bg-success-subtle { background-color: #d1e7dd; }
 .text-success { color: #0f5132; }

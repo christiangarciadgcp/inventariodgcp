@@ -307,11 +307,11 @@ export const routes: Routes = [
             Movimiento de Inventario individual
        ********************************************/
       {
-        path: 'movimientos2',
+        path: 'asignacion',
         canActivate: [permisosGuard],
         component: InventarioMovimientoComponent,
         data: {
-          breadcrumb: 'Movimientos de Inventario',
+          breadcrumb: 'Asignacion de Equipos',
           roles: roles.INVENTARIO2
         }
       },

@@ -36,19 +36,33 @@ export class ModeloListComponent {
   dataSource = new MatTableDataSource<Modelo>([]);
   modelos = signal<Modelo[]>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+/*  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;*/
 
   private modeloService = inject(ModeloService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
   cargando: boolean = true;
 
+  private _paginator!: MatPaginator;
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    if (mp) {
+      this._paginator = mp;
+      this.dataSource.paginator = this._paginator;
+    }
+  }
+
+  private _sort!: MatSort;
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    if (ms) {
+      this._sort = ms;
+      this.dataSource.sort = this._sort;
+    }
+  }
+
   constructor() {
     effect(() => {
       this.dataSource.data = this.modelos();
-      if (this.paginator) this.dataSource.paginator = this.paginator;
-      if(this.sort) this.dataSource.sort = this.sort;
     });
 
     this.dataSource.filterPredicate = (data: Modelo, filter: string) => {

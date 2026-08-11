@@ -36,7 +36,7 @@ public class DashboardService {
         dashboardDTO.setPendientes(solicitudCompraRepository.countByEstado("PENDIENTE"));
         dashboardDTO.setAprobadas(solicitudCompraRepository.countByEstado("APROBADA"));
         dashboardDTO.setRecepcionadas(solicitudCompraRepository.countByEstado("RECEPCION_PARCIAL"));
-        dashboardDTO.setTotalBodegas(bodegaRepository.count());
+        dashboardDTO.setTotalBodegas(bodegaRepository.countByActivoTrue());
 
         //PRESUPUESTOS
         dashboardDTO.setPresupuestoPendientes(presupuestoRepository.countByEstado("PENDIENTE"));
