@@ -193,7 +193,7 @@
                 <td mat-cell *matCellDef="let element" class="col-acciones">
 
                   <div class="d-flex justify-content-center align-items-center gap-1">
-
+                    @if (element.esGenerico) {
                       @if (element.imagenes && element.imagenes.length > 0) {
                         <button mat-icon-button class="action-btn eyes" matTooltip="Ver Galería" (click)="verGaleria(element)">
                           <mat-icon class="icon-accion align-middle">visibility</mat-icon>
@@ -203,7 +203,7 @@
                           <mat-icon class="icon-accion align-middle opacity-25">visibility_off</mat-icon>
                         </button>
                       }
-
+                    }
                     <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Producto" (click)="abrirFormulario(element)">
                       <mat-icon class="icon-acciones align-middle">edit_note</mat-icon>
                     </button>

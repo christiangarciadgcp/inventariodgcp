@@ -163,6 +163,8 @@
 
 
     <div class="col-12 mt-1 mb-1">
+
+      @if (form.get('esGenerico')?.value) {
       <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>
 
       <input type="file" #fileInput hidden multiple accept="image/png, image/jpeg, image/webp" (change)="onFilesSelected($event)">
@@ -170,7 +172,7 @@
       <button mat-stroked-button color="primary" type="button" class="rounded-pill mb-3" (click)="fileInput.click()">
         <mat-icon class="me-2">add_a_photo</mat-icon> Agregar Fotos
       </button>
-
+      }
       <div class="d-flex flex-wrap gap-3">
 
         @for (img of imagenesActuales; track $index) {
