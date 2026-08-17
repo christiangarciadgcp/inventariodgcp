@@ -93,7 +93,7 @@
             <ng-container matColumnDef="cantidad">
               <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">STOCK AL CORTE</th>
               <td mat-cell *matCellDef="let element" class="text-center py-2">
-                              <span class="badge rounded-pill bg-light text-dark border px-2 py-1 fw-bold shadow-sm" style="font-size: 0.8rem;">
+                              <span class="badge-pill">
                                   {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
                               </span>
               </td>

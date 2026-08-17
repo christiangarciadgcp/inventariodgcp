@@ -50,7 +50,7 @@
 
 /* --- BADGES / ETIQUETAS --- */
 .badge-soft {
-    padding: 8px 12px;
+    padding: 6px 16px;
     border-radius: 15px;
     font-size: 0.75rem;
     font-weight: 700;
@@ -58,6 +58,16 @@
 /*     text-transform: uppercase; */
     border: 1px solid transparent;
     display: inline-block;
+}
+
+.badge-pill-qty {
+  padding: 6px 16px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 700;
 }
 
 
@@ -74,8 +84,14 @@
   border-color: #d1fbfb;
 }
 
-/* Amarillo (Estilo Pendiente) -> Stock Bajo */
 .stock-low {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+/* Amarillo (Estilo Pendiente) -> Stock Bajo */
+.stock-low2 {
     background-color: #fff8dd;
     color: #c99e03;
     border-color: #ffedb8;

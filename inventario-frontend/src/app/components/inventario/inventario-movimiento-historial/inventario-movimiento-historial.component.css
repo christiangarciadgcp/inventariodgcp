@@ -121,3 +121,13 @@
 .bg-primary-subtle { background-color: #e0f2fe !important; } .text-primary { color: #0ea5e9 !important; }
 .bg-warning-subtle { background-color: #fef08a !important; } .text-warning { color: #d97706 !important; }
 .bg-light { background-color: #f1f5f9 !important; }
+
+.badge-pill {
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  border-radius: 15px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 700;
+}
