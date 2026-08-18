@@ -83,7 +83,7 @@ export class ProductoDialogComponent implements OnInit {
     idModelo : [null, Validators.required],
     esGenerico: [false],
     idProductoPadre: [null],
-    esNuevo: [false]
+    esNuevo: [true]
   });
 
 

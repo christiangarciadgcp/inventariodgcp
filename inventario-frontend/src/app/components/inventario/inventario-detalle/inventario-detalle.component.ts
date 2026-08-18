@@ -46,7 +46,7 @@ export class InventarioDetalleComponent implements OnInit {
   private reporteInventario = inject(InventarioBodegaService);
   private mensaje = inject(Mensaje);
 
-  displayedColumns: string[] = ['sku', 'producto', 'ser-inv', 'categoria', 'cantidad', 'acciones'];
+  displayedColumns: string[] = ['sku', 'producto', 'categoria', 'marca-modelo', 'ser-inv', 'cantidad', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   paginator = viewChild(MatPaginator);
@@ -61,6 +61,7 @@ export class InventarioDetalleComponent implements OnInit {
   productosMaestros: Producto[] = [];
   productosFiltrados: Observable<Producto[]>;
   mostrarBuscador = false;
+  cargandoMaestro: boolean = false;
 
   constructor() {
 
@@ -87,11 +88,9 @@ export class InventarioDetalleComponent implements OnInit {
       }
     };
 
-    // Filtro para el Autocomplete
+    // Filtro para el Autocomplete (Optimizado para transición fluida)
     this.productosFiltrados = this.buscadorCtrl.valueChanges.pipe(
       startWith(''),
-      debounceTime(300),
-      distinctUntilChanged(),
       map(value => {
         const nombre = typeof value === 'string' ? value : (value as any)?.nombreproducto;
         return nombre ? this._filtrarProductos(nombre) : this.productosMaestros.slice();
@@ -264,12 +263,32 @@ export class InventarioDetalleComponent implements OnInit {
   }
 
   actualizarMaestroSilencioso() {
+    // Si ya cargó los productos antes, o si ya está en proceso, no hacemos nada
+    if (this.productosMaestros.length > 0 || this.cargandoMaestro) {
+      return;
+    }
+
+    this.cargandoMaestro = true;
+    this.cdr.detectChanges(); // Forzamos a que el spinner aparezca al hacer click
+
     this.productoService.getProductosActivos().subscribe({
       next: (data) => {
         this.productosMaestros = data.filter(p => !p.esGenerico);
-        this.buscadorCtrl.setValue(this.buscadorCtrl.value);
+
+        // Primero disparamos el valor para que el "async" del HTML se llene con los datos reales
+        this.buscadorCtrl.setValue(this.buscadorCtrl.value, { emitEvent: true });
+
+        // Ocultamos el spinner (así Angular no renderiza una lista vacía ni por un milisegundo)
+        this.cargandoMaestro = false;
+
+        //Le decimos a la vista que cambie el spinner por los datos en un solo golpe visual
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error actualizando catálogo maestro silenciosamente', err)
+      error: (err) => {
+        console.error('Error actualizando catálogo maestro', err);
+        this.cargandoMaestro = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 }

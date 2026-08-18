@@ -220,12 +220,13 @@
 }
 
 /* Ancho de cada columna para mantener la estética con el paginado */
-.mat-column-sku { width: 15%; }
-.mat-column-producto { width: 35%; }
-.mat-column-ser-inv { width: 17%; }
-.mat-column-categoria { width: 13%; }
-.mat-column-cantidad { width: 10%; }
-.mat-column-acciones { width: 10%; }
+.mat-column-sku { width: 14%; }
+.mat-column-producto { width: 29%; }
+.mat-column-categoria { width: 10%; }
+.mat-column-marca-modelo { width: 15%; }
+.mat-column-ser-inv { width: 15%; }
+.mat-column-cantidad { width: 9%; }
+.mat-column-acciones { width: 8%; }
 
 /* Sirve para controlar la anchura del texto largo y salto de linea */
 .mat-column-producto span {

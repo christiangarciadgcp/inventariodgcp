@@ -45,19 +45,30 @@
                placeholder="Escriba el SKU, Nombre, Serie o Inventario del Equipo o Material..."
                [formControl]="buscadorCtrl" [matAutocomplete]="auto" autocomplete="off" autofocus (focus)="actualizarMaestroSilencioso()">
 
-        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="productoMaestroSeleccionado($event)">
-          @for (producto of (productosFiltrados | async) ?? []; track producto.idProducto) {
-            <mat-option [value]="producto">
-              <div class="d-flex align-items-center w-100">
-                <span class="badge border font-monospace bg-light text-dark border-dark-subtle me-3" style="font-size: 0.75rem;">
-                  {{ producto.skuproducto }}
-                </span>
-                <span class="fw-bold text-dark me-2">{{ producto.nombreproducto }}</span>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="productoMaestroSeleccionado($event)" panelWidth="900px">
+
+          <!-- ESTADO: CARGANDO -->
+          @if (cargandoMaestro) {
+            <mat-option disabled class="text-center">
+              <div class="d-flex align-items-center justify-content-center text-muted" style="height: 100%;">
+                <mat-spinner diameter="20" strokeWidth="2" class="me-3"></mat-spinner>
+                <span class="fst-italic">Cargando Catálogo...</span>
+              </div>
+            </mat-option>
+          } @else {
+            @for (producto of (productosFiltrados | async) ?? []; track producto.idProducto) {
+              <mat-option [value]="producto">
+                <div class="d-flex align-items-center w-100">
+          <span class="badge border font-monospace bg-light text-dark border-dark-subtle me-3" style="font-size: 0.75rem;">
+            {{ producto.skuproducto }}
+          </span>
+                  <span class="fw-bold text-dark me-2">{{ producto.nombreproducto }}</span>
 
                   <small class="text-muted fst-italic"> [ <span class="fw-bold text-dark">Serie:</span> {{producto.serieproducto}} ] - [ <span class="fw-bold text-dark">Inventario:</span> {{producto.inventarioproducto}} ]</small>
 
-              </div>
-            </mat-option>
+                </div>
+              </mat-option>
+            }
           }
         </mat-autocomplete>
 
@@ -106,10 +117,31 @@
 
 
               <ng-container matColumnDef="producto">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> PRODUCTO </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> MATERIAL / EQUIPO </th>
                 <td mat-cell *matCellDef="let element" class="text-center">
                   <div class="d-flex flex-column align-items-center justify-content-center py-2">
                     <span class="fw-bold text-dark text-center">{{ element.producto.nombreproducto }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="categoria">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> CATEGORÍA </th>
+                <td mat-cell *matCellDef="let element" class="text-center">
+                  <div class="d-flex align-items-center justify-content-center text-muted">
+                    <small>{{ element.producto.categoria?.nombrecategoria || 'N/A' }}</small>
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="marca-modelo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> Marca / Modelo </th>
+                <td mat-cell *matCellDef="let element">
+                  <div class="d-flex flex-column align-items-center justify-content-center py-2 w-100">
+
+                      <span class="fw-bold text-dark text-center">{{element.producto.modelo?.marca?.nombremarca || 'N/A'}}</span>
+                      <small class="text-secondary text-center mt-1">{{element.producto.modelo?.nombremodelo || 'N/A'}}</small>
+
                   </div>
                 </td>
               </ng-container>
@@ -126,18 +158,9 @@
                 </td>
               </ng-container>
 
-              <ng-container matColumnDef="categoria">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> CATEGORÍA </th>
-                <td mat-cell *matCellDef="let element" class="text-center">
-                  <div class="d-flex align-items-center justify-content-center text-muted">
-                    <mat-icon style="font-size: 16px; width: 16px; height: 16px;" class="me-1">category</mat-icon>
-                    <small>{{ element.producto.categoria?.nombrecategoria || 'N/A' }}</small>
-                  </div>
-                </td>
-              </ng-container>
 
               <ng-container matColumnDef="cantidad">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> STOCK ACTUAL </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> CANTIDAD</th>
                 <td mat-cell *matCellDef="let element" class="text-center">
                   <span class="badge-soft"
                         [ngClass]="{
