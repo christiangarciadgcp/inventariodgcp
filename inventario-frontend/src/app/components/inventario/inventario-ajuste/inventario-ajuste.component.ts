@@ -49,8 +49,8 @@ export class InventarioAjusteComponent {
 
   // Formulario
   form = this.fb.group({
-    cantidad: [null, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
-    motivo: ['', [Validators.required]]
+    cantidad: [1, [Validators.required, Validators.min(1), Validators.pattern('[0-9]+$')]],
+    motivo: [`Carga inicial de inventario ${this.fechaHoy}`, [Validators.required]]
   });
 
   cantidadSignal = toSignal(
