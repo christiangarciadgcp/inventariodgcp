@@ -263,25 +263,30 @@ export class InventarioDetalleComponent implements OnInit {
   }
 
   actualizarMaestroSilencioso() {
-    // Si ya cargó los productos antes, o si ya está en proceso, no hacemos nada
-    if (this.productosMaestros.length > 0 || this.cargandoMaestro) {
+    // 1. Si ya hay una petición en camino, evitamos que se duplique
+    if (this.cargandoMaestro) {
       return;
     }
 
-    this.cargandoMaestro = true;
-    this.cdr.detectChanges(); // Forzamos a que el spinner aparezca al hacer click
+    // 2. SOLO mostramos el spinner visual la primera vez que se abre (cuando no hay datos)
+    if (this.productosMaestros.length === 0) {
+      this.cargandoMaestro = true;
+      this.cdr.detectChanges();
+    }
 
+    // 3. SIEMPRE hacemos la petición al servidor para traer los productos más frescos
     this.productoService.getProductosActivos().subscribe({
       next: (data) => {
+        // Actualizamos la memoria con la lista nueva (incluyendo el producto recién creado)
         this.productosMaestros = data.filter(p => !p.esGenerico);
 
-        // Primero disparamos el valor para que el "async" del HTML se llene con los datos reales
+        // Actualizamos el buscador con la nueva data sin que el usuario note el salto
         this.buscadorCtrl.setValue(this.buscadorCtrl.value, { emitEvent: true });
 
-        // Ocultamos el spinner (así Angular no renderiza una lista vacía ni por un milisegundo)
+        // Ocultamos el spinner de forma segura
         this.cargandoMaestro = false;
 
-        //Le decimos a la vista que cambie el spinner por los datos en un solo golpe visual
+        // Le indicamos a Angular que dibuje los cambios sin parpadeos
         this.cdr.detectChanges();
       },
       error: (err) => {
