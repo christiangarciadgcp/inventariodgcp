@@ -37,6 +37,11 @@ public class Producto {
     @JoinColumn(name = "idmodelo")
     private Modelo modelo;
 
+    // --- RELACIÓN PADRE (Genérico) -> HIJO (Físico) ---
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_producto_padre")
+    private Producto productoPadre;
+
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductoImagen> imagenes = new ArrayList<>();
 
@@ -70,9 +75,5 @@ public class Producto {
     @Column(name = "esnuevo", columnDefinition = "boolean default false")
     private Boolean esNuevo = true;
 
-    // --- RELACIÓN PADRE (Genérico) -> HIJO (Físico) ---
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_producto_padre")
-    private Producto productoPadre;
 
 }

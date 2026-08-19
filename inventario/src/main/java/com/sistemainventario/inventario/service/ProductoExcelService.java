@@ -24,12 +24,14 @@ public class ProductoExcelService {
 
     private final InventarioService inventarioService;
     private final BodegaRepository bodegaRepository;
+    private final ProductoRepository productoRepository;
 
     public ProductoExcelService(CategoriaRepository categoriaRepository, ProveedorRepository proveedorRepository,
                                 UnidadMedidaRepository unidadMedidaRepository, ModeloRepository modeloRepository,
                                 ProductoService productoService,
                                 InventarioService inventarioService,
-                                BodegaRepository bodegaRepository) {
+                                BodegaRepository bodegaRepository,
+                                ProductoRepository productoRepository) {
         this.categoriaRepository = categoriaRepository;
         this.proveedorRepository = proveedorRepository;
         this.unidadMedidaRepository = unidadMedidaRepository;
@@ -37,6 +39,7 @@ public class ProductoExcelService {
         this.productoService = productoService;
         this.inventarioService = inventarioService;
         this.bodegaRepository = bodegaRepository;
+        this.productoRepository = productoRepository;
     }
 
     @Transactional
@@ -70,6 +73,7 @@ public class ProductoExcelService {
 
                 String cantidadStr = obtenerValorCelda(row, 10, formatter); // Columna K
                 String nombreBodega = obtenerValorCelda(row, 11, formatter); // Columna L
+                String nombreProductoPadre = obtenerValorCelda(row, 12, formatter); //Columna M
 
                 // BÚSQUEDAS EN LA BASE DE DATOS
                 Categoria categoria = categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreCategoria)
@@ -87,6 +91,12 @@ public class ProductoExcelService {
                             .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Proveedor no encontrado -> " + nombreProveedor));
                 }
 
+                Producto productoPadre = null;
+                if (!nombreProductoPadre.isEmpty() && !nombreProductoPadre.equalsIgnoreCase("N/A")) {
+                    productoPadre = productoRepository.findFirstByNombreproductoIgnoreCaseAndEsGenericoTrue(nombreProductoPadre)
+                            .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Producto base (padre) no encontrado -> " + nombreProductoPadre));
+                }
+
                 boolean esNuevo = true;
                 if (condicion.equalsIgnoreCase("USADO") || condicion.equalsIgnoreCase("NO")) {
                     esNuevo = false;
@@ -101,6 +111,10 @@ public class ProductoExcelService {
                 
                 if (proveedor != null) {
                     dto.setIdProveedor(proveedor.getIdProveedor());
+                }
+
+                if (productoPadre != null) {
+                    dto.setIdProductoPadre(productoPadre.getIdProducto());
                 }
                 
                 dto.setSerieproducto(serie);

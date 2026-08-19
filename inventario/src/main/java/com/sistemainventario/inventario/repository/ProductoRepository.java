@@ -14,6 +14,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
 
     List<Producto> findByNombreproductoContainingIgnoreCase(String nombreproducto);
 
+    Optional<Producto> findFirstByNombreproductoIgnoreCaseAndEsGenericoTrue(String nombreproducto);
+
     Optional<Producto> findByskuproducto(String skuproducto);
 
     Iterable<Producto> findByCategoria_IdCategoria(Integer idCategoria);
@@ -23,10 +25,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     // List<Producto> findByActivoTrue();
 
 
-    // NUEVOS METODOS PARA PRODUCTOS
-        // NUEVO: Para llenar el selector de padres en el formulario
-        List<Producto> findByEsGenericoTrueAndActivoTrue();
+    // NUEVO: Para llenar el selector de padres en el formulario
+    List<Producto> findByEsGenericoTrueAndActivoTrue();
 
-        // NUEVO: Para buscar sustitutos físicos cuando se despacha un genérico
-        List<Producto> findByProductoPadre_IdProductoAndActivoTrue(Integer idProductoPadre);
+    // NUEVO: Para buscar sustitutos físicos cuando se despacha un genérico
+    List<Producto> findByProductoPadre_IdProductoAndActivoTrue(Integer idProductoPadre);
+
+        
 }
