@@ -70,7 +70,6 @@ public class ProductoExcelService {
                 String inventarioStr = obtenerValorCelda(row, 7, formatter);
                 String descripcion = obtenerValorCelda(row, 8, formatter);
                 String condicion = obtenerValorCelda(row, 9, formatter);
-
                 String cantidadStr = obtenerValorCelda(row, 10, formatter); // Columna K
                 String nombreBodega = obtenerValorCelda(row, 11, formatter); // Columna L
                 String nombreProductoPadre = obtenerValorCelda(row, 12, formatter); //Columna M
