@@ -52,29 +52,29 @@ public class BodegaService {
 
         Bodega bodegaGuardada = bodegaRepository.save(bodega);
 
-        if(nuevaBodega){
-            List<Producto> productos = productoRepository.findAll();
-            List<Inventario> inventarioInicial = new ArrayList<>();
+        // if(nuevaBodega){
+        //     List<Producto> productos = productoRepository.findAll();
+        //     List<Inventario> inventarioInicial = new ArrayList<>();
 
-            for (Producto p : productos){
-                Inventario inventario = new Inventario();
+        //     for (Producto p : productos){
+        //         Inventario inventario = new Inventario();
 
-                InventarioId id = new InventarioId();
-                id.setIdBodega(bodegaGuardada.getIdBodega());
-                id.setIdProducto(p.getIdProducto());
-                inventario.setId(id);
+        //         InventarioId id = new InventarioId();
+        //         id.setIdBodega(bodegaGuardada.getIdBodega());
+        //         id.setIdProducto(p.getIdProducto());
+        //         inventario.setId(id);
 
-                inventario.setBodega(bodegaGuardada);
-                inventario.setProducto(p);
-                inventario.setCantidad_actual(0);
+        //         inventario.setBodega(bodegaGuardada);
+        //         inventario.setProducto(p);
+        //         inventario.setCantidad_actual(0);
 
-                inventarioInicial.add(inventario);
-            }
+        //         inventarioInicial.add(inventario);
+        //     }
 
-            if(!inventarioInicial.isEmpty()){
-                inventarioRepository.saveAll(inventarioInicial);
-            }
-        }
+        //     if(!inventarioInicial.isEmpty()){
+        //         inventarioRepository.saveAll(inventarioInicial);
+        //     }
+        // }
 
         return bodegaGuardada;
 

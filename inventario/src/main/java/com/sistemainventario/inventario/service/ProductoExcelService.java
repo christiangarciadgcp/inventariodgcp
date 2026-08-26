@@ -9,9 +9,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class ProductoExcelService {
@@ -21,30 +27,51 @@ public class ProductoExcelService {
     private final UnidadMedidaRepository unidadMedidaRepository;
     private final ModeloRepository modeloRepository;
     private final ProductoService productoService;
-
+    private final MarcaRepository marcaRepository;
     private final InventarioService inventarioService;
     private final BodegaRepository bodegaRepository;
     private final ProductoRepository productoRepository;
 
+    private final TransactionTemplate transactionTemplate;
+
     public ProductoExcelService(CategoriaRepository categoriaRepository, ProveedorRepository proveedorRepository,
                                 UnidadMedidaRepository unidadMedidaRepository, ModeloRepository modeloRepository,
                                 ProductoService productoService,
+                                MarcaRepository marcaRepository,
                                 InventarioService inventarioService,
                                 BodegaRepository bodegaRepository,
-                                ProductoRepository productoRepository) {
+                                ProductoRepository productoRepository,
+                                PlatformTransactionManager transactionManager) {
         this.categoriaRepository = categoriaRepository;
         this.proveedorRepository = proveedorRepository;
         this.unidadMedidaRepository = unidadMedidaRepository;
         this.modeloRepository = modeloRepository;
         this.productoService = productoService;
+        this.marcaRepository = marcaRepository;
         this.inventarioService = inventarioService;
         this.bodegaRepository = bodegaRepository;
         this.productoRepository = productoRepository;
+
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
+        this.transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    }
+
+    private static class FilaProcesada {
+        ProductoRegistroDTO dto;
+        Bodega bodegaDestino;
+        Integer cantidadInicial;
+
+        public FilaProcesada(ProductoRegistroDTO dto, Bodega bodegaDestino, Integer cantidadInicial){
+            this.dto = dto;
+            this.bodegaDestino = bodegaDestino;
+            this.cantidadInicial = cantidadInicial;
+        }
     }
 
     @Transactional
     public List<Producto> procesarCargaMasiva(MultipartFile archivoExcel, Integer idUsuario) {
         List<Producto> productosGuardados = new ArrayList<>();
+        List<FilaProcesada> filaProcesadas = new ArrayList<>();
         DataFormatter formatter = new DataFormatter(); 
 
         try (InputStream is = archivoExcel.getInputStream(); 
@@ -56,7 +83,7 @@ public class ProductoExcelService {
                 String nombreProducto = obtenerValorCelda(row, 0, formatter);
                 
                 if (row.getRowNum() == 0 && nombreProducto.equalsIgnoreCase("Nombre del Producto")) {
-                    continue;
+                    continue; // A1 no es el inicio del archivo base para ingresar materiales
                 }
 
                 if (nombreProducto.isEmpty()) break; // Termina el ciclo de la carga 
@@ -76,24 +103,38 @@ public class ProductoExcelService {
 
                 // BÚSQUEDAS EN LA BASE DE DATOS
                 Categoria categoria = categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreCategoria)
-                        .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Categoría no encontrada -> " + nombreCategoria));
+                        .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Categoría no encontrada: " + nombreCategoria));
+
+                Marca marca = marcaRepository.findFirstByNombremarcaIgnoreCase(nombreMarca)
+                        .orElseGet(() -> transactionTemplate.execute(status -> {
+                            Marca nuevaMarca = new Marca();
+                            nuevaMarca.setNombremarca(nombreMarca);
+                            nuevaMarca.setActivo(true);
+                            return marcaRepository.save(nuevaMarca);
+                        }));
 
                 Modelo modelo = modeloRepository.findFirstByNombremodeloIgnoreCaseAndMarca_NombremarcaIgnoreCase(nombreModelo, nombreMarca)
-                        .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": El modelo '" + nombreModelo + "' no fue encontrado bajo la marca '" + nombreMarca + "'"));
+                        .orElseGet(() -> transactionTemplate.execute(status -> {
+                            Modelo nuevoModelo = new Modelo();
+                            nuevoModelo.setNombremodelo(nombreModelo);
+                            nuevoModelo.setMarca(marca);
+                            nuevoModelo.setActivo(true);
+                            return modeloRepository.save(nuevoModelo);
+                        }));
 
                 UnidadMedida unidad = unidadMedidaRepository.findFirstByNombreunidadmedidaIgnoreCase(nombreUnidad)
-                        .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Unidad de medida no encontrada -> " + nombreUnidad));
+                        .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Unidad de medida no encontrada: " + nombreUnidad));
 
                 Proveedor proveedor = null;
                 if (!nombreProveedor.isEmpty() && !nombreProveedor.equalsIgnoreCase("N/A")) {
                     proveedor = proveedorRepository.findFirstByNombreproveedorIgnoreCase(nombreProveedor)
-                            .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Proveedor no encontrado -> " + nombreProveedor));
+                            .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Proveedor no encontrado: " + nombreProveedor));
                 }
 
                 Producto productoPadre = null;
                 if (!nombreProductoPadre.isEmpty() && !nombreProductoPadre.equalsIgnoreCase("N/A")) {
                     productoPadre = productoRepository.findFirstByNombreproductoIgnoreCaseAndEsGenericoTrue(nombreProductoPadre)
-                            .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Producto base (padre) no encontrado -> " + nombreProductoPadre));
+                            .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Producto base (padre) no encontrado: " + nombreProductoPadre));
                 }
 
                 boolean esNuevo = true;
@@ -101,7 +142,7 @@ public class ProductoExcelService {
                     esNuevo = false;
                 }
 
-                // 2. ARMAR EL DTO
+                // ARMAR EL DTO en memoria
                 ProductoRegistroDTO dto = new ProductoRegistroDTO();
                 dto.setNombreproducto(nombreProducto);
                 dto.setIdCategoria(categoria.getIdCategoria());
@@ -124,32 +165,41 @@ public class ProductoExcelService {
                 dto.setEsGenerico(false);
                 
                 // Precios en Cero
-                dto.setPreciocostoproducto(java.math.BigDecimal.ZERO);
-                dto.setPrecioventaproducto(java.math.BigDecimal.ZERO);
+                dto.setPreciocostoproducto(BigDecimal.ZERO);
+                dto.setPrecioventaproducto(BigDecimal.ZERO);
 
-                // 3. GUARDAR
-                Producto producto = productoService.guardarProducto(dto, null);
-                productosGuardados.add(producto);
+
+                Bodega bodegaDestino = null;
+                Integer cantidadInicial = null;
+
 
                 if (!cantidadStr.isEmpty() && !nombreBodega.isEmpty()) {
                     try {
-                        int cantidadInicial = Integer.parseInt(cantidadStr);
+                         cantidadInicial = Integer.parseInt(cantidadStr);
                         if (cantidadInicial > 0) {
-                            Bodega bodegaDestino = bodegaRepository.findFirstByNombrebodegaIgnoreCase(nombreBodega)
-                                    .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Bodega destino no encontrada -> " + nombreBodega));
-
-                            inventarioService.registrarMovimiento(
-                                    producto.getIdProducto(),
-                                    bodegaDestino.getIdBodega(),
-                                    "ENTRADA",
-                                    cantidadInicial,
-                                    idUsuario,
-                                    "Carga inicial de inventario vía plantilla Excel"
-                            );
+                            bodegaDestino = bodegaRepository.findFirstByNombrebodegaIgnoreCase(nombreBodega)
+                                    .orElseThrow(() -> new RuntimeException("Fila " + (row.getRowNum() + 1) + ": Bodega destino no encontrada: " + nombreBodega));
                         }
                     } catch (NumberFormatException e) {
                         throw new RuntimeException("Fila " + (row.getRowNum() + 1) + ": La Cantidad Inicial debe ser un número entero válido.");
                     }
+                }
+
+                filaProcesadas.add(new FilaProcesada(dto, bodegaDestino, cantidadInicial));
+            }
+
+            for(FilaProcesada fila : filaProcesadas){
+                Producto producto = productoService.guardarProducto(fila.dto, null);
+                productosGuardados.add(producto);
+
+                if(fila.bodegaDestino != null && fila.cantidadInicial != null && fila.cantidadInicial > 0){
+                    inventarioService.registrarMovimiento(
+                        producto.getIdProducto(), 
+                        fila.bodegaDestino.getIdBodega(), 
+                        "ENTRADA", 
+                        fila.cantidadInicial, 
+                        idUsuario, 
+                        "Carga inicial de inventario vía plantilla Excel");
                 }
             }
 
