@@ -10,7 +10,7 @@
 
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Nombre de Usuario</mat-label>
-            <input matInput formControlName="nombreusuario" autocomplete="off" placeholder="Ej. nombre.apellido">
+            <input matInput formControlName="nombreusuario" autocomplete="off" placeholder="Ej. nombre.apellido" [readonly]="esEdicion">
             <mat-icon matSuffix>person</mat-icon>
             @if(form.get('nombreusuario')?.hasError('required') && form.get('nombreusuario')?.touched){
                 <mat-error>User obligatorio</mat-error>

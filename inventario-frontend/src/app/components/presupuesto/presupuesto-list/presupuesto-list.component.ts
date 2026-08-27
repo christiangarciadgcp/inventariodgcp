@@ -132,9 +132,9 @@ export class PresupuestoListComponent implements OnInit {
 
     const rolActual = this.authService.getRolUsuario();
 
-    this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
+    this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi' || rolActual === 'coordinador utdi');
 
-    this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador');
+    this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador' || rolActual === 'coordinador utdi');
 
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
     if (tabParam) {

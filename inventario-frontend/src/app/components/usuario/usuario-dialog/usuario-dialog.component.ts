@@ -44,7 +44,9 @@ export class UsuarioDialogComponent implements OnInit {
   ngOnInit(): void {
     this.rolService.getRoles().subscribe(data => {
       //ORDENAMIENTO SEGUN ID
-      this.listaRoles = data.sort((a, b) => a.idRol! - b.idRol!);
+      this.listaRoles = data.sort((a, b) =>
+      a.nombrerol.localeCompare(b.nombrerol, 'es', {sensitivity: 'base'})
+      );
     });
 
       // Validamos si llegó data para activar el modo Edición
@@ -60,7 +62,7 @@ export class UsuarioDialogComponent implements OnInit {
         });
 
         // Deshabilitamos campos que no se pueden editar
-        this.form.get('nombreusuario')?.disable();
+        //this.form.get('nombreusuario')?.disable();
 
         // En edición, la contraseña no es obligatoria en este modal
         this.form.get('passwordusuario')?.clearValidators();

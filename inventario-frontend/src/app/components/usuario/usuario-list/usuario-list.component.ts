@@ -230,6 +230,8 @@ export class UsuarioListComponent implements OnInit {
     switch (rol) {
       case 'administrador':
         return 'role-admin';
+      case 'coordinador utdi':
+        return 'role-coordinador';
       case 'jefe utdi':
         return 'role-jefe';
       case 'inventario utdi':

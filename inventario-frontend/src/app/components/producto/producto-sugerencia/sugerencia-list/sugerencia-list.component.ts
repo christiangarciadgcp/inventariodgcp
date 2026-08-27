@@ -56,7 +56,7 @@ export class SugerenciasListComponent implements OnInit {
   ngOnInit(): void {
 
     const rolActual = this.authService.getRolUsuario();
-    this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
+    this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi' || rolActual === 'coordinador utdi');
     if (this.esEncargadoInventario()) {
       this.displayedColumns = ['id', 'fecha', 'nombre', 'solicitante', 'justificacion', 'estado', 'acciones'];
     } else {

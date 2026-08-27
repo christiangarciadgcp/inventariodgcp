@@ -36,7 +36,7 @@ export class PresupuestoAprobacionComponent implements OnInit {
 
   itemsSolicitados = signal<PresupuestoRevisionItem[]>([]);
   cargando = signal<boolean>(true);
-  esJefeUTDI = signal<boolean>(false);
+  esEncargadoAprobarPresupuesto = signal<boolean>(false);
 
   idPresupuesto : number = 0;
   usuarioPresupuesto : string = '';
@@ -44,7 +44,7 @@ export class PresupuestoAprobacionComponent implements OnInit {
 
   ngOnInit() {
     const rolActual = this.authService.getRolUsuario();
-    this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador');
+    this.esEncargadoAprobarPresupuesto.set(rolActual === 'jefe utdi' || rolActual === 'administrador' || rolActual === 'coordinador utdi');
 
     if(this.data && this.data.idPresupuesto){
       this.idPresupuesto = this.data.idPresupuesto;

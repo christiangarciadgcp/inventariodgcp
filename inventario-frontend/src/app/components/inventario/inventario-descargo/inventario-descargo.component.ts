@@ -207,9 +207,9 @@ export class InventarioDescargoComponent implements OnInit{
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '350px',
+      width: '450px',
       data: {
-        titulo: '¿Está seguro de enviar a descargo estos materiales?',
+        titulo: '¿Está seguro de realizar este descargo?',
         mensaje: 'Esta acción no se puede deshacer',
         textoBoton: 'Aceptar',
         colorBoton: 'primary'

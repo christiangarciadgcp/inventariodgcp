@@ -37,7 +37,7 @@ public class UsuarioService {
 
     //METODO PARA LISTAR TODOS LOS USUARIOS
     public List<Usuario> listarUsuarios(){
-        return usuarioRepository.findAll(Sort.by(Sort.Direction.ASC, "idUsuario"));
+        return usuarioRepository.findAll(Sort.by(Sort.Direction.ASC, "rol.nombrerol"));
     }
 
     //METODO PARA BUSCAR UN USUARIO POR SU NOMBRE
