@@ -14,7 +14,7 @@
     justify-content: center;
 }
 
-.mat-mdc-cell { 
+.mat-mdc-cell {
     font-size: 0.9rem;
     color: #344767;
     font-weight: 500;
@@ -82,7 +82,7 @@
     position: relative;
 }
 
-.mat-mdc-cell { 
+.mat-mdc-cell {
     font-size: 0.9rem;
     color: #344767;
     font-weight: 500;
@@ -92,32 +92,32 @@
 /* --- BOTÓN AGREGAR (CORREGIDO) --- */
 .btn-add-custom {
     /* Altura idéntica al input outline */
-    height: 56px; 
-    
+    height: 56px;
+
     /* EL MISMO GRADIENTE QUE EL HEADER Y BOTÓN GUARDAR */
     background: linear-gradient(#031e3f 0%, #153863 100%);
     color: #ffffff;
-    
+
     /* Limpieza de texto borroso */
     text-shadow: none !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    
+
     /* Tipografía */
     font-weight: 600;
     font-size: 0.95rem;
     letter-spacing: 0.5px;
-    
+
     /* Borde y Forma */
     border: none;
     outline: none;
     border-radius: 50px; /* Píldora */
-    
+
     /* Flexbox */
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     /* Sombras */
     box-shadow: 0 4px 6px rgba(63, 81, 181, 0.3);
     transition: all 0.2s ease;
@@ -205,4 +205,37 @@
     .btn-add-custom {
         margin-top: 5px;
     }
+}
+
+/* Fuerza el contorno, el texto y los íconos a color rojo de error */
+/* 1. Borde rojo (mantiene el grosor fino original de Material) */
+::ng-deep .input-error-custom .mdc-notched-outline__leading,
+::ng-deep .input-error-custom .mdc-notched-outline__notch,
+::ng-deep .input-error-custom .mdc-notched-outline__trailing {
+  border-color: #f44336 !important;
+}
+
+/* 2. Color rojo para el Label interno ("Buscar Producto") */
+::ng-deep .input-error-custom .mat-mdc-form-field-label {
+  color: #f44336 !important;
+}
+
+/* 3. Color rojo para los íconos (la lupa) */
+::ng-deep .input-error-custom .mat-mdc-form-field-icon-suffix mat-icon {
+  color: #f44336 !important;
+}
+
+/* 4. Estilo para simular el mensaje de error de Angular */
+::ng-deep .hint-error-custom {
+  color: #f44336 !important;
+}
+
+::ng-deep .input-error-custom mat-label,
+::ng-deep .input-error-custom .mat-mdc-form-field-icon-suffix {
+  color: #f44336 !important;
+}
+
+/* Opcional: un fondo rojizo ultra suave para llamar más la atención */
+::ng-deep .input-error-custom .mat-mdc-form-field-flex {
+  background-color: #fffaf9 !important;
 }

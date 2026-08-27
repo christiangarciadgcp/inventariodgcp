@@ -70,7 +70,8 @@ export class PresupuestoFormComponent implements OnInit {
 
   productoSeleccionado: Producto | null = null;
   busquedaTexto: any = '';
-  cantidadSeleccionada: number = 1;
+  cantidadSeleccionada: number = 0;
+
 
   displayedColumns: string[] = ['producto', 'cantidad', 'acciones'];
 
@@ -158,12 +159,20 @@ export class PresupuestoFormComponent implements OnInit {
   limpiarInputsProducto(){
     this.productoSeleccionado = null;
     this.busquedaTexto = '';
-    this.cantidadSeleccionada = 1;
+    this.cantidadSeleccionada = 0;
     this.productosFiltrados.set([...this.listaProductos()]);
   }
 
   agregarProducto() {
-    if (!this.productoSeleccionado || this.cantidadSeleccionada <= 0) return;
+    if (!this.productoSeleccionado ){
+      this.mensaje.open("Agregue un material a la lista", "warning");
+      return;
+    }
+
+    if (this.cantidadSeleccionada <= 0 || !this.cantidadSeleccionada) {
+      this.mensaje.open("Ingrese una cantidad mayor a cero", "warning");
+      return;
+    }
 
     const itemsActuales = this.detallesAgregados();
     const existe = itemsActuales.find(d => d.producto.idProducto === this.productoSeleccionado?.idProducto);

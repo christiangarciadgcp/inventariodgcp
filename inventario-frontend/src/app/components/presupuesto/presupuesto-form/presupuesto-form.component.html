@@ -126,15 +126,14 @@
                     <div class="col-md-3">
                         <label class="form-label text-muted small fw-bold ms-1">Cantidad</label>
                         <mat-form-field appearance="outline" class="w-100 density-comfortable bg-white" subscriptSizing="dynamic">
-                            <input matInput type="number" min="1" [(ngModel)]="cantidadSeleccionada" (keypress)="sn.soloNumeros($event)">
+                            <input matInput type="number" min="0" [(ngModel)]="cantidadSeleccionada" (keypress)="sn.soloNumeros($event)">
                         </mat-form-field>
                     </div>
 
                     <div class="col-md-2">
                         <label class="form-label d-block text-transparent small fw-bold mb-md-4 text-center"> </label>
                         <button type="button" class="btn-add-custom w-100"
-                                (click)="agregarProducto()"
-                                [disabled]="!productoSeleccionado">
+                                (click)="agregarProducto()">
                             <mat-icon class="me-2" style="font-size: 20px; width: 20px; height: 20px;">add_shopping_cart</mat-icon>
                             Agregar
                         </button>

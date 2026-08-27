@@ -21,7 +21,7 @@
                 <strong>Condición:</strong>
 
                 <span class="badge ms-2 px-2 py-2 shadow-sm"
-                      [ngClass]="form.get('esNuevo')?.value ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'">
+                      [ngClass]="form.get('esNuevo')?.value ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'">
           {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
         </span>
               </div>
