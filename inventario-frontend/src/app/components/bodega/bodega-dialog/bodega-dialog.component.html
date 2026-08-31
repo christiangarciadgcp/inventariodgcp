@@ -16,6 +16,20 @@
             }
         </mat-form-field>
 
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de Bodega</mat-label>
+          <mat-select formControlName="idBodegaTipo">
+            @for (bodegas of listaBodegasTipo; track bodegas.idBodegaTipo) {
+              <mat-option [value]="bodegas.idBodegaTipo">
+                {{ bodegas.tipobodega | uppercase}}
+              </mat-option>
+            }
+          </mat-select>
+          @if (form.get('idBodegaTipo')?.hasError('required') && form.get('idBodegaTipo')?.touched) {
+            <mat-error>Debe seleccionar un tipo de bodega</mat-error>
+          }
+        </mat-form-field>
+
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Dirección Física</mat-label>
             <input matInput formControlName="direccion" placeholder="Ej. Calle Principal #123" autocomplete="off">
@@ -28,6 +42,8 @@
                 <mat-error>El formato debe ser ####-####</mat-error>
             }
         </mat-form-field>
+
+
     </form>
 
 </mat-dialog-content>

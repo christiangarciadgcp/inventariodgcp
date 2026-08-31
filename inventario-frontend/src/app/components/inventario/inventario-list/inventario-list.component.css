@@ -56,5 +56,43 @@
     transform: translateX(5px);
 }
 
-/* ESTILO PARA EL BOTÓN DE EXCEL */
 
+/* --- CABECERAS DE SECCIÓN ELEGANTES --- */
+.section-divider {
+  width: 100%;
+}
+
+.section-divider h4 {
+  letter-spacing: 1px;
+  color: #153863 !important;
+  font-size: 1.15rem;
+}
+
+.icon-wrapper {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.divider-line {
+  height: 2px;
+  background: linear-gradient(90deg, #dbe0e6 0%, transparent 100%);
+  border-radius: 2px;
+}
+
+.divider-line-reverse {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #dbe0e6 100%);
+  border-radius: 2px;
+}

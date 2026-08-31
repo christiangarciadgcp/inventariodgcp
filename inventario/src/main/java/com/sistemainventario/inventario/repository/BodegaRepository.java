@@ -20,4 +20,4 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer>{
 
     Long countByActivoTrue();
 
-}
+}   

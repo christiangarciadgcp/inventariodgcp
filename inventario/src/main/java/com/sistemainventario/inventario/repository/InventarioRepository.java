@@ -41,4 +41,5 @@ public interface InventarioRepository extends JpaRepository<Inventario, Inventar
            "ORDER BY b.nombrebodega ASC, p.nombreproducto ASC, i.cantidad_actual DESC, p.skuproducto ASC")
     List<Inventario> findInventarioConsolidadoExistente();
 
+
 }

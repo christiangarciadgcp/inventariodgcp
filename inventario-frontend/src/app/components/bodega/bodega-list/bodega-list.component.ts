@@ -30,7 +30,7 @@ import {Marca} from '../../../models/marca';
 })
 export class BodegaListComponent {
 
-  displayedColumns: string[] = ['id', 'nombre', 'direccion', 'telefono', 'estado', 'acciones'];
+  displayedColumns: string[] = ['id', 'nombre', 'direccion', 'telefono', 'estado', 'tipo', 'acciones'];
   dataSource = new MatTableDataSource<Bodega>([]);
   bodegas = signal<Bodega[]>([]);
 
@@ -63,6 +63,8 @@ export class BodegaListComponent {
           return item.nombrebodega;
         case 'estado':
           return item.activo;
+        case 'tipo':
+          return item.bodegaTipo;
         default:
           return (item as any)[property];
       }
@@ -119,7 +121,8 @@ export class BodegaListComponent {
       nombrebodega: data.nombre,
       direccionbodega: data.direccion,
       telefonobodega: data.telefono,
-      activo: false
+      activo: false,
+      bodegaTipo: { idBodegaTipo: data.idBodegaTipo, tipobodega: '' }
     };
 
     this.bodegaService.updateBodega(id, bodegaActualizada).subscribe({
@@ -139,7 +142,8 @@ export class BodegaListComponent {
       nombrebodega: datos.nombre,
       direccionbodega: datos.direccion,
       telefonobodega : datos.telefono,
-      activo : datos.activo
+      activo : datos.activo,
+      bodegaTipo : { idBodegaTipo: datos.idBodegaTipo, tipobodega: '' }
     };
 
     console.log('Enviando:', nuevaBodega);
@@ -207,6 +211,17 @@ export class BodegaListComponent {
         });
       }
     });
+  }
+
+  obtenerClase(tipo: string): string {
+    switch (tipo) {
+      case 'VIRTUAL':
+        return 'badge-virtual';
+      case 'FISICA':
+        return 'badge-fisica';
+      default:
+        return 'default';
+    }
   }
 
 }

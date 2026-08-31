@@ -43,7 +43,7 @@ export class UsuarioDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.rolService.getRoles().subscribe(data => {
-      //ORDENAMIENTO SEGUN ID
+      //ORDENAMIENTO SEGUN NOMBRE DE ROL
       this.listaRoles = data.sort((a, b) =>
       a.nombrerol.localeCompare(b.nombrerol, 'es', {sensitivity: 'base'})
       );

@@ -1,7 +1,6 @@
 package com.sistemainventario.inventario.service;
 
 import com.sistemainventario.inventario.model.Rol;
-//import com.sistemainventario.inventario.repository.CategoriaRepository;
 import com.sistemainventario.inventario.repository.RolRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

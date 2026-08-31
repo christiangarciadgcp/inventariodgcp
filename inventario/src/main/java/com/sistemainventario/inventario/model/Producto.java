@@ -75,5 +75,8 @@ public class Producto {
     @Column(name = "esnuevo", columnDefinition = "boolean default false")
     private Boolean esNuevo = true;
 
+    @Column(name = "es_asignable", columnDefinition = "boolean default false", nullable = false)
+    private Boolean esAsignable = false;
+
 
 }

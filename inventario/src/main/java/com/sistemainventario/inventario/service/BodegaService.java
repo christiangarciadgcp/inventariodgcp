@@ -89,6 +89,7 @@ public class BodegaService {
         bodegaActual.setNombrebodega(bodega.getNombrebodega());
         bodegaActual.setDireccionbodega(bodega.getDireccionbodega());
         bodegaActual.setTelefonobodega(bodega.getTelefonobodega());
+        bodegaActual.setBodegaTipo(bodega.getBodegaTipo());
 
         return bodegaRepository.save(bodegaActual);
     }

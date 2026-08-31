@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal,ChangeDetectorRef } from '@angular/core';
+  import { Component, OnInit, inject, signal,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,6 +30,8 @@ export class InventarioListComponent implements OnInit {
   private reporteConsolidado = inject(InventarioBodegasConsolidadoService)
 
   bodegas = signal<Bodega[]>([]);
+  bodegasFisicas = signal<Bodega[]>([]);
+  bodegasVirtuales = signal<Bodega[]>([]);
   generandoReporte = false;
   generandoExcel = false;
 
@@ -41,7 +43,8 @@ export class InventarioListComponent implements OnInit {
   cargarInventario() {
     this.inventarioService.listarBodegas().subscribe({
       next: (data) => {
-        this.bodegas.set(data);
+        this.bodegasVirtuales.set(data.filter(b => b.bodegaTipo.idBodegaTipo === 1));
+        this.bodegasFisicas.set(data.filter(b => b.bodegaTipo.idBodegaTipo === 2));
         this.cdr.detectChanges();
 
       },

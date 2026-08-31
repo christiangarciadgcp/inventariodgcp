@@ -26,7 +26,7 @@
                     [disabled]="generandoExcel"
             (click)="descargarExcelConsolidado()">
               <mat-icon class="me-2 text-success">table_view</mat-icon>
-              {{ generandoReporte ? 'Exportando Reporte' : 'Exportar Excel'}}
+              {{ generandoExcel ? 'Exportando Excel' : 'Exportar Excel'}}
             </button>
 
 
@@ -35,46 +35,86 @@
         </div>
 
 
-    <div class="row g-4">
+  <!-- CABECERA VIRTUALES -->
+  <div class="section-divider d-flex align-items-center mt-2 mb-4">
+    <div class="icon-wrapper shadow-sm">
+      <mat-icon>warehouse</mat-icon>
+    </div>
+    <h4 class="fw-bold m-0 ms-3 text-dark">BODEGAS VIRTUALES</h4>
+    <div class="flex-grow-1 ms-4 divider-line"></div>
+  </div>
 
-        @for (bodega of bodegas(); track bodega.idBodega) {
-
-        <div class="col-12 col-md-6 col-lg-4"> <mat-card class="bodega-card h-100 cursor-pointer"
-                [routerLink]="['/inventario/bodega', bodega.idBodega]">
-                <mat-card-content class="p-4 d-flex flex-column align-items-center text-center">
-
-                    <div class="icon-circle mb-3 shadow-sm">
-                        <mat-icon>warehouse</mat-icon>
-                    </div>
-
-                    <h3 class="fw-bold text-dark mb-1">{{ bodega.nombrebodega }}</h3>
-
-                    <span class="text-dark small d-flex align-items-center justify-content-center gap-1 w-100">
+  <!-- INVENTARIO BODEGAS VIRTUALES -->
+  <div class="row g-4 mb-5">
+    @for (bodega of bodegasVirtuales(); track bodega.idBodega) {
+      <div class="col-12 col-md-6 col-lg-4">
+        <mat-card class="bodega-card h-100 cursor-pointer" [routerLink]="['/inventario/bodega', bodega.idBodega]">
+          <mat-card-content class="p-4 d-flex flex-column align-items-center text-center">
+            <div class="icon-circle mb-3 shadow-sm">
+              <mat-icon>warehouse</mat-icon>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">{{ bodega.nombrebodega }}</h3>
+            <span class="text-dark small d-flex align-items-center justify-content-center gap-1 w-100">
                         <mat-icon style="font-size: 14px; height: 14px;">location_on</mat-icon>
-                        {{ bodega.direccionbodega }}
+              {{ bodega.direccionbodega }}
                     </span>
-
-                    <mat-divider class="w-100 my-4"></mat-divider>
-
-                    <span class="text-primary fw-bold small d-flex align-items-center action-text">
+            <mat-divider class="w-100 my-4"></mat-divider>
+            <span class="text-primary fw-bold small d-flex align-items-center action-text">
                         VER INVENTARIO <mat-icon class="ms-1 icon-arrow">arrow_forward</mat-icon>
                     </span>
-
-                </mat-card-content>
-            </mat-card>
-
+          </mat-card-content>
+        </mat-card>
+      </div>
+    } @empty {
+      <div class="col-12">
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-muted bg-white rounded-4 shadow-sm border">
+          <mat-icon style="font-size: 100px; width: 100px; height: 100px;" class="mb-3 text-light-emphasis">domain_disabled</mat-icon>
+          <h4 class="fw-bold">No hay bodegas disponibles</h4>
+          <p class="m-0">Parece que aún no se han registrado bodegas en el sistema.</p>
         </div>
+      </div>
+    }
+  </div>
 
-        } @empty {
-        <div class="col-12">
-            <div
-                class="d-flex flex-column align-items-center justify-content-center py-5 text-muted bg-white rounded-4 shadow-sm border">
-                <mat-icon style="font-size: 100px; width: 100px; height: 100px;"
-                    class="mb-3 text-light-emphasis">domain_disabled</mat-icon>
-                <h4 class="fw-bold">No hay bodegas disponibles</h4>
-                <p class="m-0">Parece que aún no se han registrado bodegas en el sistema.</p>
-            </div>
-        </div>
-        }
+  <!-- CABECERA FÍSICAS -->
+  <div class="section-divider d-flex align-items-center mt-5 mb-4">
+    <div class="icon-wrapper shadow-sm">
+      <mat-icon>warehouse</mat-icon>
     </div>
+    <h4 class="fw-bold m-0 ms-3 text-dark">BODEGAS FÍSICAS</h4>
+    <div class="flex-grow-1 ms-4 divider-line"></div>
+  </div>
+
+  <!-- INVENTARIO BODEGAS FISICAS -->
+  <div class="row g-4 pb-5">
+    @for (bodega of bodegasFisicas(); track bodega.idBodega) {
+      <div class="col-12 col-md-6 col-lg-4">
+        <mat-card class="bodega-card h-100 cursor-pointer" [routerLink]="['/inventario/bodega', bodega.idBodega]">
+          <mat-card-content class="p-4 d-flex flex-column align-items-center text-center">
+            <div class="icon-circle mb-3 shadow-sm">
+              <mat-icon>warehouse</mat-icon>
+            </div>
+            <h3 class="fw-bold text-dark mb-1">{{ bodega.nombrebodega }}</h3>
+            <span class="text-dark small d-flex align-items-center justify-content-center gap-1 w-100">
+                        <mat-icon style="font-size: 14px; height: 14px;">location_on</mat-icon>
+              {{ bodega.direccionbodega }}
+                    </span>
+            <mat-divider class="w-100 my-4"></mat-divider>
+            <span class="text-primary fw-bold small d-flex align-items-center action-text">
+                        VER INVENTARIO <mat-icon class="ms-1 icon-arrow">arrow_forward</mat-icon>
+                    </span>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    } @empty {
+      <div class="col-12">
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-muted bg-white rounded-4 shadow-sm border">
+          <mat-icon style="font-size: 100px; width: 100px; height: 100px;" class="mb-3 text-light-emphasis">domain_disabled</mat-icon>
+          <h4 class="fw-bold">No hay bodegas disponibles</h4>
+          <p class="m-0">Parece que aún no se han registrado bodegas en el sistema.</p>
+        </div>
+      </div>
+    }
+  </div>
+
 </div>

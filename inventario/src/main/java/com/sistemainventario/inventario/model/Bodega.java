@@ -12,6 +12,10 @@ public class Bodega {
     @Column(name = "idbodega")
     private Integer idBodega;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idbodegatipo")
+    private BodegaTipo bodegaTipo;
+
     @Column(name = "nombrebodega", nullable = false, length = 150)
     private String nombrebodega;
 

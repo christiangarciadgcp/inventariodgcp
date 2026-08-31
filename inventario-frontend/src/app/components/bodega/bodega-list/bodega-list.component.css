@@ -133,3 +133,36 @@ button[mat-icon-button][color="warn"] {
 ::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
     opacity: 0.9 !important;
 }
+
+.badge-soft {
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 10px solid transparent;
+}
+
+/* VIRTUAL: Tonos Azul Acero */
+.badge-virtual {
+  background-color: #e7f6f8;
+  color: #0695af;
+  border: 1px solid #92ede3;
+}
+
+/* FÍSICA: Tonos Gris Pizarra Cálido */
+.badge-fisica {
+  background-color: #fff6e5;
+  color: #fb8c00;
+  border: 1px solid #f39766;
+}
+
+/* DEFAULT */
+.default {
+  background-color: #f9fafb;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.mat-column-tipo { width: 10%; }

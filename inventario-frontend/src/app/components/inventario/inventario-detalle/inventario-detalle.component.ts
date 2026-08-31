@@ -104,6 +104,8 @@ export class InventarioDetalleComponent implements OnInit {
         data.producto.skuproducto +
         data.producto.nombreproducto +
         (data.producto.categoria?.nombrecategoria || '') +
+        data.producto.modelo?.marca?.nombremarca  +
+        data.producto.modelo?.nombremodelo +
         data.producto.serieproducto +
         data.producto.inventarioproducto
       ).toLowerCase();
@@ -117,7 +119,6 @@ export class InventarioDetalleComponent implements OnInit {
         this.cargarProductos(this.idBodega);
       }
     });
-
   }
 
   private _filtrarProductos(nombre: string): Producto[] {
