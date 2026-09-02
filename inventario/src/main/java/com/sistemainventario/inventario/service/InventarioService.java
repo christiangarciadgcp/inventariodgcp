@@ -41,7 +41,7 @@ public class InventarioService {
     *********************************************************************************************************/
     @Transactional(readOnly = true)
     public List<Bodega> listarTodasLasBodegas(){
-        Sort idbodega = Sort.by(Sort.Direction.ASC,"idBodega");
+        Sort idbodega = Sort.by(Sort.Direction.ASC,"nombrebodega");
         return bodegaRepository.findByActivoTrue(idbodega);
     }
 

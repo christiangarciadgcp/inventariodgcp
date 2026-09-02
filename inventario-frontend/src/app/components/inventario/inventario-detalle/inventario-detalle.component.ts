@@ -116,6 +116,7 @@ export class InventarioDetalleComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.idBodega = +id;
+        this.cargarNombreBodega(this.idBodega);
         this.cargarProductos(this.idBodega);
       }
     });
@@ -176,11 +177,9 @@ export class InventarioDetalleComponent implements OnInit {
     this.cargando = true;
     this.inventarioService.listarInventarioPorBodega(id).subscribe({
       next: (data) => {
-        if (data.length > 0) {
-          this.nombreBodega = data[0].bodega.nombrebodega;
-        }
         const inventarioFisico = data.filter((item : any) => !item.producto.esGenerico);
         this.dataSource.data = inventarioFisico;
+
         this.totalValorizado = inventarioFisico.reduce((acc : number, item : any) =>
           acc + (item.cantidad_actual * item.producto.preciocostoproducto), 0);
         this.cargando = false;
@@ -190,6 +189,19 @@ export class InventarioDetalleComponent implements OnInit {
         console.error('Error', err);
         this.cargando = false;
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  cargarNombreBodega(id: number) {
+    this.inventarioService.listarBodegas().subscribe({
+      next: (bodegas) => {
+        // Buscamos la bodega específica en el catálogo
+        const bodegaActual = bodegas.find(b => b.idBodega === id);
+        if (bodegaActual) {
+          this.nombreBodega = bodegaActual.nombrebodega;
+          this.cdr.detectChanges();
+        }
       }
     });
   }

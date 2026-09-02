@@ -49,6 +49,7 @@ import { roles } from './core/roles';
 import {
   PresupuestoDespachoComponent
 } from './components/presupuesto/presupuesto-despacho/presupuesto-despacho.component';
+import {InventarioConsultaComponent} from './components/inventario/inventario-consulta/inventario-consulta.component';
 
 export const routes: Routes = [
 
@@ -232,6 +233,19 @@ export const routes: Routes = [
         data: {breadcrumb: 'Sugerencia de Materiales'}
 
       },
+
+      /**********************************
+       Consulta de Materiales
+       ***********************************/
+      {
+        path: 'inventario-consulta',
+        component: InventarioConsultaComponent,
+        title: 'Consulta de Materiales',
+        data: {breadcrumb: 'Consulta de Materiales'}
+
+      },
+
+
 
       /*********************************
               Solicitudes de Compra

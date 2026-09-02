@@ -37,7 +37,7 @@ public interface InventarioRepository extends JpaRepository<Inventario, Inventar
            "JOIN FETCH i.bodega b " +
            "JOIN FETCH i.producto p " +
            "LEFT JOIN FETCH p.categoria " +
-           "WHERE i.cantidad_actual > 0 AND p.activo = true " +
+           "WHERE i.cantidad_actual > 0 AND p.activo = true AND b.bodegaTipo.idBodegaTipo <> 1 " +
            "ORDER BY b.nombrebodega ASC, p.nombreproducto ASC, i.cantidad_actual DESC, p.skuproducto ASC")
     List<Inventario> findInventarioConsolidadoExistente();
 

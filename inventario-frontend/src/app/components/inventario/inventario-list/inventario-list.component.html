@@ -11,6 +11,14 @@
             </div>
 
           <div class="ms-auto d-flex align-items-center gap-3">
+
+            <div class="search-elegant m-0" style="width: 300px;">
+              <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
+              <div class="search-btn-circle">
+                <mat-icon>search</mat-icon>
+              </div>
+            </div>
+
             <button mat-raised-button
                     class="rounded-pill px4"
                     style="height: 42px;"
@@ -36,6 +44,8 @@
 
 
   <!-- CABECERA VIRTUALES -->
+  @if(bodegasVirtuales().length > 0 || !input.value) {
+
   <div class="section-divider d-flex align-items-center mt-2 mb-4">
     <div class="icon-wrapper shadow-sm">
       <mat-icon>warehouse</mat-icon>
@@ -75,7 +85,9 @@
       </div>
     }
   </div>
+}
 
+@if(bodegasFisicas().length > 0 || !input.value){
   <!-- CABECERA FÍSICAS -->
   <div class="section-divider d-flex align-items-center mt-5 mb-4">
     <div class="icon-wrapper shadow-sm">
@@ -116,5 +128,20 @@
       </div>
     }
   </div>
+
+}
+
+  <!-- ========================================== -->
+  <!-- ESTADO: BÚSQUEDA SIN RESULTADOS GLOBALES   -->
+  <!-- ========================================== -->
+  @if (input.value && bodegasVirtuales().length === 0 && bodegasFisicas().length === 0) {
+    <div class="col-12 mt-4">
+      <div class="d-flex flex-column align-items-center justify-content-center py-5 text-muted bg-white rounded-4 shadow-sm border">
+        <mat-icon style="font-size: 80px; width: 80px; height: 80px;" class="mb-3 text-light-emphasis">warehouse</mat-icon>
+        <h4 class="fw-bold">No se encontraron resultados</h4>
+        <p class="m-0">No hay bodegas que coincidan con la búsqueda "<span class="fw-bold text-dark">{{ input.value }}</span>".</p>
+      </div>
+    </div>
+  }
 
 </div>

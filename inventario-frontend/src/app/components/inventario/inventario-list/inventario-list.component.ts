@@ -35,6 +35,9 @@ export class InventarioListComponent implements OnInit {
   generandoReporte = false;
   generandoExcel = false;
 
+  _bodegasFisicas: Bodega[] = [];
+  _bodegasVirtuales: Bodega[] = [];
+
   ngOnInit(): void {
     this.cargarInventario();
   }
@@ -43,8 +46,11 @@ export class InventarioListComponent implements OnInit {
   cargarInventario() {
     this.inventarioService.listarBodegas().subscribe({
       next: (data) => {
-        this.bodegasVirtuales.set(data.filter(b => b.bodegaTipo.idBodegaTipo === 1));
-        this.bodegasFisicas.set(data.filter(b => b.bodegaTipo.idBodegaTipo === 2));
+        this._bodegasVirtuales = data.filter(b => b.bodegaTipo.idBodegaTipo === 1);
+        this._bodegasFisicas = data.filter(b => b.bodegaTipo.idBodegaTipo === 2);
+
+        this.bodegasVirtuales.set(this._bodegasVirtuales)
+        this.bodegasFisicas.set(this._bodegasFisicas);
         this.cdr.detectChanges();
 
       },
@@ -54,6 +60,30 @@ export class InventarioListComponent implements OnInit {
         this.mensaje.open(msg, 'error');
       }
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase().trim();
+
+    if (!filterValue) {
+      // Si está vacío, mostrar todas las bodegas
+      this.bodegasVirtuales.set(this._bodegasVirtuales);
+      this.bodegasFisicas.set(this._bodegasFisicas);
+      return;
+    }
+
+    // Filtrar Bodegas virtuales
+    const filtradasVirtuales = this._bodegasVirtuales.filter(b =>
+      b.nombrebodega.toLowerCase().includes(filterValue)
+    );
+
+    // Filtrar Bodegas físicas
+    const filtradasFisicas = this._bodegasFisicas.filter(b =>
+      b.nombrebodega.toLowerCase().includes(filterValue)
+    );
+
+    this.bodegasVirtuales.set(filtradasVirtuales);
+    this.bodegasFisicas.set(filtradasFisicas);
   }
 
   imprimirReporteConsolidado() {

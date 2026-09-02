@@ -175,6 +175,16 @@
             }
           </a>
 
+          <!-- CONSULTA DE MATERIALES-->
+          <a routerLink="/inventario-consulta" routerLinkActive="active" class="nav-link"
+             [matTooltip]="layoutService.sidebarCollapsed() ? 'Consulta de Materiales' : ''" matTooltipPosition="right">
+            <div class="nav-icon"><mat-icon>handyman</mat-icon></div>
+
+            @if (!layoutService.sidebarCollapsed()) {
+              <span class="nav-text">Consulta de Materiales</span>
+            }
+          </a>
+
 
 
 
