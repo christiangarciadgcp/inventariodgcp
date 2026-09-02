@@ -251,7 +251,7 @@ export const routes: Routes = [
               Solicitudes de Compra
        **********************************/
       {
-        path: 'solicitud_compra',
+        path: 'solicitud-compra',
         canActivate: [permisosGuard],
         data: {
           breadcrumb: 'Solicitudes de Compra',

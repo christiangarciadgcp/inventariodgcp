@@ -276,12 +276,13 @@ html {
   100% { transform: rotate(360deg); }
 }
 
+
 .badge-pill {
   padding: 6px 16px;
   font-size: 0.75rem;
   border-radius: 15px;
   background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #b2b3b6;
   color: #1e293b;
   font-weight: 700;
 }

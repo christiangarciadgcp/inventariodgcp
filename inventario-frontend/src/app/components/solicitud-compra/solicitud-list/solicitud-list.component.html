@@ -17,7 +17,7 @@
     <div class="d-flex flex-wrap align-items-center gap-3">
 
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0"
-              routerLink="/solicitud_compra/nueva_solicitud_compra">
+              routerLink="/solicitud-compra/nueva_solicitud_compra">
         <mat-icon class="me-2">add_task</mat-icon>
         Nueva Solicitud de Compra
       </button>
@@ -127,7 +127,7 @@
                     @if (element.estado === 'PENDIENTE') {
                         <button mat-icon-button class="action-btn edit-color"
                                 matTooltip="Editar Solicitud de Compra"
-                                [routerLink]="['/solicitud_compra/editar_solicitud_compra', element.idSolicitudCompra]">
+                                [routerLink]="['/solicitud-compra/editar_solicitud_compra', element.idSolicitudCompra]">
                             <mat-icon>edit</mat-icon>
                         </button>
                     }

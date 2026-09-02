@@ -75,19 +75,19 @@
 .stock-high {
     background-color: #e8fff3;
     color: #0fba5c;
-    border-color: #d1fbe4;
+    border: 1px solid #96eabb;
 }
 
 .stock-info {
   background-color: #e8fffc;
   color: #0fa0ba;
-  border-color: #d1fbfb;
+  border-color: #94ecec;
 }
 
 .stock-low {
   background-color: #f1f5f9;
-  border: 1px solid #e2e8f0;
   color: #1e293b;
+  border: 1px solid #bcb9b9;
 }
 
 /* Amarillo (Estilo Pendiente) -> Stock Bajo */
@@ -220,12 +220,12 @@
 }
 
 /* Ancho de cada columna para mantener la estética con el paginado */
-.mat-column-sku { width: 14%; }
-.mat-column-producto { width: 29%; }
-.mat-column-categoria { width: 10%; }
-.mat-column-marca-modelo { width: 15%; }
+.mat-column-sku { width: 18%; }
+.mat-column-producto { width: 28%; }
+.mat-column-categoria { width: 9%; }
+.mat-column-marca-modelo { width: 14%; }
 .mat-column-ser-inv { width: 15%; }
-.mat-column-cantidad { width: 9%; }
+.mat-column-cantidad { width: 10%; }
 .mat-column-acciones { width: 8%; }
 
 /* Sirve para controlar la anchura del texto largo y salto de linea */

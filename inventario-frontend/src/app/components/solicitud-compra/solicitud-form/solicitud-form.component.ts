@@ -223,7 +223,7 @@ export class SolicitudFormComponent implements OnInit {
         this.solicitudService.actualizarSolicitud(this.idSolicitudEdicion()!, dto).subscribe({
             next: () => {
                 this.mensaje.open('Solicitud de Compra actualizada correctamente', 'exito');
-                this.router.navigate(['/solicitud_compra']);
+                this.router.navigate(['/solicitud-compra']);
             },
             error: (err) => this.mensaje.open(err.error?.message || 'Error al actualizar', 'error')
         });
@@ -233,7 +233,7 @@ export class SolicitudFormComponent implements OnInit {
         this.solicitudService.crearSolicitud(dto).subscribe({
             next: () => {
                 this.mensaje.open('Solicitud de Compra creada exitosamente', 'exito');
-                this.router.navigate(['/solicitud_compra']);
+                this.router.navigate(['/solicitud-compra']);
             },
             error: (err) => this.mensaje.open('Error al crear solicitud', 'error')
         });
