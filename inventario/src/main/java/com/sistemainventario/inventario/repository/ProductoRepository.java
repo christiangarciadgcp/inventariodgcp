@@ -31,5 +31,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     List<Producto> findByProductoPadre_IdProductoAndActivoTrue(Integer idProductoPadre);
 
     List<Producto> findByEsAsignableTrue(Sort sort);
+
+    Long countByEsGenericoFalse();
         
 }

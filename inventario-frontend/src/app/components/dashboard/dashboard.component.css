@@ -22,6 +22,7 @@
 .border-primary { border-left-color: #0d6efd !important; }
 .border-orange { border-left-color: #f36739 !important; }
 .border-indigo { border-left-color: #6610f2 !important; }
+.border-extra { border-left-color: #6610f2 !important; }
 
 /* Caja del Icono */
 .icon-box {

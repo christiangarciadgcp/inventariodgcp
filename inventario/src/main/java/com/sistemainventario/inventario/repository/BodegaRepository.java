@@ -4,6 +4,7 @@ import com.sistemainventario.inventario.model.Bodega;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public interface BodegaRepository extends JpaRepository<Bodega, Integer>{
 
     Optional<Bodega> findFirstByNombrebodegaIgnoreCase(String nombrebodega);
 
+    @Query("SELECT COUNT(b) FROM Bodega b WHERE b.activo = true AND b.bodegaTipo.idBodegaTipo = 2")
     Long countByActivoTrue();
 
 }   

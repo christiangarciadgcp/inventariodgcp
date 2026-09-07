@@ -69,6 +69,10 @@
     overflow: visible !important;
 }
 
+.mat-column-estado{
+  width: 15%;
+}
+
 
 .btn-nuevo {
     background: linear-gradient(#031e3f 0%, #153863 100%);

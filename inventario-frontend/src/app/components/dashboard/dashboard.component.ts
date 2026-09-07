@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit{
     aprobadas : 0,
     recepcionadas : 0,
     totalBodegas : 0,
+    totalProductos : 0,
     presupuestoPendientes : 0,
     presupuestoAprobados : 0,
     presupuestoDespachados : 0,

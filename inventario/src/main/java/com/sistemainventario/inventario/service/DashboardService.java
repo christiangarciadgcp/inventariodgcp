@@ -11,6 +11,7 @@ import com.sistemainventario.inventario.model.MovimientoStock;
 import com.sistemainventario.inventario.repository.BodegaRepository;
 import com.sistemainventario.inventario.repository.MovimientoStockRepository;
 import com.sistemainventario.inventario.repository.PresupuestoRepository;
+import com.sistemainventario.inventario.repository.ProductoRepository;
 import com.sistemainventario.inventario.repository.SolicitudCompraRepository;
 
 @Service
@@ -20,12 +21,16 @@ public class DashboardService {
     private final BodegaRepository bodegaRepository;
     private final MovimientoStockRepository movimientoStockRepository;
     private final PresupuestoRepository presupuestoRepository;
+    private final ProductoRepository productoRepository;
 
-    public DashboardService(SolicitudCompraRepository solicitudCompraRepository, BodegaRepository bodegaRepository,MovimientoStockRepository movimientoStockRepository, PresupuestoRepository presupuestoRepository){
+    public DashboardService(SolicitudCompraRepository solicitudCompraRepository, BodegaRepository bodegaRepository,MovimientoStockRepository movimientoStockRepository, PresupuestoRepository presupuestoRepository,
+        ProductoRepository productoRepository
+    ){
         this.solicitudCompraRepository = solicitudCompraRepository;
         this.bodegaRepository = bodegaRepository;
         this.movimientoStockRepository = movimientoStockRepository;
         this.presupuestoRepository = presupuestoRepository;
+        this.productoRepository = productoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -37,6 +42,7 @@ public class DashboardService {
         dashboardDTO.setAprobadas(solicitudCompraRepository.countByEstado("APROBADA"));
         dashboardDTO.setRecepcionadas(solicitudCompraRepository.countByEstado("RECEPCION_PARCIAL"));
         dashboardDTO.setTotalBodegas(bodegaRepository.countByActivoTrue());
+        dashboardDTO.setTotalProductos(productoRepository.countByEsGenericoFalse());
 
         //PRESUPUESTOS
         dashboardDTO.setPresupuestoPendientes(presupuestoRepository.countByEstado("PENDIENTE"));

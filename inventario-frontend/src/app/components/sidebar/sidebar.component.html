@@ -207,7 +207,7 @@
             }
 
           <!-- SOLICITUDES DE COMPRA -->
-            @if (permiso(rolesPermitidos.INVENTARIO)) {
+            @if (permiso(rolesPermitidos.ADMIN)) {
                 <a routerLink="/solicitud-compra" routerLinkActive="active"
                     class="nav-link" [matTooltip]="layoutService.sidebarCollapsed() ? 'Solicitud de Compra' : ''"
                     matTooltipPosition="right">

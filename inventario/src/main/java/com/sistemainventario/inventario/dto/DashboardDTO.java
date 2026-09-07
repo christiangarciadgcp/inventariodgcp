@@ -14,6 +14,7 @@ public class DashboardDTO {
     private long aprobadas;
     private long recepcionadas;
     private long totalBodegas;
+    private long totalProductos;
 
     // PRESUPUESTOS
     private long presupuestoPendientes;
