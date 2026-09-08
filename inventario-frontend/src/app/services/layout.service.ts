@@ -1,14 +1,25 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
+
+export type SidebarState = 'EXPANDED' | 'HOVER' | 'COLLAPSED';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LayoutService {
-  
-// Signal para manejar el estado (true = colapsado, false = expandido)
-  sidebarCollapsed = signal<boolean>(false);
+
+  sidebarState = signal<SidebarState>('EXPANDED');
+
+  sidebarCollapsed = computed(() => this.sidebarState() !== 'EXPANDED');
 
   toggleSidebar() {
-    this.sidebarCollapsed.update(value => !value);
+    const currentState = this.sidebarState();
+
+    if (currentState === 'EXPANDED') {
+      this.sidebarState.set('HOVER');
+    } else if (currentState === 'HOVER') {
+      this.sidebarState.set('COLLAPSED');
+    } else {
+      this.sidebarState.set('EXPANDED');
+    }
   }
 }

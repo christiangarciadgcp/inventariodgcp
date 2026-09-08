@@ -1,5 +1,4 @@
 <div class="container-wide px-5 mt-4">
-
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center gap-3">
       <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
@@ -12,11 +11,13 @@
     </div>
   </div>
 
-  <mat-card class="custom-card mb-4 p-3 shadow-sm border-0" style="border-radius: 16px;">
-    <form [formGroup]="filtroForm" class="d-flex flex-wrap gap-3 align-items-center">
+  <!-- CONTENEDOR PRINCIPAL FLEX -->
+  <div class="d-flex align-items-center justify-content-between mb-4 mt-2 gap-3 w-100">
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 280px;">
-        <mat-label>Rango de Fechas </mat-label>
+    <!-- FILTROS-->
+    <form [formGroup]="filtroForm" class="d-flex align-items-center gap-2 flex-grow-1">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1" style="min-width: 200px; max-width: 280px;">
+        <mat-label>Fechas</mat-label>
         <mat-date-range-input [rangePicker]="picker">
           <input matStartDate formControlName="inicio" placeholder="Inicio">
           <input matEndDate formControlName="fin" placeholder="Fin">
@@ -25,8 +26,8 @@
         <mat-date-range-picker #picker></mat-date-range-picker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 220px;">
-        <mat-label>Tipo de Movimiento</mat-label>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1" style="min-width: 150px; max-width: 220px;">
+        <mat-label>Tipo</mat-label>
         <mat-select formControlName="tipo">
           @for (tipo of tiposMovimiento; track tipo) {
             <mat-option [value]="tipo">{{ tipo }}</mat-option>
@@ -34,118 +35,148 @@
         </mat-select>
       </mat-form-field>
 
-      <button mat-raised-button class="btn-buscar rounded-pill px-4" [disabled]="buscando" (click)="buscarMovimientos()">
-        <mat-icon class="me-2">search</mat-icon> {{ buscando ? 'Buscando...' : 'Buscar Movimientos' }}
+      <button mat-raised-button
+              class="btn-buscar rounded-pill"
+              [ngClass]="layoutService.sidebarCollapsed() ? 'px-4' : 'px-0'"
+              [style.min-width]="layoutService.sidebarCollapsed() ? 'auto' : '48px'"
+              [style.width]="layoutService.sidebarCollapsed() ? 'auto' : '48px'"
+              [disabled]="buscando"
+              (click)="buscarMovimientos()"
+              matTooltip="Buscar Movimientos">
+
+        <div class="d-flex align-items-center justify-content-center w-100 h-100">
+          <mat-icon [class.me-2]="layoutService.sidebarCollapsed()" style="margin-right: 0;">search</mat-icon>
+          @if(layoutService.sidebarCollapsed()){
+            <span>{{ buscando ? 'Buscando...' : 'Buscar' }}</span>
+          }
+        </div>
+
       </button>
     </form>
-  </mat-card>
 
-  @if (movimientos().length > 0) {
-    <div class="d-flex justify-content-between align-items-center mb-3 animacion-fade">
+    <!-- ACCIONES Y BÚSQUEDA RÁPIDA (Derecha) -->
+    @if (movimientos().length > 0) {
+      <div class="d-flex align-items-center gap-2 flex-shrink-0 animacion-fade">
+        <button mat-raised-button
+                class="rounded-pill"
+                [ngClass]="layoutService.sidebarCollapsed() ? 'px-4' : 'px-0'"
+                style="height: 42px;"
+                [style.min-width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                [style.width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                (click)="descargarReportePdf()"
+                matTooltip="Exportar Historial a PDF">
 
-      <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..."  autocomplete="off">
-        <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
-      </div>
-
-      <button mat-raised-button class=" rounded-pill px-4" style="height: 42px;" (click)="descargarReportePdf()">
-        <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon>
-        Exportar Historial a PDF
-      </button>
-    </div>
-  }
-
-  <mat-card class="activity-card shadow-sm h-100 mb-5">
-    <div class="card-body p-4">
-
-      <div class="table-scroll-container">
-        @if (cargando) {
-          <div class="d-flex flex-column justify-content-center align-items-center py-5">
-            <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
-
-            <!-- Texto apilado abajo con un pequeño margen y estilo -->
-            <h6 class="mt-2 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+            <mat-icon class="text-danger" [class.me-2]="layoutService.sidebarCollapsed()" style="margin-right: 0;">picture_as_pdf</mat-icon>
+            @if(layoutService.sidebarCollapsed()){
+              <span>Exportar PDF</span>
+            }
           </div>
-        } @else {
-        <table mat-table [dataSource]="dataSource" class="w-100 table-modern">
 
-          <ng-container matColumnDef="icono">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let element" class="py-2" style="width: 50px;">
-              <div class="avatar-icon-compact {{ getColorMovimiento(element.tipo) }} shadow-sm">
+        </button>
+
+        <div class="search-elegant m-0 flex-shrink-1" style="max-width: 250px;">
+          <input type="text" class="search-input fw-bold text-dark" (keyup)="applyFilter($event)" placeholder="Buscar ..." autocomplete="off">
+          <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- MAT-CARD Y TABLA ... -->
+
+  <mat-card class="custom-card mb-5">
+    @if (cargando) {
+      <div class="d-flex flex-column justify-content-center align-items-center py-5">
+        <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
+        <h6 class="mt-3 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="dataSource" class="w-100">
+
+        <!-- FECHA -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> FECHA Y HORA </th>
+          <td mat-cell *matCellDef="let element" class="text-center py-2 pe-4">
+            <span class="text-muted fw-medium d-block" style="font-size: 0.8rem; line-height: 1.2;">
+                {{ element.fecha | date:'dd MMM yy' }}
+            </span>
+            <span class="text-secondary fw-bold d-block" style="font-size: 0.75rem; line-height: 1.2;">
+                {{ element.fecha | date:'h:mm a' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- TIPO Y PRODUCTO -->
+        <ng-container matColumnDef="detalle">
+          <th mat-header-cell *matHeaderCellDef class="ps-3"> TIPO | MATERIAL / EQUIPO </th>
+          <td mat-cell *matCellDef="let element" class="ps-3 py-2">
+
+            <div class="d-flex align-items-center h-100">
+              <!-- ÍCONO PEGADO AL TEXTO (me-2 da un espacio mínimo perfecto) -->
+              <div class="avatar-icon-compact {{ getColorMovimiento(element.tipo) }} shadow-sm me-2 flex-shrink-0">
                 <mat-icon>{{ getIconoMovimiento(element.tipo) }}</mat-icon>
               </div>
-            </td>
-          </ng-container>
 
-          <ng-container matColumnDef="detalle">
-            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">TIPO / PRODUCTO</th>
-            <td mat-cell *matCellDef="let element" class="py-2">
-              <div class="d-flex flex-column justify-content-center h-100">
+              <!-- TEXTOS -->
+              <div class="d-flex flex-column justify-content-center">
                 <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ element.tipo }} | {{ element.producto?.nombreproducto }}</span>
                 <small class="text-muted" style="font-size: 0.75rem; line-height: 1.2;">{{ element.motivo || 'Sin motivo registrado' }}</small>
               </div>
-            </td>
-          </ng-container>
+            </div>
 
-          <ng-container matColumnDef="bodega">
-            <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">ORIGEN / DESTINO</th>
-            <td mat-cell *matCellDef="let element" class="py-2">
-              <div class="d-flex flex-column justify-content-center h-100">
-                                <span class="fw-bold text-dark d-flex align-items-center" style="font-size: 0.85rem;">
-                                    <mat-icon class=" me-1 text-info-emphasis" style="font-size: 14px; width: 14px; height: 14px;">warehouse</mat-icon>
-                                  {{ element.bodega?.nombrebodega }}
-                                </span>
-                <small class="text-muted" style="font-size: 0.75rem;">Por: <span class="fw-medium text-secondary">{{ utils.formatearNombre(element.usuario?.nombreusuario) }}</span></small>
-              </div>
-            </td>
-          </ng-container>
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="cantidad">
-            <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">CANT.</th>
-            <td mat-cell *matCellDef="let element" class="text-center py-2">
-                            <span class="badge-pill">
-                                {{ element.cantidad }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
-                            </span>
-            </td>
-          </ng-container>
+        <!-- ORIGEN Y DESTINO -->
+        <ng-container matColumnDef="bodega">
+          <th mat-header-cell *matHeaderCellDef> ORIGEN / DESTINO </th>
+          <td mat-cell *matCellDef="let element" class="py-2">
+            <div class="d-flex flex-column justify-content-center h-100">
+              <span class="fw-bold text-dark d-flex align-items-center" style="font-size: 0.85rem;">
+                  <mat-icon class="me-1 text-info-emphasis" style="font-size: 14px; width: 14px; height: 14px;">warehouse</mat-icon>
+                {{ element.bodega?.nombrebodega }}
+              </span>
+              <small class="text-muted" style="font-size: 0.75rem;">Por: <span class="fw-medium text-secondary">{{ utils.formatearNombre(element.usuario?.nombreusuario) }}</span></small>
+            </div>
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef class="text-end text-muted small fw-bold tracking-wide pe-3">FECHA Y HORA</th>
-            <td mat-cell *matCellDef="let element" class="text-end py-2 pe-3">
-                            <span class="text-muted fw-medium d-block" style="font-size: 0.8rem; line-height: 1.2;">
-                                {{ element.fecha | date:'dd MMM yy' }}
-                            </span>
-              <span class="text-secondary fw-bold d-block" style="font-size: 0.75rem; line-height: 1.2;">
-                                {{ element.fecha | date:'h:mm a' }}
-                            </span>
-            </td>
-          </ng-container>
+        <!-- CANTIDAD -->
+        <ng-container matColumnDef="cantidad">
+          <th mat-header-cell *matHeaderCellDef class="text-center"> CANTIDAD </th>
+          <td mat-cell *matCellDef="let element" class="text-center py-2">
+            <span class="badge-pill">
+                {{ element.cantidad }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
+            </span>
+          </td>
+        </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row-modern"></tr>
 
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell text-center py-5 text-muted" colspan="5">
-              <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">manage_search</mat-icon>
 
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+        <!-- ESTADO VACÍO / BÚSQUEDA -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-5" colspan="5">
+            <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+              <mat-icon style="font-size: 45px; width: 45px; height: 45px;" class="mb-2">manage_search</mat-icon>
               @if (textoBusqueda) {
-                <h5 class="fw-bold m-0">No se encontraron movimientos</h5>
-                <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
+                <span class="fw-medium">No se encontraron movimientos</span>
+                <small class="text-muted mt-1">Para la búsqueda "{{ textoBusqueda }}"</small>
+              } @else {
+                <span class="fw-medium">Consulta de Movimientos</span>
+                <small class="text-muted mt-1">Establezca el período requerido y presione "Buscar Movimientos".</small>
               }
-              @else {
-                <h5 class="fw-bold m-0">Consulta de Movimientos</h5>
-                <p class="m-0 small">Establezca el período requerido y presione "Buscar Movimientos".</p>
-              }
-            </td>
-          </tr>
-        </table>
-        }
-      </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    }
 
-      @if (movimientos().length > 0) {
-        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
-      }
-    </div>
+    @if (movimientos().length > 0) {
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons class="border-top"></mat-paginator>
+    }
   </mat-card>
 </div>

@@ -12,10 +12,13 @@
     </div>
   </div>
 
-  <mat-card class="custom-card mb-4 p-3 shadow-sm border-0" style="border-radius: 16px;">
-    <form [formGroup]="filtroForm" class="d-flex flex-wrap gap-3 align-items-center">
+  <!-- CONTENEDOR PRINCIPAL FLEX -->
+  <div class="d-flex align-items-center justify-content-between mb-4 mt-2 gap-3 w-100">
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 250px;">
+    <!-- FILTROS (Izquierda) -->
+    <form [formGroup]="filtroForm" class="d-flex align-items-center gap-2 flex-grow-1">
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1" style="min-width: 180px; max-width: 250px;">
         <mat-label>Bodega</mat-label>
         <mat-select formControlName="idBodega">
           @for (b of bodegas; track b.idBodega) {
@@ -24,105 +27,151 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 200px;">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-grow-1" style="min-width: 150px; max-width: 200px;">
         <mat-label>Fecha de Cierre</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="fecha">
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
-      <button mat-raised-button class="btn-buscar rounded-pill px-4" [disabled]="buscando" (click)="buscarSnapshot()">
-        <mat-icon class="me-2">search</mat-icon> {{ buscando ? 'Buscando...' : 'Buscar Cierre' }}
+      <button mat-raised-button
+              class="btn-buscar rounded-pill"
+              [ngClass]="layoutService.sidebarCollapsed() ? 'px-4' : 'px-0'"
+              [style.min-width]="layoutService.sidebarCollapsed() ? 'auto' : '48px'"
+              [style.width]="layoutService.sidebarCollapsed() ? 'auto' : '48px'"
+              [disabled]="buscando"
+              (click)="buscarSnapshot()"
+              matTooltip="Buscar Cierre">
+        <div class="d-flex align-items-center justify-content-center w-100 h-100">
+          <mat-icon [class.me-2]="layoutService.sidebarCollapsed()" style="margin-right: 0;">search</mat-icon>
+          @if(layoutService.sidebarCollapsed()){
+            <span>{{ buscando ? 'Buscando...' : 'Buscar' }}</span>
+          }
+        </div>
       </button>
+
     </form>
-  </mat-card>
 
-  @if (snapshots().length > 0) {
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Filtrar resultados en tabla..." autocomplete="off">
-        <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
-      </div>
+    <!-- ACCIONES Y BÚSQUEDA RÁPIDA (Derecha) -->
+    @if (snapshots().length > 0) {
+      <div class="d-flex align-items-center gap-2 flex-shrink-0 animacion-fade">
 
-      <div class="d-flex gap-2">
-        <button mat-raised-button class="rounded-pill px-4" style="height: 42px;" [disabled]="generandoExcel" (click)="descargarExcel()">
-          <mat-icon class="me-2 text-success">table_view</mat-icon> Exportar Cierre a Excel
-        </button>
-        <button mat-raised-button class="rounded-pill px-4" style="height: 42px;" (click)="descargarPDF()">
-          <mat-icon class="me-2 text-danger">picture_as_pdf</mat-icon> Exportar Cierre a PDF
-        </button>
-      </div>
-    </div>
-  }
-
-  <mat-card class="activity-card shadow-sm h-100 mb-5">
-    <div class="card-body p-4">
-      <div class="table-scroll-container">
-        @if (cargando) {
-          <div class="d-flex flex-column justify-content-center align-items-center py-5">
-            <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
-
-            <!-- Texto apilado abajo con un pequeño margen y estilo -->
-            <h6 class="mt-2 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+        <!-- Botón Excel -->
+        <button mat-raised-button
+                class="rounded-pill"
+                [ngClass]="layoutService.sidebarCollapsed() ? 'px-4' : 'px-0'"
+                style="height: 42px;"
+                [style.min-width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                [style.width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                [disabled]="generandoExcel"
+                (click)="descargarExcel()"
+                matTooltip="Exportar a Excel">
+          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+            <mat-icon class="text-success" [class.me-2]="layoutService.sidebarCollapsed()" style="margin-right: 0;">table_view</mat-icon>
+            @if(layoutService.sidebarCollapsed()){
+              <span>Excel</span>
+            }
           </div>
-        } @else {
-          <table mat-table [dataSource]="dataSource" class="w-100 table-modern">
+        </button>
 
-            <ng-container matColumnDef="sku">
-              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide"> SKU </th>
-              <td mat-cell *matCellDef="let element">
-                <span class="badge-pill font-monospace" style="font-size: 0.8rem; letter-spacing: 1px;">{{ element.producto.skuproducto }}</span>
-              </td>
-            </ng-container>
+        <!-- Botón PDF -->
+        <button mat-raised-button
+                class="rounded-pill"
+                [ngClass]="layoutService.sidebarCollapsed() ? 'px-4' : 'px-0'"
+                style="height: 42px;"
+                [style.min-width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                [style.width]="layoutService.sidebarCollapsed() ? 'auto' : '42px'"
+                (click)="descargarPDF()"
+                matTooltip="Exportar a PDF">
+          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+            <mat-icon class="text-danger" [class.me-2]="layoutService.sidebarCollapsed()" style="margin-right: 0;">picture_as_pdf</mat-icon>
+            @if(layoutService.sidebarCollapsed()){
+              <span>PDF</span>
+            }
+          </div>
+        </button>
 
-            <ng-container matColumnDef="producto">
-              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">PRODUCTO</th>
-              <td mat-cell *matCellDef="let element" class="py-2 fw-bold text-dark">
-                {{ element.producto?.nombreproducto }}
-              </td>
-            </ng-container>
+        <!-- Buscador de la tabla -->
+        <div class="search-elegant m-0 flex-shrink-1" style="max-width: 250px;">
+          <input type="text" class="search-input fw-bold text-dark" (keyup)="applyFilter($event)" placeholder="Buscar..." autocomplete="off">
+          <div class="search-btn-circle"><mat-icon>filter_list</mat-icon></div>
+        </div>
 
-            <ng-container matColumnDef="categoria">
-              <th mat-header-cell *matHeaderCellDef class="text-muted small fw-bold tracking-wide">CATEGORÍA</th>
-              <td mat-cell *matCellDef="let element" class="py-2 text-muted">
-                <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">category</mat-icon>
-                {{ element.producto?.categoria?.nombrecategoria }}
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="cantidad">
-              <th mat-header-cell *matHeaderCellDef class="text-center text-muted small fw-bold tracking-wide">STOCK AL CORTE</th>
-              <td mat-cell *matCellDef="let element" class="text-center py-2">
-                              <span class="badge-pill">
-                                  {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
-                              </span>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row-modern"></tr>
-
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell text-center py-5 text-muted" colspan="4">
-                <mat-icon class="opacity-50 mb-2" style="font-size: 45px; height: 45px; width: 45px;">inventory</mat-icon>
-
-                @if (textoBusqueda){
-                  <h5 class="fw-bold m-0">No se encontraron registros</h5>
-                  <p class="m-0 small">Para la búsqueda "{{ textoBusqueda }}"</p>
-                }
-                @else{
-                  <h5 class="fw-bold m-0">Cierre de Inventario</h5>
-                  <p class="m-0 small">Seleccione una Bodega y Fecha para ver el cierre del día.</p>
-                }
-              </td>
-            </tr>
-          </table>
-        }
       </div>
+    }
+  </div>
 
-      @if (snapshots().length > 0) {
-        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
-      }
-    </div>
+  <!-- TABLA CON ESTILO CUSTOM-CARD -->
+  <mat-card class="custom-card mb-5">
+    @if (cargando) {
+      <div class="d-flex flex-column justify-content-center align-items-center py-5">
+        <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
+        <h6 class="mt-3 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando...</h6>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="dataSource" class="w-100">
+
+        <!-- SKU -->
+        <ng-container matColumnDef="sku">
+          <th mat-header-cell *matHeaderCellDef class="ps-4"> SKU </th>
+          <td mat-cell *matCellDef="let element" class="ps-4 py-2">
+            <span class="badge-pill font-monospace" style="font-size: 0.8rem; letter-spacing: 1px;">
+                {{ element.producto.skuproducto }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- PRODUCTO -->
+        <ng-container matColumnDef="producto">
+          <th mat-header-cell *matHeaderCellDef> MATERIAL / EQUIPO </th>
+          <td mat-cell *matCellDef="let element" class="py-2 fw-bold text-dark" style="font-size: 0.85rem;">
+            {{ element.producto?.nombreproducto }}
+          </td>
+        </ng-container>
+
+        <!-- CATEGORÍA -->
+        <ng-container matColumnDef="categoria">
+          <th mat-header-cell *matHeaderCellDef> CATEGORÍA </th>
+          <td mat-cell *matCellDef="let element" class="py-2 text-muted" style="font-size: 0.85rem;">
+            <div class="d-flex align-items-center">
+              <mat-icon style="font-size: 14px; width: 14px; height: 14px;" class="me-1">category</mat-icon>
+              {{ element.producto?.categoria?.nombrecategoria }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- CANTIDAD -->
+        <ng-container matColumnDef="cantidad">
+          <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> CANTIDAD </th>
+          <td mat-cell *matCellDef="let element" class="text-center py-2 pe-4">
+            <span class="badge-pill">
+              {{ element.cantidadactual }} {{ element.producto?.unidadMedida?.abreviaturaunidadmedida | lowercase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+        <!-- ESTADO VACÍO / BÚSQUEDA -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-5" colspan="4">
+            <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+              <mat-icon style="font-size: 45px; width: 45px; height: 45px;" class="mb-2">manage_search</mat-icon>
+              @if (textoBusqueda){
+                <span class="fw-medium">No se encontraron registros</span>
+                <small class="text-muted mt-1">Para la búsqueda "{{ textoBusqueda }}"</small>
+              } @else {
+                <span class="fw-medium">Cierre de Inventario</span>
+                <small class="text-muted mt-1">Seleccione una Bodega y Fecha para ver el cierre del día.</small>
+              }
+            </div>
+          </td>
+        </tr>
+      </table>
+    }
+
+    @if (snapshots().length > 0) {
+      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons class="border-top"></mat-paginator>
+    }
   </mat-card>
-</div>

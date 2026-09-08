@@ -19,6 +19,8 @@ import {InventarioSnapshotService} from '../../../services/reportes/inventario-s
 import {Bodega} from '../../../models/bodega';
 import {PdfViewerDialogComponent} from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {LayoutService} from '../../../services/layout.service';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-inventario-snapshot-diario',
@@ -26,7 +28,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
-    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner
+    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner, MatTooltip
   ],
   templateUrl: './inventario-snapshot-diario.component.html',
   styleUrl: './inventario-snapshot-diario.component.css',
@@ -37,6 +39,7 @@ export class InventarioSnapshotDiarioComponent implements OnInit{
   private mensaje = inject(Mensaje);
   private reporteService = inject(InventarioSnapshotService);
   private dialog = inject(MatDialog);
+  public layoutService = inject(LayoutService);
 
   textoBusqueda = '';
   buscando = false;

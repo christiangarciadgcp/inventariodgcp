@@ -1,4 +1,4 @@
-import { Component, inject,HostBinding, signal, OnInit } from '@angular/core';
+import {Component, inject, HostBinding, signal, OnInit, HostListener} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,14 +22,14 @@ import { roles } from '../../core/roles'
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
-export class SidebarComponent implements OnInit{
+export class SidebarComponent implements OnInit {
 
   private authService = inject(AuthService);
   public layoutService = inject(LayoutService);
   public readonly rolesPermitidos = roles;
   opcionesCatalogo = signal(false);
-
   rolActual = signal<string>('');
+  isHovered = signal(false);
 
   ngOnInit() {
     this.rolActual.set(this.authService.getRolUsuario());
@@ -39,16 +39,42 @@ export class SidebarComponent implements OnInit{
     return rolesPermitidos.includes(this.rolActual());
   }
 
+  // acoplarCatalogo() {
+  //   if (this.layoutService.sidebarCollapsed()) {
+  //     this.layoutService.toggleSidebar();
+  //   }
+  //   this.opcionesCatalogo.update(value => !value);
+  // }
+
   acoplarCatalogo() {
-    if (this.layoutService.sidebarCollapsed()) {
-      this.layoutService.toggleSidebar();
-    }
+    // Simplemente abrimos o cerramos el submenú interno,
+    // SIN modificar el estado de anclaje del sidebar completo.
     this.opcionesCatalogo.update(value => !value);
+  }
+
+
+  get isExpanded(): boolean {
+    const state = this.layoutService.sidebarState();
+    if (state === 'EXPANDED') return true;      // Siempre abierto
+    if (state === 'COLLAPSED') return false;    // Siempre cerrado
+    return this.isHovered();                    // Si es HOVER, depende del mouse
+  }
+
+  @HostListener('mouseenter') onMouseEnter() {
+    if (this.layoutService.sidebarState() === 'HOVER') {
+      this.isHovered.set(true);
+    }
+  }
+
+  @HostListener('mouseleave') onMouseLeave() {
+    if (this.layoutService.sidebarState() === 'HOVER') {
+      this.isHovered.set(false);
+    }
   }
 
   @HostBinding('style.width')
   get width() {
-    return this.layoutService.sidebarCollapsed() ? '75px' : '260px';
+    return this.isExpanded ? '260px' : '75px';
   }
 
   @HostBinding('style.transition') transition = 'width 0.3s ease-in-out';

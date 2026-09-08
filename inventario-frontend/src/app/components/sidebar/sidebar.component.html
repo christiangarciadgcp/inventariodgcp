@@ -1,289 +1,222 @@
-<div class="sidebar-container" [class.collapsed]="layoutService.sidebarCollapsed()">
+<div class="sidebar-container" [class.collapsed]="!isExpanded">
 
-    <div class="sidebar-header">
+  <div class="sidebar-header">
+    <a routerLink="/" class="logo-area">
+      <img src="assets/images/bodegas.png" alt="Logo" class="sidebar-logo">
+    </a>
 
-        <a routerLink="/" class="logo-area">
-            <img src="assets/images/bodegas.png" alt="Logo" class="sidebar-logo">
+    <button mat-icon-button class="toggle-btn ms-auto" (click)="layoutService.toggleSidebar()">
+      <mat-icon style="margin-bottom: 5px;">
+        @if (layoutService.sidebarState() === 'EXPANDED') {
+          menu
+        } @else if (layoutService.sidebarState() === 'HOVER') {
+          keyboard_double_arrow_left
+        } @else {
+          keyboard_double_arrow_right
+        }
+      </mat-icon>
+    </button>
+  </div>
 
-<!--            @if (!layoutService.sidebarCollapsed()) {
-            <div class="logo-text fade-in-text">
-                <span class="fw-bold fs-5 lh-1">UTDI</span>
-                <span class="small text-muted">Inventory</span>
-            </div>
-            }-->
-        </a>
-
-        <button mat-icon-button class="toggle-btn ms-auto" (click)="layoutService.toggleSidebar()">
-            <mat-icon style="margin-bottom: 5px;">{{ layoutService.sidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
-        </button>
-    </div>
-
-    @if (!layoutService.sidebarCollapsed()) {
+  @if (isExpanded) {
     <div class="px-3">
-        <hr class="mt-0 mb-2 text-secondary opacity-25">
+      <hr class="mt-0 mb-2 text-secondary opacity-25">
     </div>
-    }
+  }
 
-    <div class="scroller">
+  <div class="scroller">
+    <div class="nav nav-pills flex-column">
 
-        <div class="nav nav-pills flex-column">
+      <!-- DASHBOARD -->
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link"
+         [matTooltip]="!isExpanded ? 'Dashboard' : ''" matTooltipPosition="right">
+        <div class="nav-icon"><mat-icon>dashboard</mat-icon></div>
+        @if (isExpanded) { <span class="nav-text">Dashboard</span> }
+      </a>
 
-          <!-- DASHBOARD -->
-            <a routerLink="/dashboard" routerLinkActive="active" class="nav-link"
-                [matTooltip]="layoutService.sidebarCollapsed() ? 'Dashboard' : ''" matTooltipPosition="right">
-                <div class="nav-icon"><mat-icon>dashboard</mat-icon></div>
+      <!-- ADMINISTRACIÓN-->
+      @if (permiso(rolesPermitidos.INVENTARIO2)) {
+        @if (isExpanded) {
+          <div class="nav-header">ADMINISTRACIÓN</div>
+        } @else {
+          <div class="nav-divider"></div>
+        }
+      }
 
-                @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Dashboard</span>
-                }
-            </a>
+      <!-- CATÁLOGOS RUTA PRINCIPAL -->
+      @if (permiso(rolesPermitidos.INVENTARIO2)) {
+        <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Catálogos' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Catálogos</span> }
+        </a>
+      }
 
-          <!-- OPCION DE ADMINISTRACION-->
-          @if (permiso(rolesPermitidos.INVENTARIO2)) {
-            @if (!layoutService.sidebarCollapsed()) {
-              <div class="nav-header">ADMINISTRACIÓN</div>
-            } @else {
-              <div class="nav-divider"></div>
+      <!-- CATÁLOGOS DESPLEGABLE
+      @if (permiso(rolesPermitidos.ADMIN)) {
+        <div class="nav-item-group" routerLinkActive="active-group" [routerLinkActiveOptions]="{exact: false}">
+          <a class="nav-link cursor-pointer" (click)="acoplarCatalogo()" [class.active]="rla.isActive"
+             #rla="routerLinkActive" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}"
+             [matTooltip]="!isExpanded ? 'Catálogos' : ''" matTooltipPosition="right">
+
+            <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
+
+            @if (isExpanded) {
+              <span class="nav-text flex-grow-1">Catálogos</span>
+              <mat-icon class="menu-arrow" [class.rotated]="opcionesCatalogo()">expand_more</mat-icon>
             }
-          }
-
-          <!-- GESTION DE CATALOGOS-->
-          @if (permiso(rolesPermitidos._INVENTARIO)) {
-          <a routerLink="/catalogos" routerLinkActive="active" class="nav-link"
-              [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
-              <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
-
-              @if (!layoutService.sidebarCollapsed()) {
-              <span class="nav-text">Catálogos</span>
-              }
           </a>
-          }
 
-          <!-- GESTION DE CATALOGOS COMO LISTA-->
-          @if (permiso(rolesPermitidos.ADMIN)) {
-            <div class="nav-item-group" routerLinkActive="active-group" [routerLinkActiveOptions]="{exact: false}">
-
-              <a class="nav-link cursor-pointer" (click)="acoplarCatalogo()" [class.active]="rla.isActive"
-                 #rla="routerLinkActive" routerLinkActive="active" [routerLinkActiveOptions]="{exact: false}"
-                 [matTooltip]="layoutService.sidebarCollapsed() ? 'Catálogos' : ''" matTooltipPosition="right">
-
-                <div class="nav-icon"><mat-icon>grid_view</mat-icon></div>
-
-                @if (!layoutService.sidebarCollapsed()) {
-                  <span class="nav-text flex-grow-1">Catálogos</span>
-
-                  <mat-icon class="menu-arrow" [class.rotated]="opcionesCatalogo()">
-                    expand_more
-                  </mat-icon>
-                }
+          <!-- CATÁLOGOS DESPLEGABLE
+          @if (isExpanded && opcionesCatalogo()) {
+            <div class="nav-children">
+              <a routerLink="/catalogos/bodegas" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-building"></i></div>
+                <span class="nav-text">Bodegas</span>
               </a>
-
-              @if (!layoutService.sidebarCollapsed() && opcionesCatalogo()) {
-                <div class="nav-children">
-
-                  <a routerLink="/catalogos/bodegas" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-building"></i></div>
-                    <span class="nav-text">Bodegas</span>
-                  </a>
-
-                  <a routerLink="/catalogos/productos" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-box"></i></div>
-                    <span class="nav-text">Materiales y Equipo</span>
-                  </a>
-
-                  <a routerLink="/catalogos/categorias" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-tags"></i></div>
-                    <span class="nav-text">Categorías</span>
-                  </a>
-
-                  <a routerLink="/catalogos/proveedores" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-truck"></i></div>
-                    <span class="nav-text">Proveedores</span>
-                  </a>
-
-                  <a routerLink="/catalogos/unidades" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-rulers"></i></div>
-                    <span class="nav-text">Unidades de Medida</span>
-                  </a>
-
-                  <a routerLink="/catalogos/marcas" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-substack"></i></div>
-                    <span class="nav-text">Marcas</span>
-                  </a>
-
-                  <a routerLink="/catalogos/modelos" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-ui-checks-grid"></i></div>
-                    <span class="nav-text">Modelos</span>
-                  </a>
-
-                  <a routerLink="/catalogos/ubicaciones" routerLinkActive="active" class="nav-link child-link">
-                    <div class="nav-icon small-icon"><i class="bi bi-geo-alt"></i></div>
-                    <span class="nav-text">Ubicaciones</span>
-                  </a>
-
-                </div>
-              }
+              <a routerLink="/catalogos/productos" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-box"></i></div>
+                <span class="nav-text">Materiales y Equipo</span>
+              </a>
+              <a routerLink="/catalogos/categorias" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-tags"></i></div>
+                <span class="nav-text">Categorías</span>
+              </a>
+              <a routerLink="/catalogos/proveedores" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-truck"></i></div>
+                <span class="nav-text">Proveedores</span>
+              </a>
+              <a routerLink="/catalogos/unidades" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-rulers"></i></div>
+                <span class="nav-text">Unidades de Medida</span>
+              </a>
+              <a routerLink="/catalogos/marcas" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-substack"></i></div>
+                <span class="nav-text">Marcas</span>
+              </a>
+              <a routerLink="/catalogos/modelos" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-ui-checks-grid"></i></div>
+                <span class="nav-text">Modelos</span>
+              </a>
+              <a routerLink="/catalogos/ubicaciones" routerLinkActive="active" class="nav-link child-link">
+                <div class="nav-icon small-icon"><i class="bi bi-geo-alt"></i></div>
+                <span class="nav-text">Ubicaciones</span>
+              </a>
             </div>
-          }
-
-          <!-- GESTION DE USUARIOS-->
-          @if (permiso(rolesPermitidos.ADMIN)) {
-            <a routerLink="/usuarios" routerLinkActive="active" class="nav-link"
-               [matTooltip]="layoutService.sidebarCollapsed() ? 'Usuarios' : '' " matTooltipPosition="right">
-              <div class="nav-icon"><mat-icon>group</mat-icon></div>
-
-              @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Usuarios</span>
-              }
-            </a>
-          }
-
-            @if (!layoutService.sidebarCollapsed()) {
-            <div class="nav-header">UTDI</div>
-            } @else {
-            <div class="nav-divider"></div>
-            }
-
-          <!-- PRESUPUESTOS-->
-          <a routerLink="/presupuesto" routerLinkActive="active" class="nav-link"
-             [matTooltip]="layoutService.sidebarCollapsed() ? 'Presupuesto' : ''" matTooltipPosition="right">
-            <div class="nav-icon"><mat-icon>post_add</mat-icon></div>
-
-            @if (!layoutService.sidebarCollapsed()) {
-              <span class="nav-text">Presupuesto</span>
-            }
-          </a>
-
-          <!-- DICCIONARIO DE MATERIALES-->
-          <a routerLink="/diccionario-materiales" routerLinkActive="active" class="nav-link"
-             [matTooltip]="layoutService.sidebarCollapsed() ? 'Diccionario de Materiales' : ''" matTooltipPosition="right">
-            <div class="nav-icon"><mat-icon>menu_book</mat-icon></div>
-
-            @if (!layoutService.sidebarCollapsed()) {
-              <span class="nav-text">Diccionario de Materiales</span>
-            }
-          </a>
-
-
-          <!-- SUGERENCIA DE MATERIALES-->
-          <a routerLink="/sugerencia-materiales" routerLinkActive="active" class="nav-link"
-             [matTooltip]="layoutService.sidebarCollapsed() ? 'Sugerencia de Materiales' : ''" matTooltipPosition="right">
-            <div class="nav-icon"><mat-icon>lightbulb_2</mat-icon></div>
-
-            @if (!layoutService.sidebarCollapsed()) {
-              <span class="nav-text">Sugerencia de Materiales</span>
-            }
-          </a>
-
-          <!-- CONSULTA DE MATERIALES-->
-          <a routerLink="/inventario-consulta" routerLinkActive="active" class="nav-link"
-             [matTooltip]="layoutService.sidebarCollapsed() ? 'Consulta de Materiales' : ''" matTooltipPosition="right">
-            <div class="nav-icon"><mat-icon>handyman</mat-icon></div>
-
-            @if (!layoutService.sidebarCollapsed()) {
-              <span class="nav-text">Consulta de Materiales</span>
-            }
-          </a>
-
-
-
-
-<!--            <a routerLink="/proyecto" routerLinkActive="active" class="nav-link"
-                [matTooltip]="layoutService.sidebarCollapsed() ? 'Proyecto' : ''" matTooltipPosition="right">
-                <div class="nav-icon"><mat-icon>electric_bolt</mat-icon></div>
-
-                @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Soporte</span>
-                }
-            </a>-->
-
-          <!-- OPCION DE INVENTARIO-->
-            @if (permiso(rolesPermitidos.INVENTARIO)) {
-                @if (!layoutService.sidebarCollapsed()) {
-                    <div class="nav-header">INVENTARIO</div>
-                } @else {
-                    <div class="nav-divider"></div>
-                }
-            }
-
-          <!-- SOLICITUDES DE COMPRA -->
-            @if (permiso(rolesPermitidos.ADMIN)) {
-                <a routerLink="/solicitud-compra" routerLinkActive="active"
-                    class="nav-link" [matTooltip]="layoutService.sidebarCollapsed() ? 'Solicitud de Compra' : ''"
-                    matTooltipPosition="right">
-                    <div class="nav-icon"><mat-icon>request_quote</mat-icon></div>
-
-                    @if (!layoutService.sidebarCollapsed()) {
-                    <span class="nav-text">Solicitud de Compra</span>
-                    }
-                </a>
-            }
-
-          <!-- INVENTARIO DE CADA BODEGA-->
-            @if (permiso(rolesPermitidos.INVENTARIO)) {
-                <a routerLink="/inventario" routerLinkActive="active" class="nav-link"
-                    [matTooltip]="layoutService.sidebarCollapsed() ? 'Inventario' : ''" matTooltipPosition="right">
-                    <div class="nav-icon"><mat-icon>inventory_2</mat-icon></div>
-
-                    @if (!layoutService.sidebarCollapsed()) {
-                    <span class="nav-text">Inventario</span>
-                    }
-                </a>
-            }
-
-
-
-          <!-- MOVIMIENTO ENTRE BODEGAS-->
-            @if (permiso(rolesPermitidos.INVENTARIO2)) {
-                <a routerLink="/movimientos" routerLinkActive="active" class="nav-link"
-                    [matTooltip]="layoutService.sidebarCollapsed() ? 'Movimientos' : ''" matTooltipPosition="right">
-                    <div class="nav-icon"><mat-icon>swap_horiz</mat-icon></div>
-
-                    @if (!layoutService.sidebarCollapsed()) {
-                    <span class="nav-text">Movimientos</span>
-                    }
-                </a>
-            }
-
-          <!-- DESCARGO DE MATERIALES-->
-            @if (permiso(rolesPermitidos.INVENTARIO2)) {
-                <a routerLink="/descargo" routerLinkActive="active" class="nav-link"
-                    [matTooltip]="layoutService.sidebarCollapsed() ? 'Descargo' : ''" matTooltipPosition="right">
-                    <div class="nav-icon"><mat-icon>remove_circle_outline</mat-icon></div>
-
-                    @if (!layoutService.sidebarCollapsed()) {
-                    <span class="nav-text">Descargo</span>
-                    }
-                </a>
-            }
-
-          <!-- OPCION DE REPORTES-->
-          @if (permiso(rolesPermitidos.INVENTARIO)) {
-            @if (!layoutService.sidebarCollapsed()) {
-              <div class="nav-header">REPORTES</div>
-            } @else {
-              <div class="nav-divider"></div>
-            }
-
-            <a routerLink="/movimientos-historial" routerLinkActive="active" class="nav-link"
-               [matTooltip]="layoutService.sidebarCollapsed() ? 'Historial de Movimientos' : ''" matTooltipPosition="right">
-              <div class="nav-icon"><mat-icon>history</mat-icon></div>
-
-              @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Historial de Movimientos</span>
-              }
-            </a>
-
-            <a routerLink="/snapshots" routerLinkActive="active" class="nav-link"
-               [matTooltip]="layoutService.sidebarCollapsed() ? 'Snapshots' : ''" matTooltipPosition="right">
-              <div class="nav-icon"><mat-icon>event_available</mat-icon></div>
-
-              @if (!layoutService.sidebarCollapsed()) {
-                <span class="nav-text">Snapshots</span>
-              }
-            </a>
           }
 
         </div>
+      }-->
+
+      <!-- USUARIOS -->
+      @if (permiso(rolesPermitidos.ADMIN)) {
+        <a routerLink="/usuarios" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Usuarios' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>group</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Usuarios</span> }
+        </a>
+      }
+
+      @if (isExpanded) {
+        <div class="nav-header">UTDI</div>
+      } @else {
+        <div class="nav-divider"></div>
+      }
+
+      <!-- PRESUPUESTO -->
+      <a routerLink="/presupuesto" routerLinkActive="active" class="nav-link"
+         [matTooltip]="!isExpanded ? 'Presupuesto' : ''" matTooltipPosition="right">
+        <div class="nav-icon"><mat-icon>post_add</mat-icon></div>
+        @if (isExpanded) { <span class="nav-text">Presupuesto</span> }
+      </a>
+
+      <!-- DICCIONARIO DE MATERIALES -->
+      <a routerLink="/diccionario-materiales" routerLinkActive="active" class="nav-link"
+         [matTooltip]="!isExpanded ? 'Diccionario de Materiales' : ''" matTooltipPosition="right">
+        <div class="nav-icon"><mat-icon>menu_book</mat-icon></div>
+        @if (isExpanded) { <span class="nav-text">Diccionario de Materiales</span> }
+      </a>
+
+      <!-- SUGERENCIA DE MATERIALES -->
+      <a routerLink="/sugerencia-materiales" routerLinkActive="active" class="nav-link"
+         [matTooltip]="!isExpanded ? 'Sugerencia de Materiales' : ''" matTooltipPosition="right">
+        <div class="nav-icon"><mat-icon>lightbulb_2</mat-icon></div>
+        @if (isExpanded) { <span class="nav-text">Sugerencia de Materiales</span> }
+      </a>
+
+      <!-- CONSULTA DE MATERIALES -->
+      <a routerLink="/inventario-consulta" routerLinkActive="active" class="nav-link"
+         [matTooltip]="!isExpanded ? 'Consulta de Materiales' : ''" matTooltipPosition="right">
+        <div class="nav-icon"><mat-icon>handyman</mat-icon></div>
+        @if (isExpanded) { <span class="nav-text">Consulta de Materiales</span> }
+      </a>
+
+      <!-- INVENTARIO -->
+      @if (permiso(rolesPermitidos.INVENTARIO)) {
+        @if (isExpanded) {
+          <div class="nav-header">INVENTARIO</div>
+        } @else {
+          <div class="nav-divider"></div>
+        }
+      }
+
+      <!-- SOLICITUD DE COMPRA -->
+      @if (permiso(rolesPermitidos.ADMIN)) {
+        <a routerLink="/solicitud-compra" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Solicitud de Compra' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>request_quote</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Solicitud de Compra</span> }
+        </a>
+      }
+
+      <!-- INVENTARIO -->
+      @if (permiso(rolesPermitidos.INVENTARIO)) {
+        <a routerLink="/inventario" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Inventario' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>inventory_2</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Inventario</span> }
+        </a>
+      }
+
+      <!-- MOVIMIENTOS -->
+      @if (permiso(rolesPermitidos.INVENTARIO2)) {
+        <a routerLink="/movimientos" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Movimientos' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>swap_horiz</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Movimientos</span> }
+        </a>
+      }
+
+      <!-- DESCARGO -->
+      @if (permiso(rolesPermitidos.INVENTARIO2)) {
+        <a routerLink="/descargo" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Descargo' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>remove_circle_outline</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Descargo</span> }
+        </a>
+      }
+
+      <!-- REPORTES -->
+      @if (permiso(rolesPermitidos.INVENTARIO)) {
+        @if (isExpanded) {
+          <div class="nav-header">REPORTES</div>
+        } @else {
+          <div class="nav-divider"></div>
+        }
+
+        <a routerLink="/movimientos-historial" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Historial de Movimientos' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>history</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Historial de Movimientos</span> }
+        </a>
+
+        <a routerLink="/snapshots" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Snapshots' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>event_available</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Snapshots</span> }
+        </a>
+      }
+
     </div>
+  </div>
 </div>

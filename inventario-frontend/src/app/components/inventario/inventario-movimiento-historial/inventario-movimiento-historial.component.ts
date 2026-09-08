@@ -20,6 +20,8 @@ import { Mensaje } from '../../../core/mensaje';
 import { InventarioMovimientosService } from '../../../services/reportes/inventario-movimientos.service';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {LayoutService} from '../../../services/layout.service';
+import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-inventario-movimiento-historial',
@@ -27,7 +29,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatIconModule, MatButtonModule,
     MatTableModule, MatDatepickerModule, MatNativeDateModule, MatFormFieldModule,
-    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner
+    MatSelectModule, MatPaginatorModule, MatInputModule, RouterLink, MatProgressSpinner, MatTooltip
   ],
   templateUrl: './inventario-movimiento-historial.component.html',
   styleUrl: './inventario-movimiento-historial.component.css',
@@ -38,11 +40,12 @@ export class InventarioMovimientoHistorialComponent {
   private mensaje = inject(Mensaje);
   private reporteService = inject(InventarioMovimientosService);
   private dialog = inject(MatDialog);
+  public layoutService = inject(LayoutService);
 
   textoBusqueda = '';
   buscando = false;
   cargando: boolean = false;
-  displayedColumns: string[] = ['icono', 'detalle', 'bodega', 'cantidad', 'fecha'];
+  displayedColumns: string[] = ['fecha', 'detalle', 'bodega', 'cantidad'];
   dataSource = new MatTableDataSource<any>([]);
   movimientos = signal<any[]>([]);
 

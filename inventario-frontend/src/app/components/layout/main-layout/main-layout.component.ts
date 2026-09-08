@@ -16,5 +16,9 @@ import { LayoutService } from '../../../services/layout.service';
 export class MainLayoutComponent {
 
   public layoutService = inject(LayoutService);
-  
+
+  ngOnInit() {
+    this.layoutService.sidebarState.set('EXPANDED');
+  }
+
 }

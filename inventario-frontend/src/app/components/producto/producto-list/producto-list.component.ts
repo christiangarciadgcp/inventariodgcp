@@ -22,6 +22,7 @@ import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
 import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/producto-galeria-dialog.component';
 import { AuthService } from '../../../services/auth.service';
+import {LayoutService} from '../../../services/layout.service';
 
 @Component({
   selector: 'app-producto-list',
@@ -51,6 +52,7 @@ export class ProductoListComponent implements OnInit {
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
+  public layoutService = inject(LayoutService);
 
   private _paginator!: MatPaginator;
   @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {

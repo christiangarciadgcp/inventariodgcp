@@ -3,7 +3,7 @@
   <app-sidebar class="h-100 position-fixed start-0 top-0 bottom-0" style="z-index: 1030;"></app-sidebar>
 
   <main class="d-flex flex-column transition-margin"
-        [style.margin-left]="layoutService.sidebarCollapsed() ? '75px' : '260px'"
+        [style.margin-left]="layoutService.sidebarState() === 'EXPANDED' ? '260px' : '75px'"
         style="min-height: 100vh;">
 
     <div class="container-fluid px-5 mt-4">
