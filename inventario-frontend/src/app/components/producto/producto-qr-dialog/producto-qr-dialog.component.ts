@@ -63,13 +63,11 @@ export class ProductoQrDialogComponent implements OnInit {
   }
 
   imprimirEtiqueta(): void {
-    // 1. Elimina cualquier iframe de impresión previo si existiera
     const iframeAnterior = document.getElementById('iframe-impresion-qr');
     if (iframeAnterior) {
       iframeAnterior.remove();
     }
 
-    // 2. Crea un iframe invisible dentro del documento
     const iframe = document.createElement('iframe');
     iframe.id = 'iframe-impresion-qr';
     iframe.style.position = 'fixed';
@@ -83,16 +81,44 @@ export class ProductoQrDialogComponent implements OnInit {
     const doc = iframe.contentWindow?.document;
     if (!doc) return;
 
-    // 3. Escribe el documento de la viñeta con dimensiones optimizadas
+    const p = this.data.producto;
+
+    const esValorValido = (val?: string | null): boolean => {
+      if (!val) return false;
+      const v = val.trim().toUpperCase();
+      const invalidos = ['S/I', 'S/N', 'N/A', 'SIN ESPECIFICAR', 'NO ESPECIFICADO', 'NINGUNO'];
+      return v !== '' && !invalidos.includes(v);
+    };
+
+    let textoHeader = '';
+
+    if (esValorValido(p.inventarioproducto)) {
+      textoHeader = `INV: ${p.inventarioproducto!.trim()}`;
+    } else if(esValorValido(p.serieproducto)) {
+      textoHeader = ` ${p.serieproducto!.trim()}`;
+    }
+    else {
+      const marcaValida = esValorValido(p.modelo?.marca?.nombremarca) ? p.modelo!.marca!.nombremarca.trim() : '';
+      const modeloValido = esValorValido(p.modelo?.nombremodelo) ? p.modelo!.nombremodelo.trim() : '';
+
+      const marcaModelo = `${marcaValida} ${modeloValido}`.trim();
+
+      if (marcaModelo) {
+        textoHeader = marcaModelo;
+      } else {
+        textoHeader = p.nombreproducto || 'CONTROL DE INVENTARIO - UTDI';
+      }
+    }
+
+
     doc.open();
     doc.write(`
       <!DOCTYPE html>
       <html>
         <head>
           <title>Etiqueta QR - UTDI</title>
-          <style>
+        <style>
             @page {
-              /* Margen cero para impresoras de etiquetas/térmicas o centrado */
               margin: 4mm;
               size: auto;
             }
@@ -106,7 +132,7 @@ export class ProductoQrDialogComponent implements OnInit {
               background-color: #ffffff;
             }
             .etiqueta-card {
-              width: 60mm; /* Tamaño estándar de viñeta para activos */
+              width: 60mm;
               border: 1.5px solid #031e3f;
               border-radius: 8px;
               padding: 8px;
@@ -114,19 +140,24 @@ export class ProductoQrDialogComponent implements OnInit {
               box-sizing: border-box;
             }
             .header-tag {
-              font-size: 8.5pt;
+              font-size: 8pt;
               font-weight: 800;
-              letter-spacing: 0.5px;
+              line-height: 1.15;
+              letter-spacing: 0.3px;
               color: #153863;
               text-transform: uppercase;
               border-bottom: 1.5px solid #153863;
               padding-bottom: 4px;
               margin-bottom: 6px;
-              white-space: nowrap;
+
+              /* Permite el salto de línea y rompe secuencias alfanuméricas continuas */
+              white-space: normal;
+              word-break: break-all;
+              overflow-wrap: anywhere;
             }
             .qr-img {
-              width: 48mm;
-              height: 48mm;
+              width: 46mm;
+              height: 46mm;
               display: block;
               margin: 0 auto;
             }
@@ -134,7 +165,7 @@ export class ProductoQrDialogComponent implements OnInit {
         </head>
         <body>
           <div class="etiqueta-card">
-            <div class="header-tag">Control de Inventario - UTDI</div>
+            <div class="header-tag">${textoHeader}</div>
             <img src="${this.qrDataUrl()}" class="qr-img" alt="Código QR" />
           </div>
         </body>
@@ -142,7 +173,6 @@ export class ProductoQrDialogComponent implements OnInit {
     `);
     doc.close();
 
-    // 4. Dispara la impresión una vez cargado el contenido y limpia el iframe
     iframe.contentWindow?.focus();
     setTimeout(() => {
       iframe.contentWindow?.print();

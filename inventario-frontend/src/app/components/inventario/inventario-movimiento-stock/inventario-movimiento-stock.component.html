@@ -218,8 +218,8 @@
               <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-dark text-uppercase small fw-bold">SERIE / INVENTARIO</th>
               <td mat-cell *matCellDef="let element" class="text-center py-2 font-monospace">
                 @if (element.producto.serieproducto || element.producto.inventarioproducto) {
-                  <span class="fw-bold text-dark d-block">Serie: {{ element.producto.serieproducto || 'S/N' }}</span>
-                  <small class="text-secondary d-block">Inv: {{ element.producto.inventarioproducto || 'S/I' }}</small>
+                  <span class="fw-bold text-dark d-block">{{ element.producto.serieproducto || 'S/N' }}</span>
+                  <small class="text-secondary d-block">{{ element.producto.inventarioproducto || 'S/I' }}</small>
                 } @else {
                   <span class="text-muted small">S/N - S/I</span>
                 }
