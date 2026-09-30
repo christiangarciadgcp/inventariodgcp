@@ -7,9 +7,11 @@ import org.springframework.stereotype.Component;
 
 import com.sistemainventario.inventario.model.Bodega;
 import com.sistemainventario.inventario.model.Rol;
+import com.sistemainventario.inventario.model.SecuenciaActa;
 import com.sistemainventario.inventario.model.Usuario;
 import com.sistemainventario.inventario.repository.BodegaRepository;
 import com.sistemainventario.inventario.repository.RolRepository;
+import com.sistemainventario.inventario.repository.SecuenciaActaRepository;
 import com.sistemainventario.inventario.repository.UsuarioRepository;
 
 import java.util.Arrays;
@@ -27,15 +29,18 @@ public class DataInitializer implements CommandLineRunner{
     private final RolRepository rolRepository;
     private final BodegaRepository bodegaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SecuenciaActaRepository secuenciaActaRepository;
 
     public DataInitializer(UsuarioRepository usuarioRepository,
                             RolRepository rolRepository,
                             BodegaRepository bodegaRepository,
-                            PasswordEncoder passwordEncoder){
+                            PasswordEncoder passwordEncoder,
+                        SecuenciaActaRepository secuenciaActaRepository){
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.bodegaRepository = bodegaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.secuenciaActaRepository = secuenciaActaRepository;
     }
 
     @Override
@@ -91,5 +96,13 @@ public class DataInitializer implements CommandLineRunner{
             usuarioRepository.save(user);
             System.out.println("USUARIO ADMINISTRADOR CREADO EXITOSAMENTE");
         }
+
+        if (secuenciaActaRepository.findByAnio(2026).isEmpty()) {
+            System.out.println("CONFIGURANDO SECUENCIA ACTA...");
+            SecuenciaActa seq = new SecuenciaActa();
+            seq.setAnio(2026);
+            seq.setNumeroInicio(0);
+            secuenciaActaRepository.save(seq);
+}
     }
 }

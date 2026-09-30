@@ -1,0 +1,113 @@
+.custom-card {
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  background: white;
+  overflow: hidden;
+}
+
+.mat-mdc-table {
+  background: transparent;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.mat-mdc-header-row {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-bottom: 2px solid #f1f3f5;
+  height: 48px;
+  text-align: center !important;
+}
+
+.mat-mdc-header-cell {
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center !important;
+}
+
+.mat-mdc-row {
+  height: 55px;
+  transition: all 0.2s ease-in-out;
+  text-align: center !important;
+}
+
+.hover-row:hover {
+  background-color: #f8faff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.mat-mdc-cell {
+  font-size: 0.9rem;
+  color: #344767;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb !important;
+  text-align: center !important;
+}
+
+.badge-soft {
+  padding: 8px 14px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.estado-asignada {
+  background-color: #e1ffe3;
+  color: #00b215;
+  border: 1px solid #7ae582;
+}
+
+.estado-devolucion-total {
+  background-color: #e7f6f8;
+  color: #0695af;
+  border: 1px solid #80ceda;
+}
+
+::ng-deep .mat-sort-header-arrow {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-sort-header-container {
+  justify-content: center !important;
+}
+
+/* DISTRIBUCIÓN DE ANCHOS (100% TOTAL) */
+.mat-column-producto {
+  width: 30%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-marca-modelo {
+  width: 15%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-serie-inventario {
+  width: 22%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-estado {
+  width: 12%;
+}
+
+.mat-column-fecha {
+  width: 12%;
+}
+
+.mat-column-acciones {
+  width: 12%;
+}

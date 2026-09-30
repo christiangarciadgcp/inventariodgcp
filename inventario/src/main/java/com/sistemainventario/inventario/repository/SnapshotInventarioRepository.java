@@ -2,6 +2,7 @@ package com.sistemainventario.inventario.repository;
 
 import com.sistemainventario.inventario.model.SnapshotInventario;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,11 +26,13 @@ public interface SnapshotInventarioRepository extends JpaRepository<SnapshotInve
            "JOIN FETCH s.producto p " +
            "JOIN FETCH s.bodega b " +
            "LEFT JOIN FETCH p.categoria " +
+           "LEFT JOIN FETCH p.modelo m " +
+           "LEFT JOIN FETCH m.marca " +
            "WHERE b.idBodega = :idBodega AND s.fechasnapshot >= :inicio AND s.fechasnapshot <= :fin " +
            "ORDER BY p.nombreproducto ASC")
-            List<SnapshotInventario> findSnapshotPorBodegaYFecha(
+    List<SnapshotInventario> findSnapshotPorBodegaYFecha(
             @Param("idBodega") Integer idBodega,
-            @Param("inicio") java.time.Instant inicio,
-            @Param("fin") java.time.Instant fin
+            @Param("inicio") Instant inicio,
+            @Param("fin") Instant fin
     );
 }

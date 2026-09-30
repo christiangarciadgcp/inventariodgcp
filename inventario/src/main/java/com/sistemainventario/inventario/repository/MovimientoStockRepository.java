@@ -47,22 +47,26 @@ public interface MovimientoStockRepository extends JpaRepository<MovimientoStock
     ); */
 
     @Query("SELECT m FROM MovimientoStock m " +
-           "JOIN FETCH m.bodega " +
-           "JOIN FETCH m.usuario " +
-           "JOIN FETCH m.producto p " +
-           "LEFT JOIN FETCH p.categoria " +
-           "WHERE m.fecha >= :inicio AND m.fecha <= :fin ORDER BY m.fecha ASC")
+        "JOIN FETCH m.bodega " +
+        "JOIN FETCH m.usuario " +
+        "JOIN FETCH m.producto p " +
+        "LEFT JOIN FETCH p.categoria " +
+        "LEFT JOIN FETCH p.modelo mod " +
+        "LEFT JOIN FETCH mod.marca " +
+        "WHERE m.fecha >= :inicio AND m.fecha <= :fin ORDER BY m.fecha ASC")
     List<MovimientoStock> findMovimientosPorRangoDeFechas(
-    @Param("inicio") Instant inicio,
-    @Param("fin") Instant fin
+        @Param("inicio") Instant inicio,
+        @Param("fin") Instant fin
     );
 
     @Query("SELECT m FROM MovimientoStock m " +
-    "JOIN FETCH m.bodega " +
-    "JOIN FETCH m.usuario " +
-    "JOIN FETCH m.producto p " +
-    "LEFT JOIN FETCH p.categoria " +
-    "WHERE m.fecha >= :inicio AND m.fecha <= :fin AND m.tipo = :tipo ORDER BY m.fecha ASC")
+        "JOIN FETCH m.bodega " +
+        "JOIN FETCH m.usuario " +
+        "JOIN FETCH m.producto p " +
+        "LEFT JOIN FETCH p.categoria " +
+        "LEFT JOIN FETCH p.modelo mod " +
+        "LEFT JOIN FETCH mod.marca " +
+        "WHERE m.fecha >= :inicio AND m.fecha <= :fin AND m.tipo = :tipo ORDER BY m.fecha ASC")
     List<MovimientoStock> findMovimientosPorRangoYTipo(
         @Param("inicio") Instant inicio,
         @Param("fin") Instant fin,

@@ -1,0 +1,172 @@
+<div class="custom-modal-container">
+
+  <!-- CABECERA PRINCIPAL MODAL -->
+  <div class="header-modal p-4 text-white d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="m-0 fw-bold">Acta N° {{ data.asignacion.numeroActa }}</h5>
+      <small class="opacity-75">Asignado a: {{ data.asignacion.responsableDestino }} | Estado: {{ data.asignacion.estado }}</small>
+    </div>
+    <button mat-icon-button class="text-white" (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="p-4 dialog-content-scroll">
+
+    <!-- HISTORIAL EN LÍNEA DE TIEMPO HORIZONTAL -->
+    <div class="pb-2 ">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
+        <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+          Historial
+        </h6>
+      </div>
+
+      <div class="horizontal-timeline-wrapper overflow-auto pb-3 px-2">
+        <div class="d-flex align-items-start position-relative" style="min-width: max-content;">
+          @for (h of data.asignacion.historial; track h.idHistorial; let isLast = $last) {
+            <div class="horizontal-timeline-step" style="width: 175px;">
+
+              <div class="step-connector" [class.d-none]="isLast" [ngClass]="obtenerClaseTimeline(h.accion)"></div>
+
+              <div class="step-dot d-flex justify-content-center align-items-center text-white mx-auto shadow"
+                   [ngClass]="obtenerClaseTimeline(h.accion)">
+                <mat-icon style="font-size: 22px; width: 22px; height: 22px;">
+                  {{ obtenerIconoAccion(h.accion) }}
+                </mat-icon>
+              </div>
+
+              <div class="step-content text-center mt-3 px-2">
+                <span class="badge-accion mb-1 d-inline-block shadow-sm" [ngClass]="obtenerClaseBadgeAccion(h.accion)">
+                  {{ obtenerTextoBadgeAccion(h.accion) }}
+                </span>
+
+                @if (esDevolucion(h.accion) && (h.detalle || detalles().length === 1)) {
+                  <div class="equipo-devuelto-label text-truncate my-1" [matTooltip]="obtenerTooltipProducto(h.detalle)">
+                    <mat-icon class="align-middle me-1 icon-equipo">devices</mat-icon>
+                    <span>{{ obtenerProductoDevuelto(h.detalle) }}</span>
+                  </div>
+                }
+
+                <div class="fw-bold text-dark lh-sm text-truncate mt-1" style="font-size: 0.82rem;">
+                  {{ utils.formatearNombre(h.usuario.nombreusuario) }}
+                </div>
+
+                <div class="text-muted mt-1 fw-medium" style="font-size: 0.72rem;">
+                  {{ h.fecha | date:'dd/MMM/yyyy' }} <br>
+                  {{ h.fecha | date:'h:mm a' }}
+                </div>
+              </div>
+
+            </div>
+          } @empty {
+            <div class="text-center text-muted small py-3 bg-light rounded-3 border-dashed w-100">
+              No hay registros de historial disponibles.
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (data.asignacion.observaciones) {
+      <div class="observaciones-card p-3 mb-4 rounded-3 border d-flex align-items-start gap-3">
+        <div class="icon-circle-obs rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+          <mat-icon class="icon-obs">sticky_note_2</mat-icon>
+        </div>
+        <div class="flex-grow-1">
+          <div class="d-flex align-items-center justify-content-between mb-1">
+            <span class="fw-bold text-uppercase text-dark small" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+              Observaciones
+            </span>
+          </div>
+          <p class="m-0 text-secondary small lh-base text-break">
+            "{{ data.asignacion.observaciones }}"
+          </p>
+        </div>
+      </div>
+    }
+
+    <!-- TÍTULO DE DETALLE -->
+    <h6 class="fw-bold text-dark text-uppercase small mb-3" style="letter-spacing: 0.5px;">
+      Detalle de Equipos Asignados
+    </h6>
+
+    <!-- TABLA DE EQUIPOS ASIGNADOS -->
+    <div class="border rounded-3 overflow-hidden mb-4">
+      <table mat-table [dataSource]="detalles()" class="w-100">
+
+        <!-- PRODUCTO -->
+        <ng-container matColumnDef="producto">
+          <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-3"> Equipo </th>
+          <td mat-cell *matCellDef="let d" class="ps-3 py-2 fw-bold text-dark">
+            {{ d.producto.nombreproducto }}
+          </td>
+        </ng-container>
+
+        <!-- SERIE / INV -->
+        <ng-container matColumnDef="serie">
+          <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-2"> SERIE / INVENTARIO </th>
+          <td mat-cell *matCellDef="let d" class="ps-2 py-2 small font-monospace">
+            Serie: {{ d.producto.serieproducto || 'S/N' }} <br> Inv: {{ d.producto.inventarioproducto || 'S/I' }}
+          </td>
+        </ng-container>
+
+        <!-- BODEGA ORIGEN -->
+        <ng-container matColumnDef="bodegaOrigen">
+          <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold text-center"> BODEGA ORIGEN </th>
+          <td mat-cell *matCellDef="let d" class="text-center py-2">
+            <span class="badge-pill bg-light text-info-emphasis">{{ d.bodegaOrigen?.nombrebodega }}</span>
+          </td>
+        </ng-container>
+
+        <!-- ESTADO (PENDIENTE si el acta está REGISTRADA) -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold text-center pe-3"> ESTADO </th>
+          <td mat-cell *matCellDef="let d" class="text-center pe-3 py-2">
+            <span class="badge" [ngClass]="obtenerClaseBadgeItem(d.estado, data.asignacion.estado)">
+              {{ obtenerTextoBadgeItem(d.estado, data.asignacion.estado) }}
+            </span>
+            @if (d.estado === 'DEVUELTO' && d.bodegaDevolucion) {
+              <small class="d-block text-muted mt-1" style="font-size: 0.72rem;">
+                Devuelto a: {{ d.bodegaDevolucion.nombrebodega }}
+              </small>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center py-4 text-muted" colspan="4">
+            <mat-icon style="font-size: 32px; width: 32px; height: 32px;" class="mb-2 opacity-50">devices</mat-icon>
+            <p class="m-0 small">No hay equipos registrados en este detalle.</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </mat-dialog-content>
+
+    @if (data.asignacion.estado === 'REGISTRADA' && apruebaAsignaciones()) {
+
+      <div class="modal-footer p-3 bg-light border-top d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small fw-bold"> </span>
+        </div>
+
+
+        <div class="d-flex gap-2">
+          <button mat-stroked-button color="warn" class=" btn-cancel  shadow-sm" (click)="cancelar()">
+            <mat-icon class="me-1">block</mat-icon> CANCELAR
+          </button>
+          <button mat-flat-button color="primary" class="btn-confirm  shadow-sm" (click)="aprobar()">
+            <mat-icon class="me-2">check_circle</mat-icon> APROBAR ASIGNACIÓN
+          </button>
+        </div>
+
+      </div>
+
+    }
+
+</div>

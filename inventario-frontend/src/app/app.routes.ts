@@ -50,6 +50,9 @@ import {
   PresupuestoDespachoComponent
 } from './components/presupuesto/presupuesto-despacho/presupuesto-despacho.component';
 import {InventarioConsultaComponent} from './components/inventario/inventario-consulta/inventario-consulta.component';
+import { AsignacionListComponent } from './components/asignacion/asignacion-list/asignacion-list.component';
+import { AsignacionFormComponent } from './components/asignacion/asignacion-form/asignacion-form.component';
+import { AsignacionTrazabilidadComponent } from './components/asignacion/asignacion-trazabilidad/asignacion-trazabilidad.component';
 
 export const routes: Routes = [
 
@@ -321,7 +324,7 @@ export const routes: Routes = [
             Movimiento de Inventario individual
        ********************************************/
       {
-        path: 'asignacion',
+        path: 'movimientoindividual',
         canActivate: [permisosGuard],
         component: InventarioMovimientoComponent,
         data: {
@@ -342,6 +345,40 @@ export const routes: Routes = [
           breadcrumb: 'Descargo de Materiales',
           roles: roles.INVENTARIO2
         }
+      },
+
+      /*********************************
+                Asignaciones
+       **********************************/
+      {
+        path: 'asignaciones',
+        canActivate: [permisosGuard],
+        data: {
+          breadcrumb: 'Asignaciones',
+          roles: roles.INVENTARIO
+        },
+        children: [
+          { path: '',
+            component: AsignacionListComponent,
+            title: 'Asignaciones',
+            data: { breadcrumb: 'Asignaciones' }
+          },
+          { path: 'nueva',
+            component: AsignacionFormComponent,
+            title: 'Nueva Asignacion',
+            data: { breadcrumb: 'Nueva Asignación' }
+          },
+          { path: 'editar/:id',
+            component: AsignacionFormComponent,
+            title: 'Editar Asignacion',
+            data: { breadcrumb: 'Editar Asignación' }
+          },
+          { path: 'trazabilidad',
+            title: 'Historial de Asignaciones',
+            component: AsignacionTrazabilidadComponent,
+            data: { breadcrumb: 'Trazabilidad de Equipos' }
+          }
+        ]
       },
 
       {

@@ -76,16 +76,17 @@
 }
 
 .nav-link {
-    height: 40px;
-    margin: 2px 12px;
-    display: flex;
-    align-items: center;
-    border-radius: 8px;
-    color: #495361;
-    text-decoration: none;
-    transition: background-color 0.2s, color 0.2s;
-    white-space: nowrap;
-    cursor: pointer;
+  height: 36px;               /* Reducido de 40px a 34px */
+  padding: 0 10px;            /* Sobrescribe el padding por defecto de Bootstrap */
+  margin: 2px 12px;           /* Margen vertical reducido a 1px */
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  color: #495361;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .nav-link:hover {

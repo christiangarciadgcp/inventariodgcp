@@ -23,6 +23,7 @@ import { Mensaje } from '../../../core/mensaje';
 import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/producto-galeria-dialog.component';
 import { AuthService } from '../../../services/auth.service';
 import {LayoutService} from '../../../services/layout.service';
+import {ProductoQrDialogComponent} from '../producto-qr-dialog/producto-qr-dialog.component';
 
 @Component({
   selector: 'app-producto-list',
@@ -37,7 +38,7 @@ import {LayoutService} from '../../../services/layout.service';
 })
 export class ProductoListComponent implements OnInit {
 
-  displayedColumns: string[] = ['id', 'sku', 'nombre', 'categoria', 'marca', 'ser-inv', 'proveedor', 'estado', 'acciones'];
+  displayedColumns: string[] = ['id', 'sku', 'nombre', 'categoria', 'marca', 'ser-inv', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
   cargandoExcel = false;
@@ -319,6 +320,14 @@ export class ProductoListComponent implements OnInit {
         }
       });
     }
+  }
+
+
+  verCodigoQr(producto: Producto): void {
+    this.dialog.open(ProductoQrDialogComponent, {
+      width: '380px',
+      data: { producto: producto }
+    });
   }
 
 }

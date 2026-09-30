@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -12,14 +12,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDialog } from '@angular/material/dialog';
+
 import { InventarioService } from '../../../services/inventario.service';
 import { AuthService } from '../../../services/auth.service';
 import { Mensaje } from '../../../core/mensaje';
 import { Bodega } from '../../../models/bodega';
 import { Utils } from '../../../core/utils';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
-
 
 @Component({
   selector: 'app-inventario-movimiento-stock',
@@ -31,10 +31,9 @@ import { MatDialog } from '@angular/material/dialog';
     MatAutocompleteModule
   ],
   templateUrl: './inventario-movimiento-stock.component.html',
-  styleUrl: './inventario-movimiento-stock.component.css',
+  styleUrl: './inventario-movimiento-stock.component.css'
 })
-export class InventarioMovimientoStockComponent implements OnInit{
-
+export class InventarioMovimientoStockComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private inventarioService = inject(InventarioService);
@@ -44,221 +43,260 @@ export class InventarioMovimientoStockComponent implements OnInit{
   public sn = inject(Utils);
   private dialog = inject(MatDialog);
 
-  // Datos
   listaBodegas = signal<Bodega[]>([]);
   productosOrigen = signal<any[]>([]);
   productosFiltrados = signal<any[]>([]);
-  productosDetalle = signal<any[]>([]);
-  displayedColumns : string[] = ['producto','cantidad','acciones'];
+  detallesAgregados = signal<any[]>([]);
 
-  stockDisponible = 0;
+  displayedColumns: string[] = ['producto', 'marca-modelo', 'serie-inventario', 'cantidad', 'acciones'];
+  stockDisponible: number = 0;
   busquedaTexto: string = '';
 
   form = this.fb.group({
-    bodegaOrigen : [null, Validators.required],
-    bodegaDestino : [null, Validators.required],
-    motivo : ['', Validators.required],
+    bodegaOrigen: [null, Validators.required],
+    bodegaDestino: [null, Validators.required],
+    motivo: ['', Validators.required],
     producto: [{ value: null, disabled: true }],
-    cantidad: [null, [Validators.required, Validators.min(1)]]
+    cantidad: [0, [Validators.required, Validators.min(1)]] // Cantidad inicia en 0
   });
 
-  get productoSeleccionado() : any {
+  get productoSeleccionado(): any {
     return this.form.get('producto')?.value;
   }
 
   ngOnInit(): void {
     this.cargarBodegas();
 
-    this.form.get('bodegaOrigen')?.valueChanges.subscribe((idBodega : any ) => {
-      if(idBodega){
-        this.cargarProductosOrigen(idBodega);
-
-        this.productosDetalle.set([]);
+    // Reaccionar a cambios en bodega de origen
+    this.form.get('bodegaOrigen')?.valueChanges.subscribe((idBodega: any) => {
+      if (idBodega) {
+        this.cargarProductos(idBodega);
+        this.detallesAgregados.set([]);
         this.limpiarInputsProducto();
-        this.busquedaTexto = '';
-
         this.form.get('producto')?.enable();
-      }else{
+
+        if (this.form.value.bodegaDestino === idBodega) {
+          this.form.get('bodegaDestino')?.setValue(null);
+        }
+      } else {
         this.form.get('producto')?.disable();
         this.productosOrigen.set([]);
         this.productosFiltrados.set([]);
       }
     });
 
-    this.form.get('producto')?.valueChanges.subscribe((productoInv : any) => {
-      if(productoInv){
+    // Calcular disponible al seleccionar un producto
+    this.form.get('producto')?.valueChanges.subscribe((productoInventario: any) => {
+      if (productoInventario) {
+        const yaEnLista = this.detallesAgregados()
+          .filter(d => d.producto.idProducto === productoInventario.producto.idProducto)
+          .reduce((acc, curr) => acc + curr.cantidad, 0);
 
-        const productoAgregado = this.productosDetalle()
-            .filter(d => d.producto.idProducto === productoInv.producto.idProducto)
-            .reduce((acc, curr) => acc + curr.cantidad,0);
+        this.stockDisponible = productoInventario.cantidad_actual - yaEnLista;
 
-        this.stockDisponible = productoInv.cantidad_actual - productoAgregado;
-
-        //Validaciones
         const cantControl = this.form.get('cantidad');
         cantControl?.setValidators([
-          //Validators.required,
+          Validators.required,
           Validators.min(1),
           Validators.max(this.stockDisponible)
         ]);
-
         cantControl?.updateValueAndValidity();
 
-        //Validar si ya no hay Stock porque ya está en la lista
-        if(this.stockDisponible <= 0){
-          cantControl?.disable();
-          this.mensaje.open('No hay suficiente Stock para este producto', 'warning');
-        }else{
-          cantControl?.enable();
+        if (this.stockDisponible <= 0) {
+          this.mensaje.open('No hay stock disponible para este producto en la bodega seleccionada', 'warning');
         }
       }
     });
   }
 
-  cargarBodegas() {
+  cargarBodegas(): void {
     this.inventarioService.listarBodegas().subscribe({
       next: (data) => this.listaBodegas.set(data),
       error: (err) => {
-        const msg = err.error?.mensaje || err.error?.message || 'Error con el servidor';
-        this.mensaje.open('Error al cargar la información', 'warning');
+        const msg = err.error?.mensaje || err.error?.message || 'Error al cargar bodegas';
         this.mensaje.open(msg, 'error');
       }
     });
   }
 
-  cargarProductosOrigen(idBodega : number) {
-    this.inventarioService.listarInventarioPorBodega(idBodega).subscribe( data => {
-      const stockDisponible = data.filter(item => item.cantidad_actual > 0);
-      this.productosOrigen.set(stockDisponible);
-      this.productosFiltrados.set(stockDisponible);
+  cargarProductos(idBodega: number): void {
+    this.inventarioService.listarInventarioPorBodega(idBodega).subscribe({
+      next: (data) => {
+        const disponibles = data.filter(item => item.cantidad_actual > 0);
+        this.productosOrigen.set(disponibles);
+        this.productosFiltrados.set(disponibles);
+      },
+      error: () => this.mensaje.open('Error al obtener inventario de la bodega', 'error')
     });
   }
 
-  filtrar(event: Event) {
+  filtrar(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const valor = input.value.toLowerCase();
+    const valor = input.value.toLowerCase().trim();
 
-    // Si escribe algo nuevo, limpiamos la selección actual
     if (this.productoSeleccionado && this.productoSeleccionado.producto.nombreproducto.toLowerCase() !== valor) {
-       this.form.get('producto')?.setValue(null);
-       this.stockDisponible = 0;
-       this.form.get('cantidad')?.disable();
+      this.form.get('producto')?.setValue(null);
+      this.stockDisponible = 0;
     }
 
-    const filtrados = this.productosOrigen().filter(item =>
-      item.producto.nombreproducto.toLowerCase().includes(valor) ||
-      (item.producto.skuproducto && item.producto.skuproducto.toLowerCase().includes(valor))
-    );
+    const filtrados = this.productosOrigen().filter(item => {
+      const p = item.producto;
+      const texto = (
+        (p.nombreproducto || '') + ' ' +
+        (p.skuproducto || '') + ' ' +
+        (p.serieproducto || '') + ' ' +
+        (p.inventarioproducto || '') + ' ' +
+        (p.modelo?.nombremodelo || '') + ' ' +
+        (p.modelo?.marca?.nombremarca || '')
+      ).toLowerCase();
+      return texto.includes(valor);
+    });
 
     this.productosFiltrados.set(filtrados);
   }
 
-  seleccionarProducto(evento: any) {
+  seleccionarProducto(evento: any): void {
     const itemInventario = evento.option.value;
-
-    // Actualizamos el control del formulario
     this.form.get('producto')?.setValue(itemInventario);
-
-    // Actualizamos la variable vinculada al ngModel para que el input muestre el texto
     this.busquedaTexto = itemInventario.producto.nombreproducto;
   }
 
   displayFn(item: any): string {
-
-    if (typeof item === 'string') {
-      return item;
-    }
-
+    if (typeof item === 'string') return item;
     return (item && item.producto) ? item.producto.nombreproducto : '';
   }
 
-  limpiarInputsProducto(){
+  agregarProductoALista(): void {
+    // 1. Validar que exista una bodega de origen seleccionada
+    if (!this.form.value.bodegaOrigen) {
+      this.mensaje.open('Seleccione primero una bodega de origen', 'warning');
+      return;
+    }
+
+    // 2. Validar que se haya seleccionado un producto
+    const prodVal = this.productoSeleccionado;
+    if (!prodVal) {
+      this.mensaje.open('Debe seleccionar un producto de la lista', 'warning');
+      return;
+    }
+
+    // 3. Validar cantidad mayor a cero
+    const cantVal = Number(this.form.get('cantidad')?.value);
+    if (cantVal === null || cantVal === undefined || isNaN(cantVal) || cantVal <= 0) {
+      this.form.get('cantidad')?.markAsTouched();
+      this.mensaje.open('La cantidad debe ser mayor a cero', 'warning');
+      return;
+    }
+
+    // 4. Validar existencia y disponibilidad de stock
+    if (this.stockDisponible <= 0) {
+      this.mensaje.open('No hay stock disponible para este producto en la bodega seleccionada', 'warning');
+      return;
+    }
+
+    if (cantVal > this.stockDisponible) {
+      this.form.get('cantidad')?.markAsTouched();
+      this.mensaje.open(`La cantidad supera el stock actual [${this.stockDisponible} Disponible]`, 'warning');
+      return;
+    }
+
+    // 5. Agrupar si ya está en la lista o agregar como nuevo ítem
+    const indexExistente = this.detallesAgregados().findIndex(
+      d => d.producto.idProducto === prodVal.producto.idProducto
+    );
+
+    if (indexExistente !== -1) {
+      this.detallesAgregados.update(lista => {
+        const copia = [...lista];
+        copia[indexExistente] = {
+          ...copia[indexExistente],
+          cantidad: copia[indexExistente].cantidad + cantVal
+        };
+        return copia;
+      });
+    } else {
+      this.detallesAgregados.update(lista => [...lista, {
+        producto: prodVal.producto,
+        cantidad: cantVal
+      }]);
+    }
+
+    this.limpiarInputsProducto();
+  }
+
+  eliminarDetalle(index: number): void {
+    this.detallesAgregados.update(lista => lista.filter((_, i) => i !== index));
+
+    // Si el producto actual seleccionado coincide con el eliminado, se recalcula el disponible
+    if (this.productoSeleccionado) {
+      const prodId = this.productoSeleccionado.producto.idProducto;
+      const yaEnLista = this.detallesAgregados()
+        .filter(d => d.producto.idProducto === prodId)
+        .reduce((acc, curr) => acc + curr.cantidad, 0);
+      this.stockDisponible = this.productoSeleccionado.cantidad_actual - yaEnLista;
+    }
+  }
+
+  limpiarInputsProducto(): void {
     this.form.get('producto')?.setValue(null);
-    this.form.get('cantidad')?.reset();
+    this.form.get('cantidad')?.setValue(0); // Reiniciar siempre a 0
+    this.form.get('cantidad')?.markAsUntouched();
     this.form.get('cantidad')?.setErrors(null);
     this.stockDisponible = 0;
     this.busquedaTexto = '';
     this.productosFiltrados.set(this.productosOrigen());
   }
 
-  agregarProductoALista(){
-    const prodVal = this.productoSeleccionado;
-    const cantVal = this.form.get('cantidad')?.value;
-
-    if(!prodVal || !cantVal || cantVal <= 0) return;
-
-    const nuevoDetalle = {
-      producto: prodVal.producto,
-      cantidad: cantVal
-    };
-
-    this.productosDetalle.update(lista => [...lista, nuevoDetalle]);
-    this.limpiarInputsProducto();
-  }
-
-  eliminarDetalle(index: number) {
-    this.productosDetalle.update(lista => lista.filter((_, i) => i !== index));
-  }
-
-  guardarMovimientoStock() {
-
+  guardarTransferencia(): void {
     if (this.form.get('bodegaOrigen')?.invalid ||
-        this.form.get('bodegaDestino')?.invalid ||
-        this.form.get('motivo')?.invalid) {
-        this.form.markAllAsTouched();
-        this.mensaje.open('Complete la información de origen, destino y motivo', 'warning');
-        return;
+      this.form.get('bodegaDestino')?.invalid ||
+      this.form.get('motivo')?.invalid) {
+      this.form.markAllAsTouched();
+      this.mensaje.open('Complete la información de bodegas y motivo', 'warning');
+      return;
     }
 
-    if (this.productosDetalle().length === 0) {
-        this.mensaje.open('Agregue al menos un producto a la lista', 'warning');
-        return;
+    if (this.form.value.bodegaOrigen === this.form.value.bodegaDestino) {
+      this.mensaje.open('La bodega de origen y destino no pueden ser iguales', 'warning');
+      return;
     }
 
-    const values = this.form.value;
-
-    if (values.bodegaOrigen === values.bodegaDestino) {
-        this.mensaje.open('La bodega de origen y destino deben ser diferentes', 'warning');
-        return;
+    if (this.detallesAgregados().length === 0) {
+      this.mensaje.open('Debe agregar al menos un material a la lista de movimiento', 'warning');
+      return;
     }
 
-    const idUser = this.authService.getIdUsuarioActual();
-    if (!idUser) {
-        this.mensaje.open('Error: No se pudo identificar al usuario. Inicie sesión nuevamente.', 'error');
-        return;
-    }
-
-    const dto = {
-      idBodegaOrigen: values.bodegaOrigen,
-      idBodegaDestino: values.bodegaDestino,
-      motivo: values.motivo,
-      idUsuario: idUser,
-      items: this.productosDetalle().map(d => ({
-          idProducto: d.producto.idProducto,
-          cantidad: d.cantidad
+    const movimientoStockDTO = {
+      idBodegaOrigen: this.form.value.bodegaOrigen,
+      idBodegaDestino: this.form.value.bodegaDestino,
+      motivo: this.form.value.motivo,
+      idUsuario: this.authService.getIdUsuarioActual(),
+      items: this.detallesAgregados().map(d => ({
+        idProducto: d.producto.idProducto,
+        cantidad: d.cantidad
       }))
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '450px',
       data: {
-        titulo: '¿Está seguro de realizar este movimiento?',
-        mensaje: 'Esta acción no se puede deshacer',
-        textoBoton: 'Aceptar',
+        titulo: '¿Confirmar Movimiento de Materiales?',
+        mensaje: 'Se transferirán las existencias de la bodega de origen a la de destino.',
+        textoBoton: 'Confirmar',
         colorBoton: 'primary'
       }
     });
+
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
-        this.inventarioService.realizarMovimientoStockBodega(dto).subscribe({
+        this.inventarioService.realizarMovimientoStockBodega(movimientoStockDTO).subscribe({
           next: () => {
             this.mensaje.open('Movimiento realizado con éxito', 'exito');
             this.router.navigate(['/inventario']);
           },
           error: (err) => {
-            console.error(err);
-            const mensajeError = err.error?.mensaje || err.error?.message || 'Ocurrió un error inesperado';
-            this.mensaje.open('Error en Movimiento: ' + mensajeError , 'error');
+            const msg = err.error?.mensaje || err.error?.message || 'Error al procesar el movimiento';
+            this.mensaje.open(msg, 'error');
           }
         });
       }

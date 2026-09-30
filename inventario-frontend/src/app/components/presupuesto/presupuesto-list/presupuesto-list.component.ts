@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, effect, signal, Injectable } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, effect, signal, computed, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,8 +10,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -27,7 +25,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { PresupuestoDetalleComponent } from '../presupuesto-detalle/presupuesto-detalle.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { PresupuestoAprobacionComponent } from '../presupuesto-aprobacion/presupuesto-aprobacion.component';
-import {Utils} from '../../../core/utils';
+import { Utils } from '../../../core/utils';
 
 @Injectable()
 export class CustomDateAdapter extends NativeDateAdapter {
@@ -58,8 +56,8 @@ export const MY_DATE_FORMATS = {
   imports: [
     CommonModule, RouterLink, MatTableModule, MatPaginatorModule,
     MatSortModule, MatButtonModule, MatIconModule, MatCardModule,
-    MatInputModule, MatFormFieldModule, MatTooltipModule,MatSortModule,
-    MatTabsModule, MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule
+    MatInputModule, MatFormFieldModule, MatTooltipModule,
+    MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
@@ -86,12 +84,19 @@ export class PresupuestoListComponent implements OnInit {
   esEncargadoInventario = signal<boolean>(false);
   esJefeUTDI = signal<boolean>(false);
 
-  todasLasSolicitudes : Presupuesto[] = [];
-  currentTab : number = 0;
+  // Lista base reactiva
+  todasLasSolicitudes = signal<Presupuesto[]>([]);
+  currentTab: number = 0;
+
+  // Contadores reactivos para los badges
+  conteoPendientes = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'PENDIENTE').length);
+  conteoAprobados = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'APROBADO').length);
+  conteoDespachos = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'DESPACHO PARCIAL' || p.estado === 'DESPACHADO').length);
+  // conteoCancelados = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'CANCELADO').length);
 
   rangoFechas = new FormGroup({
-    start : new FormControl<Date | null>(null),
-    end : new FormControl<Date | null>(null),
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
   });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -104,14 +109,13 @@ export class PresupuestoListComponent implements OnInit {
       if (this.sort) this.dataSource.sort = this.sort;
     });
 
-    // Filtro personalizado: Busca por ID, Nombre de Presupuesto o Estado
     this.dataSource.filterPredicate = (data: Presupuesto, filter: string) => {
-      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.idusuariopresupuesto.nombreusuario + data.ubicacion?.nombreubicacion).toLowerCase();
+      const searchStr = (data.idPresupuesto + data.nombre_presupuesto + data.idusuariopresupuesto.nombreusuario + (data.ubicacion?.nombreubicacion || '')).toLowerCase();
       return searchStr.includes(filter);
     };
 
-    this.dataSource.sortingDataAccessor = (item : Presupuesto, property : string) => {
-      switch(property) {
+    this.dataSource.sortingDataAccessor = (item: Presupuesto, property: string) => {
+      switch (property) {
         case 'id':
           return item.idPresupuesto;
         case 'fecha':
@@ -119,7 +123,7 @@ export class PresupuestoListComponent implements OnInit {
         case 'destino':
           return item.nombre_presupuesto;
         case 'solicitante':
-            return item.idusuariopresupuesto.nombreusuario;
+          return item.idusuariopresupuesto.nombreusuario;
         case 'estado':
           return item.estado;
         default:
@@ -129,11 +133,8 @@ export class PresupuestoListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     const rolActual = this.authService.getRolUsuario();
-
     this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi' || rolActual === 'coordinador utdi');
-
     this.esJefeUTDI.set(rolActual === 'jefe utdi' || rolActual === 'administrador' || rolActual === 'coordinador utdi');
 
     const tabParam = this.route.snapshot.queryParamMap.get('tab');
@@ -143,11 +144,11 @@ export class PresupuestoListComponent implements OnInit {
 
     const hoy = new Date();
     const intervaloSolicitudes = new Date();
-    intervaloSolicitudes.setDate(hoy.getDate() - 30); // SOLO SE PODRAN VER SOLICITUDES CON 30 DIAS DE ANTIGUEDAD
-    this.rangoFechas.setValue({start : intervaloSolicitudes, end : hoy});
+    intervaloSolicitudes.setDate(hoy.getDate() - 30);
+    this.rangoFechas.setValue({ start: intervaloSolicitudes, end: hoy });
 
     this.rangoFechas.valueChanges.subscribe(() => {
-      if(this.currentTab === 2) this.filtrarDatos();
+      if (this.currentTab === 2) this.filtrarDatos();
     });
 
     this.cargarPresupuestos();
@@ -156,7 +157,8 @@ export class PresupuestoListComponent implements OnInit {
   cargarPresupuestos() {
     this.presupuestoService.listarTodos().subscribe({
       next: (data) => {
-        this.todasLasSolicitudes = data.sort((a,b) => b.idPresupuesto! - a.idPresupuesto!);
+        const ordenadas = data.sort((a, b) => b.idPresupuesto! - a.idPresupuesto!);
+        this.todasLasSolicitudes.set(ordenadas);
         this.filtrarDatos();
       },
       error: (err) => {
@@ -167,80 +169,58 @@ export class PresupuestoListComponent implements OnInit {
     });
   }
 
-  onTabChange(index : number){
+  onTabChange(index: number) {
     this.currentTab = index;
 
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab: index },
-      queryParamsHandling: 'merge' // Mantiene otros parámetros si existieran
+      queryParamsHandling: 'merge'
     });
 
     this.filtrarDatos();
   }
 
-/*   filtrarDatos(){
-    if(this.currentTab===0){
-      const pendientes = this.todasLasSolicitudes.filter(p => p.estado === 'PENDIENTE');
-      this.presupuestos.set(pendientes);
-    } else {
-      const start = this.rangoFechas.value.start;
-      let end = this.rangoFechas.value.end;
-
-      if(end){
-        end = new Date(end);
-        end.setHours(23,59,59,999);
-      }
-
-      const historial = this.todasLasSolicitudes.filter ( p => {
-        if(p.estado === 'PENDIENTE') return false;
-
-        if(!start || !end) return true;
-
-        const fechaPresupuesto = new Date(p.fecha_creacion);
-        return fechaPresupuesto >= start && fechaPresupuesto <= end;
-      });
-
-      this.presupuestos.set(historial);
-    }
-
-    if(this.paginator){
-      this.paginator.firstPage();
-    }
-  } */
-
   filtrarDatos() {
-    if(this.currentTab === 0) {     // PENDIENTES (Esperando aprobación)
-      this.presupuestos.set(this.todasLasSolicitudes.filter(p => p.estado === 'PENDIENTE'));
-    } else if (this.currentTab === 1) {        // APROBADAS (Listas para empezar a despachar)
-      this.presupuestos.set(this.todasLasSolicitudes.filter(p => p.estado === 'APROBADO'));
-    } else {        // CONTROL DE DESPACHOS (Parciales y Despachadas)
+    const lista = this.todasLasSolicitudes();
+
+    if (this.currentTab === 0) { // PENDIENTES
+      this.presupuestos.set(lista.filter(p => p.estado === 'PENDIENTE'));
+    } else if (this.currentTab === 1) { // APROBADOS
+      this.presupuestos.set(lista.filter(p => p.estado === 'APROBADO'));
+    } else if (this.currentTab === 2) { // CONTROL DE DESPACHOS
       const start = this.rangoFechas.value.start;
       let end = this.rangoFechas.value.end;
 
-      if(start) start.setHours(0, 0, 0, 0);
-
-      if(end) {
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) {
         end = new Date(end);
-        end.setHours(23,59,59,999);
+        end.setHours(23, 59, 59, 999);
       }
 
-      const historial = this.todasLasSolicitudes.filter(p => {
-        if(p.estado !== 'DESPACHO PARCIAL' && p.estado !== 'DESPACHADO') return false; // AGREGAR p.estado !== 'CANCELADO' SI SE REQUIERE QUE APAREZCAN LAS CANCELADAS
-        if(!start || !end) return true;
+      // Parciales primero, luego Despachados
+      const parciales = lista.filter(p => p.estado === 'DESPACHO PARCIAL');
+      const despachados = lista.filter(p => p.estado === 'DESPACHADO');
+      const combinados = [...parciales, ...despachados];
 
+      const filtrados = combinados.filter(p => {
+        if (!start || !end) return true;
         const fecha = new Date(p.fecha_creacion);
         return fecha >= start && fecha <= end;
       });
 
-      this.presupuestos.set(historial);
+      this.presupuestos.set(filtrados);
+    }
+/*    else if (this.currentTab === 3) { // CANCELADOS
+      this.presupuestos.set(lista.filter(p => p.estado === 'CANCELADO'));
+    }*/ else { // TODOS (currentTab === 4)
+      this.presupuestos.set(lista);
     }
 
-    if(this.paginator) this.paginator.firstPage();
+    if (this.paginator) this.paginator.firstPage();
   }
 
   aprobarSolicitud(id: number) {
-
     const idUsuario = this.authService.getIdUsuarioActual();
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
@@ -253,7 +233,7 @@ export class PresupuestoListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(confirmado => {
-      if(confirmado){
+      if (confirmado) {
         this.presupuestoService.aprobarPresupuesto(id, idUsuario).subscribe({
           next: () => {
             this.mensaje.open('Presupuesto aprobado. Pase a la pestaña de Aprobados.', 'exito');
@@ -268,10 +248,8 @@ export class PresupuestoListComponent implements OnInit {
     });
   }
 
-  cancelarSolicitud(id : number){
-
+  cancelarSolicitud(id: number) {
     const idUsuario = this.authService.getIdUsuarioActual();
-
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
@@ -283,13 +261,13 @@ export class PresupuestoListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(confirmado => {
-      if(confirmado){
-        this.presupuestoService.cancelarPresupuesto(id,idUsuario).subscribe({
-          next : () => {
+      if (confirmado) {
+        this.presupuestoService.cancelarPresupuesto(id, idUsuario).subscribe({
+          next: () => {
             this.mensaje.open('Presupuesto ha sido Cancelado', 'exito');
             this.cargarPresupuestos();
           },
-          error : (err) => {
+          error: (err) => {
             const msg = err.error?.mensaje || 'No se pudo Cancelar este presupuesto';
             this.mensaje.open(msg, 'error');
           }
@@ -303,53 +281,21 @@ export class PresupuestoListComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  verDetallePresupuesto(presupuesto : Presupuesto){
-    const dialogRef = this.dialog.open(PresupuestoDetalleComponent, {
+  verDetallePresupuesto(presupuesto: Presupuesto) {
+    this.dialog.open(PresupuestoDetalleComponent, {
       width: '900px',
       maxWidth: '100vw',
       maxHeight: '90vh',
       disableClose: false,
       data: { presupuesto: presupuesto }
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (!result) return;
-    });
   }
 
-  revisionPresupuesto(idPresupuesto : number, nombreusuario : string) {
-    const dialogRef = this.dialog.open(PresupuestoRevisionComponent, {
-      width: '1200px',
-      maxWidth: '95vw',
-      disableClose: false,
-      autoFocus: false,
-      data: { idPresupuesto: idPresupuesto, nombreusuario : nombreusuario}
-    });
-
-      // --------------------------------------------------------
-  // MODAL PARA APROBAR O RECEPCIONAR
-  // --------------------------------------------------------
-  dialogRef.afterClosed().subscribe(result => {
-    if (!result) return;
-
-    if(result === 'recargar'){
-      this.cargarPresupuestos();
-    }
-/*     if (result?.accion === 'aprobar') {
-/*       this.aprobarSolicitud(result.id,false);
-    } else if (result?.accion === 'recepcionar') {
-      // Llamar a tu lógica de recepción
-      this.recepcionarSolicitud(result.id, false);
-      console.log('Recepcionar ID:', result.id);
-    } */
-    });
-  }
-
-  evaluarPresupuesto(idPresupuesto : number, nombreusuario : string) {
+  evaluarPresupuesto(idPresupuesto: number, nombreusuario: string) {
     const dialogRef = this.dialog.open(PresupuestoAprobacionComponent, {
       width: '900px',
       maxWidth: '95vw',
-      data: { idPresupuesto: idPresupuesto, nombreusuario : nombreusuario }
+      data: { idPresupuesto: idPresupuesto, nombreusuario: nombreusuario }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -357,7 +303,6 @@ export class PresupuestoListComponent implements OnInit {
         this.currentTab = result.tabDestino;
         this.cargarPresupuestos();
 
-        // Actualizamos también la URL de una vez
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: { tab: this.currentTab },
@@ -368,18 +313,14 @@ export class PresupuestoListComponent implements OnInit {
   }
 
   imprimirDespacho(presupuesto: Presupuesto) {
-    // Validación Opcional
     if (presupuesto.estado !== 'DESPACHADO' && presupuesto.estado !== 'DESPACHO PARCIAL') {
-        this.mensaje.open('Solo se puede imprimir hoja de despacho de presupuestos APROBADOS', 'warning');
-        return;
+      this.mensaje.open('Solo se puede imprimir hoja de despacho de presupuestos APROBADOS', 'warning');
+      return;
     }
 
     this.presupuestoService.obtenerDatosReporte(presupuesto.idPresupuesto!).subscribe({
       next: (data) => {
-        // Generar PDF
         const urlBlob = this.despachoService.generarPdfDespacho(data);
-
-        // Abrir Visor
         this.dialog.open(PdfViewerDialogComponent, {
           width: '100%',
           maxWidth: '60vw',
@@ -387,7 +328,7 @@ export class PresupuestoListComponent implements OnInit {
           panelClass: 'full-screen-modal',
           data: {
             url: urlBlob,
-            titulo: ` ${presupuesto.ubicacion?.siglasubicacion} - ${presupuesto.nombre_presupuesto}`
+            titulo: `${presupuesto.ubicacion?.siglasubicacion || ''} - ${presupuesto.nombre_presupuesto}`
           }
         });
       },
@@ -397,5 +338,4 @@ export class PresupuestoListComponent implements OnInit {
       }
     });
   }
-
 }

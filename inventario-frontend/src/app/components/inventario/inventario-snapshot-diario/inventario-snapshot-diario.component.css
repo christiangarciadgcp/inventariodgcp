@@ -14,7 +14,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-
 /* --- TABLA ELEGANTE Y ANCHOS FIJOS --- */
 .custom-card {
   border: 1px solid #e0e0e0 !important;
@@ -77,25 +76,37 @@
   font-weight: 700;
 }
 
-/* --- TAMAÑOS DE COLUMNAS --- */
+/* --- TAMAÑOS DE COLUMNAS (100% TOTAL) --- */
 .mat-column-sku {
-  width: 20%;
+  width: 15%;
 }
 
 .mat-column-producto {
-  width: 45%;
+  width: 25%;
   white-space: normal !important;
   word-wrap: break-word;
   padding-right: 15px !important;
 }
 
 .mat-column-categoria {
-  width: 20%;
+  width: 14%;
   white-space: normal !important;
   word-wrap: break-word;
   padding-right: 15px !important;
 }
 
+.mat-column-marca-modelo {
+  width: 17%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-serie-inventario {
+  width: 17%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
 .mat-column-cantidad {
-  width: 15%;
+  width: 12%;
 }

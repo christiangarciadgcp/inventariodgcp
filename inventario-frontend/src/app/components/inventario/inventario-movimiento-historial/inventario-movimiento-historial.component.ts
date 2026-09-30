@@ -1,4 +1,4 @@
-import {Component, inject, signal, ViewChild, effect, input, viewChild} from '@angular/core';
+import { Component, inject, signal, effect, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -19,9 +19,9 @@ import { Utils } from '../../../core/utils';
 import { Mensaje } from '../../../core/mensaje';
 import { InventarioMovimientosService } from '../../../services/reportes/inventario-movimientos.service';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
-import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {LayoutService} from '../../../services/layout.service';
-import {MatTooltip} from '@angular/material/tooltip';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LayoutService } from '../../../services/layout.service';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-inventario-movimiento-historial',
@@ -45,18 +45,15 @@ export class InventarioMovimientoHistorialComponent {
   textoBusqueda = '';
   buscando = false;
   cargando: boolean = false;
-  displayedColumns: string[] = ['fecha', 'detalle', 'bodega', 'cantidad'];
+
+  displayedColumns: string[] = ['sku', 'fecha', 'detalle', 'bodega', 'marca-modelo', 'serie-inventario', 'cantidad'];
   dataSource = new MatTableDataSource<any>([]);
   movimientos = signal<any[]>([]);
 
-  // Lista de tipos de movimientos disponibles para el select
-  tiposMovimiento: string[] = ['TODOS', 'ENTRADA', 'SALIDA', 'DESPACHO', 'DESCARGO']; // SE PUEDE AGREGAR 'AJUSTE' SI SE REQUIERE
-
-  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+  tiposMovimiento: string[] = ['TODOS', 'ENTRADA', 'SALIDA', 'DESPACHO', 'DESCARGO'];
 
   paginator = viewChild(MatPaginator);
 
-  // Formulario unificado de filtros
   filtroForm = new FormGroup({
     inicio: new FormControl<Date | null>(null, Validators.required),
     fin: new FormControl<Date | null>(null, Validators.required),
@@ -64,10 +61,16 @@ export class InventarioMovimientoHistorialComponent {
   });
 
   constructor() {
-
     this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const p = data.producto;
       const datosAString = (
-        (data.producto?.nombreproducto || '') +
+        (p?.skuproducto || '') +
+        (p?.nombreproducto || '') +
+        (p?.categoria?.nombrecategoria || '') +
+        (p?.modelo?.marca?.nombremarca || '') +
+        (p?.modelo?.nombremodelo || '') +
+        (p?.serieproducto || '') +
+        (p?.inventarioproducto || '') +
         (data.bodega?.nombrebodega || '') +
         (data.tipo || '') +
         (data.motivo || '') +
@@ -77,12 +80,9 @@ export class InventarioMovimientoHistorialComponent {
       return datosAString.includes(filter);
     };
 
-
     effect(() => {
       this.dataSource.data = this.movimientos();
-
       const paginadorActual = this.paginator();
-
       if (paginadorActual) this.dataSource.paginator = paginadorActual;
     });
   }
@@ -113,7 +113,7 @@ export class InventarioMovimientoHistorialComponent {
         this.movimientos.set(data);
         this.buscando = false;
         this.cargando = false;
-        if(data.length === 0) {
+        if (data.length === 0) {
           this.mensaje.open('No se encontraron movimientos con los criterios aplicados.', 'info');
         }
       },
@@ -149,9 +149,8 @@ export class InventarioMovimientoHistorialComponent {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-
   getIconoMovimiento(tipo: string): string {
-    switch (tipo.toUpperCase()) {
+    switch (tipo?.toUpperCase()) {
       case 'ENTRADA': return 'trending_up';
       case 'SALIDA': return 'trending_down';
       case 'DESPACHO': return 'local_shipping';
@@ -162,7 +161,7 @@ export class InventarioMovimientoHistorialComponent {
   }
 
   getColorMovimiento(tipo: string): string {
-    switch (tipo.toUpperCase()) {
+    switch (tipo?.toUpperCase()) {
       case 'ENTRADA': return 'text-success bg-success-subtle';
       case 'SALIDA': return 'text-danger bg-danger-subtle';
       case 'DESPACHO': return 'text-primary bg-primary-subtle';
@@ -171,5 +170,4 @@ export class InventarioMovimientoHistorialComponent {
       default: return 'text-secondary bg-light';
     }
   }
-
 }

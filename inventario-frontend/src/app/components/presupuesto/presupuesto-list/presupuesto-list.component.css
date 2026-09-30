@@ -1,199 +1,234 @@
 .custom-card {
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
-    background: white;
-    overflow: hidden;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  background: white;
+  overflow: hidden;
 }
 
 .mat-mdc-table { background: transparent; }
 
 .mat-mdc-header-row {
-    background: linear-gradient(#031e3f 0%, #153863 100%);
-    border-bottom: 2px solid #f1f3f5;
-    height: 60px;
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  border-bottom: 2px solid #f1f3f5;
+  height: 48px;
+  text-align: center !important;
 }
 
 .mat-mdc-header-cell {
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center !important;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center !important;
 }
 
 .mat-mdc-row {
-    height: 70px;
-    transition: all 0.2s ease-in-out;
+  height: 60px;
+  transition: all 0.2s ease-in-out;
+  text-align: center !important;
 }
 
 .hover-row:hover {
-    background-color: #f8faff !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    z-index: 1;
-    position: relative;
+  background-color: #f8faff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  z-index: 1;
+  position: relative;
 }
 
 .mat-mdc-cell {
-    font-size: 0.9rem;
-    color: #344767;
-    font-weight: 500;
-    border-bottom: 1px solid #ebebeb !important;
-
+  font-size: 0.9rem;
+  color: #344767;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb !important;
+  text-align: center !important;
 }
 
 .badge-soft {
-    padding: 8px 12px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    border: 1px solid transparent;
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn { transition: transform 0.2s; }
 .action-btn:hover {
-    transform: scale(1.1);
-    background-color: rgba(0,0,0,0.04);
+  transform: scale(1.1);
+  background-color: rgba(0,0,0,0.04);
 }
 
 .mat-column-acciones {
-    width: 200px;
-    min-width: 100px;
-    max-width: 200px;
-    text-align: center;
-    padding-right: 24px !important;
-    overflow: visible !important;
+  width: 180px;
+  min-width: 160px;
+  max-width: 200px;
+  text-align: center !important;
+  overflow: visible !important;
 }
 
-.mat-column-estado{
+.mat-column-estado {
   width: 15%;
 }
 
-
 .btn-nuevo {
-    background: linear-gradient(#031e3f 0%, #153863 100%);
-    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
-    border: none;
-    height: 45px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+  box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
+  border: none;
+  height: 40px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
-.edit-color{
-    color: #d59809;
+.edit-color {
+  color: #d59809;
 }
 
-.revision-color{
+.revision-color {
   color: #0f8ddc;
 }
 
-.icon-circle mat-icon {
-    font-size: 25px;
-    margin-bottom: 3px;
-}
-
 .status-pendiente {
-    background-color: #fff8dd;
-    color: #d6a800;
-    border-color: #ffedb8;
+  background-color: #fff8dd;
+  color: #d6a800;
+  border: 1px solid #dfc688;
 }
 
 .status-aprobada {
-    background-color: #e8fff3;
-    color: #19cb69;
-    border-color: #d1fbe4;
+  background-color: #e1ffe3;
+  color: #00b215;
+  border: 1px solid #7ae582;
 }
 
 .status-despachado {
-    background-color: #e1f0ff;
-    color: #009ef7;
-    border-color: #cce9ff;
+  background-color: #e1f0ff;
+  color: #009ef7;
+  border-color: #cce9ff;
 }
 
 .status-despacho-parcial {
-    background-color: #fef1ed;
-    color: #f36739;
-    border-color: #ffd9cb;
+  background-color: #fef1ed;
+  color: #f36739;
+  border-color: #ffd9cb;
 }
 
 .status-cancelado {
-    background-color: #fff5f8;
-    color: #f1416c;
-    border-color: #ffe1e9;
+  background-color: #fff5f8;
+  color: #f1416c;
+  border-color: #ffe1e9;
 }
 
 .text-muted-hover:hover { color: #3f51b5 !important; cursor: pointer; }
 
 .container-wide {
-    width: 99%; /* Ocupa casi toda la pantalla */
-    max-width: 1600px; /* Pero pone un límite para que no se vea infinito en monitores 4K */
-    margin-right: auto; /* Centrado automático */
-    margin-left: auto;  /* Centrado automático */
-    padding-right: 2rem;
-    padding-left: 2rem;
+  width: 99%;
+  max-width: 1600px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 2rem;
+  padding-left: 2rem;
 }
 
-/* Ajuste opcional para pantallas pequeñas (móviles/tablets) */
 @media (max-width: 768px) {
-    .container-wide {
-        width: 100%;
-        padding-right: 1rem;
-        padding-left: 1rem;
-    }
+  .container-wide {
+    width: 100%;
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
 }
-
 
 ::ng-deep .mat-sort-header-arrow {
-    color: #ffffff !important;
+  color: #ffffff !important;
 }
 
 ::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition {
-    opacity: 0.9 !important;
+  opacity: 0.9 !important;
 }
 
-/* =========================================
-   MEJORA VISUAL DE PESTAÑAS (TABS)
-   ========================================= */
-
-/* 1. Línea base sutil para anclar las pestañas al diseño */
-::ng-deep .mat-mdc-tab-header {
-    border-bottom: 2px solid #f1f3f5;
+/* CENTRADO DE LOS ENCABEZADOS ORDENABLES */
+::ng-deep .mat-sort-header-container {
+  justify-content: center !important;
+  text-align: center !important;
 }
 
-/* 2. Estilo del texto INACTIVO (gris suave) */
-::ng-deep .mat-mdc-tab .mdc-tab__text-label {
-    color: #7b809a;
-    font-weight: 500;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    transition: all 0.2s ease;
+/* --- PESTAÑAS TIPO PÍLDORA CON CONTADORES --- */
+.tabs-header-container {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 8px;
 }
 
-/* 3. Estilo de la pestaña ACTIVA (Tu azul institucional) */
-::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-    color: #153863 !important;
-    font-weight: 800 !important;
+.tab-pill-btn {
+  border: 1px solid #dcdfe4;
+  background-color: #ffffff;
+  color: #4a5568;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 8px 18px;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  user-select: none;
 }
 
-/* 4. Línea indicadora más fina y elegante (2px en lugar de 4px) */
-::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
-    border-color: #153863 !important;
-    border-top-width: 2px !important;
-    border-radius: 4px 4px 0 0 !important;
+.tab-pill-btn:hover {
+  background-color: #f8faff;
+  border-color: #153863;
+  color: #153863;
+  transform: translateY(-1px);
 }
 
-/* 5. Fondo permanente para la pestaña ACTIVA (Efecto "botón seleccionado") */
-::ng-deep .mat-mdc-tab.mdc-tab--active {
-    background-color: rgba(21, 56, 99, 0.06) !important; /* Fondo azul muy suavecito */
-    border-radius: 8px 8px 0 0;
+.tab-pill-btn.active {
+  background: linear-gradient(135deg, #031e3f 0%, #153863 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 12px rgba(3, 30, 63, 0.25);
 }
 
-/* 6. Fondo interactivo sutil al pasar el mouse por pestañas INACTIVAS */
-::ng-deep .mat-mdc-tab:hover:not(.mdc-tab--active) {
-    background-color: rgba(21, 56, 99, 0.03); /* Fondo aún más suave para el hover */
-    border-radius: 8px 8px 0 0;
+.icon-tab {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  vertical-align: middle;
+}
+
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background-color: #edf2f7;
+  color: #2d3748;
+  transition: all 0.2s ease;
+}
+
+.tab-pill-btn.active .tab-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.density-compact ::ng-deep .mat-mdc-text-field-wrapper {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 38px;
+  border-radius: 50px !important;
+}
+
+.density-compact ::ng-deep .mat-mdc-form-field-flex {
+  height: 38px;
+  align-items: center;
 }

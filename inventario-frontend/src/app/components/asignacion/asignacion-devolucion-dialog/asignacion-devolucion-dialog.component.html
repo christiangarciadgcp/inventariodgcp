@@ -1,0 +1,87 @@
+<div class="header-modal p-3 text-white d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center gap-2">
+    <mat-icon>assignment_return</mat-icon>
+    <h5 class="m-0 fw-bold">Devolución de Equipos - Acta {{ data.asignacion.numeroActa }}</h5>
+  </div>
+  <button mat-icon-button class="text-white" (click)="dialogRef.close(false)">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="p-4">
+  <p class="text-muted small mb-3">
+    Seleccione el equipo o active la devolución total para reincorporar los activos a la bodega correspondiente.
+  </p>
+
+  <!-- OPCIÓN DE DEVOLUCIÓN TOTAL (SI HAY MÁS DE 1 EQUIPO PENDIENTE) -->
+  @if (detallesPendientes().length > 1) {
+    <div class="p-3 mb-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+      <div>
+        <div class="fw-bold text-dark small">¿Desea devolver todos los equipos pendientes?</div>
+        <small class="text-muted">Se reingresarán los {{ detallesPendientes().length }} equipos a la bodega seleccionada</small>
+      </div>
+      <mat-slide-toggle [checked]="devolverTodo()" (change)="toggleDevolverTodo($event.checked)" color="primary">
+      </mat-slide-toggle>
+    </div>
+  }
+
+  <form [formGroup]="form">
+
+    <!-- SELECTOR INDIVIDUAL (Se oculta si se activa Devolver Todos) -->
+    @if (!devolverTodo()) {
+      <div class="mb-3">
+        <label class="form-label fw-bold small text-muted">Equipo a Devolver *</label>
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-select formControlName="idAsignacionDetalle">
+            @for (d of detallesPendientes(); track d.idAsignacionDetalle) {
+              <mat-option [value]="d.idAsignacionDetalle">
+                {{ d.producto.nombreproducto }} [Serie: {{ d.producto.serieproducto || 'S/N' }} - Inv: {{ d.producto.inventarioproducto || 'S/I' }}]
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    } @else {
+      <!-- RESUMEN DE EQUIPOS A DEVOLVER EN BLOQUE -->
+      <div class="mb-3 p-3 bg-primary-subtle border border-primary-subtle rounded-3">
+        <span class="text-primary fw-bold small d-block mb-1">
+          <mat-icon class="align-middle me-1" style="font-size: 16px; width: 16px; height: 16px;">inventory</mat-icon>
+          Equipos a devolver:
+        </span>
+        <ul class="m-0 ps-3 small text-dark">
+          @for (d of detallesPendientes(); track d.idAsignacionDetalle) {
+            <li>{{ d.producto.nombreproducto }} (Serie: {{ d.producto.serieproducto || 'S/N' }})</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <!-- BODEGA DE DESTINO -->
+    <div class="mb-3">
+      <label class="form-label fw-bold small text-muted">Bodega *</label>
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+        <mat-select formControlName="idBodegaDestino">
+          @for (b of bodegasFisicas(); track b.idBodega) {
+            <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- OBSERVACIÓN -->
+    <div class="mb-2">
+      <label class="form-label fw-bold small text-muted">Observación de Devolución *</label>
+      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+        <textarea matInput formControlName="observacion" rows="2" placeholder="Condiciones del equipo, accesorios entregados, etc."></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="p-3 border-top">
+  <button mat-button class="btn-cancel rounded-pill px-4" (click)="dialogRef.close(false)">Cancelar</button>
+  <button mat-raised-button class="btn-confirm rounded-pill px-4 text-white" (click)="confirmarDevolucion()" [disabled]="form.invalid">
+    <mat-icon class="me-1">check</mat-icon>
+    {{ devolverTodo() ? 'Confirmar Devolución Total' : 'Confirmar Reingreso' }}
+  </button>
+</mat-dialog-actions>

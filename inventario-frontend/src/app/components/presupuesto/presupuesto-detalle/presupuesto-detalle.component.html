@@ -1,88 +1,89 @@
 <div class="custom-modal-container">
 
-    <div class="modal-header d-flex justify-content-between align-items-start p-4 border-bottom text-white" style="background: linear-gradient(#031e3f 0%, #153863 100%); border-bottom: 1px solid rgba(255,255,255,0.1);">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
-                    Presupuesto #{{ data.presupuesto.idPresupuesto }}
-                </h6>
+  <!-- 1. CABECERA (Fija arriba) -->
+  <div class="modal-header d-flex justify-content-between align-items-start p-4 border-bottom text-white flex-shrink-0"
+       style="background: linear-gradient(#031e3f 0%, #153863 100%); border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <h6 class="text-uppercase m-0 fw-bold" style="font-size: 0.75rem; letter-spacing: 1px;">
+          Presupuesto #{{ data.presupuesto.idPresupuesto }}
+        </h6>
 
-                <span class="badge-soft"
-                      [ngClass]="{
-                        'status-pendiente': data.presupuesto.estado === 'PENDIENTE',
-                        'status-aprobada': data.presupuesto.estado === 'APROBADO',
-                        'status-rechazada': data.presupuesto.estado === 'CANCELADO',
-                        'status-recepcion-parcial': data.presupuesto.estado === 'DESPACHO PARCIAL',
-                        'status-despachado': data.presupuesto.estado === 'DESPACHADO'
-                      }">
-                    {{ data.presupuesto.estado }}
-                </span>
-            </div>
+        <span class="badge-soft"
+              [ngClass]="{
+                'status-pendiente': data.presupuesto.estado === 'PENDIENTE',
+                'status-aprobada': data.presupuesto.estado === 'APROBADO',
+                'status-rechazada': data.presupuesto.estado === 'CANCELADO',
+                'status-recepcion-parcial': data.presupuesto.estado === 'DESPACHO PARCIAL',
+                'status-despachado': data.presupuesto.estado === 'DESPACHADO'
+              }">
+          {{ data.presupuesto.estado }}
+        </span>
+      </div>
 
-            <hr>
-            <h3 class="fw-bold text-white m-0"> Destino: {{ data.presupuesto.ubicacion?.nombreubicacion }}</h3>
-            <h4 class="fw-bold text-white m-0">Área: {{ data.presupuesto.nombre_presupuesto }}</h4>
+      <h3 class="fw-bold text-white m-0">Destino: {{ data.presupuesto.ubicacion?.nombreubicacion }}</h3>
+      <h4 class="fw-medium text-white m-0 mt-1" style="font-size: 1rem;">Área: {{ data.presupuesto.nombre_presupuesto }}</h4>
 
-            @if (data.presupuesto.observaciones) {
-                <h6 class="fw-bold text-white m-0 mt-2">Observaciones: {{ data.presupuesto.observaciones }}</h6>
-                <hr>
-            }
+      @if (data.presupuesto.observaciones) {
+        <h6 class="fw-bold text-white m-0 mt-2" style="font-size: 0.85rem;">
+          Observaciones: {{ data.presupuesto.observaciones }}
+        </h6>
+        <hr class="opacity-25 my-2">
+      }
 
-
-            <div class="d-flex align-items-center mt-2 text-white ">
-                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">calendar_today</mat-icon>
-                <small class="fw-bold text-white">Última Modificación: {{ data.presupuesto.fecha_modificacion | date:'dd/MM/yyyy h:mm a' }}</small>
-                <span class="mx-2"> | </span>
-                <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
-                <small class="fw-bold text-white">Solicitante: {{ utils.formatearNombre(data.presupuesto.idusuariopresupuesto.nombreusuario) }}</small>
-            </div>
-        </div>
-
-        <button mat-icon-button (click)="cerrar()" class="text-white">
-            <mat-icon>close</mat-icon>
-        </button>
+      <div class="d-flex align-items-center mt-2 text-white">
+        <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">calendar_today</mat-icon>
+        <small class="fw-bold text-white">Última Modificación: {{ data.presupuesto.fecha_modificacion | date:'dd/MM/yyyy h:mm a' }}</small>
+        <span class="mx-2"> | </span>
+        <mat-icon style="color:white; font-size: 16px; width: 16px; height: 16px;" class="me-1">person</mat-icon>
+        <small class="fw-bold text-white">Solicitante: {{ utils.formatearNombre(data.presupuesto.idusuariopresupuesto.nombreusuario) }}</small>
+      </div>
     </div>
 
+    <button mat-icon-button (click)="cerrar()" class="text-white">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
 
+  <!-- 2. ÚNICO CONTENEDOR CON SCROLL (Historial + Tabla juntos) -->
+  <mat-dialog-content class="dialog-content-scroll p-4 m-0 flex-grow-1">
 
-    <div class="modal-body p-0">
+    <!-- HISTORIAL -->
+    <div class="pb-2 mb-4">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
+        <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+          Historial
+        </h6>
+      </div>
 
-      <div class="px-3 pb-2 border-top pt-4">
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <mat-icon class="text-primary" style="font-size: 20px; width: 20px; height: 20px;">history</mat-icon>
-          <h6 class="m-0 fw-bold text-dark text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.5px;">
-            Historial
-          </h6>
-        </div>
-
-        <div class="horizontal-timeline-wrapper overflow-auto pb-3 px-2">
-          <div class="d-flex align-items-start position-relative" style="min-width: max-content;">
+      <div class="horizontal-timeline-wrapper overflow-auto pb-3 px-2">
+        <div class="d-flex align-items-start position-relative" style="min-width: max-content;">
           @for (h of data.presupuesto.historial; track h.idHistorial; let isLast = $last) {
-            <div class="horizontal-timeline-step" style="width: 140px;">
+            <div class="horizontal-timeline-step" style="width: 175px;">
 
               <div class="step-connector" [class.d-none]="isLast"
-                 [ngClass]="{
-                   'tl-creacion': h.accion === 'CREACION',
-                   'tl-edicion': h.accion === 'EDICION',
-                   'tl-aprobacion': h.accion === 'APROBACION',
-                   'tl-parcial': h.accion === 'DESPACHO PARCIAL',
-                   'tl-recepcion': h.accion === 'DESPACHO TOTAL',
-                   'tl-reactivacion': h.accion === 'REACTIVACION',
-                   'tl-cancelacion': h.accion === 'CANCELACION'
-                 }">
-                </div>
+                   [ngClass]="{
+                     'tl-creacion': h.accion === 'CREACION',
+                     'tl-edicion': h.accion === 'EDICION',
+                     'tl-aprobacion': h.accion === 'APROBACION',
+                     'tl-parcial': h.accion === 'DESPACHO PARCIAL',
+                     'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                     'tl-reactivacion': h.accion === 'REACTIVACION',
+                     'tl-cancelacion': h.accion === 'CANCELACION'
+                   }">
+              </div>
 
               <div class="step-dot d-flex justify-content-center align-items-center text-white mx-auto shadow"
-                  [ngClass]="{
-                   'tl-creacion': h.accion === 'CREACION',
-                   'tl-edicion': h.accion === 'EDICION',
-                   'tl-aprobacion': h.accion === 'APROBACION',
-                   'tl-parcial': h.accion === 'DESPACHO PARCIAL',
-                   'tl-recepcion': h.accion === 'DESPACHO TOTAL',
-                   'tl-reactivacion': h.accion === 'REACTIVACION',
-                   'tl-cancelacion': h.accion === 'CANCELACION'
-                  }">
-
+                   [ngClass]="{
+                     'tl-creacion': h.accion === 'CREACION',
+                     'tl-edicion': h.accion === 'EDICION',
+                     'tl-aprobacion': h.accion === 'APROBACION',
+                     'tl-parcial': h.accion === 'DESPACHO PARCIAL',
+                     'tl-recepcion': h.accion === 'DESPACHO TOTAL',
+                     'tl-reactivacion': h.accion === 'REACTIVACION',
+                     'tl-cancelacion': h.accion === 'CANCELACION'
+                   }">
                 <mat-icon style="font-size: 22px; width: 22px; height: 22px;">
                   {{
                     h.accion === 'CREACION' ? 'note_add' :
@@ -95,6 +96,7 @@
                   }}
                 </mat-icon>
               </div>
+
               <div class="step-content text-center mt-3 px-2">
                 <span class="badge-accion mb-2 d-inline-block shadow-sm"
                       [ngClass]="{
@@ -103,10 +105,10 @@
                         'bg-success-subtle text-success': h.accion === 'APROBACION',
                         'bg-parcial-subtle text-parcial': h.accion === 'DESPACHO PARCIAL',
                         'bg-info-subtle text-info': h.accion === 'DESPACHO TOTAL',
-                        'bg-reactivacion-subtle text-white': h.accion === 'REACTIVACION',
+                        'bg-reactivacion-subtle text-reactivacion': h.accion === 'REACTIVACION',
                         'bg-danger-subtle text-danger': h.accion === 'CANCELACION'
                       }">
-                    {{ h.accion }}
+                  {{ h.accion }}
                 </span>
 
                 <div class="fw-bold text-dark lh-sm text-truncate" style="font-size: 0.85rem;" [matTooltip]="utils.formatearNombre(h.usuario.nombreusuario)">
@@ -120,60 +122,63 @@
               </div>
 
             </div>
-
-
-
           } @empty {
-            <div class="text-center text-muted small py-3 bg-light rounded-3 border-dashed">
+            <div class="text-center text-muted small py-3 bg-light rounded-3 border-dashed w-100">
               No hay registros de historial disponibles.
             </div>
           }
         </div>
       </div>
-
-        <mat-dialog-content class="mat-typography p-0">
-
-            @if (cargando) {
-                <div class="d-flex justify-content-center align-items-center py-5">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-            } @else {
-
-                <table mat-table [dataSource]="dataSource" class="w-100">
-
-                    <ng-container matColumnDef="producto">
-                        <th mat-header-cell *matHeaderCellDef class="ps-4"> MATERIAL </th>
-                        <td mat-cell *matCellDef="let element" class="ps-4">
-                            <div class="d-flex flex-column py-2">
-                                <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
-                                <!--<span class="small text-muted">{{ element.producto.skuproducto }}</span>-->
-                            </div>
-                        </td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="cantidad">
-                        <th mat-header-cell *matHeaderCellDef class="text-center"> CANTIDAD </th>
-                        <td mat-cell *matCellDef="let element" class="text-center">
-                            {{ element.cantidad_solicitada }}
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
-                </table>
-
-            }
-        </mat-dialog-content>
     </div>
 
-
-    <div class="modal-footer p-3 bg-light border-top d-flex align-items-center">
-
-        <div class="d-flex gap-2">
-            <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cerrar</button>
-
-        </div>
+    <!-- TABLA DE MATERIALES -->
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <h6 class="fw-bold text-dark text-uppercase small m-0" style="font-size: 0.8rem; letter-spacing: 0.5px;">
+        Materiales Solicitados
+      </h6>
     </div>
 
-</div>
+    @if (cargando) {
+      <div class="d-flex justify-content-center align-items-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    } @else {
+      <div class="border rounded-3 overflow-hidden mb-2">
+        <table mat-table [dataSource]="dataSource" class="w-100">
+
+          <ng-container matColumnDef="producto">
+            <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-4"> MATERIAL </th>
+            <td mat-cell *matCellDef="let element" class="ps-4 py-2">
+              <span class="fw-bold text-dark">{{ element.producto.nombreproducto }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold text-center pe-4"> CANTIDAD </th>
+            <td mat-cell *matCellDef="let element" class="text-center pe-4 py-2">
+              <span class="badge-pill bg-light text-info-emphasis">
+                {{ element.cantidad_solicitada }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell text-center py-4 text-muted" colspan="2">
+              No hay materiales registrados en este presupuesto.
+            </td>
+          </tr>
+        </table>
+      </div>
+    }
+
+  </mat-dialog-content>
+
+  <!-- 3. FOOTER (Fijo abajo) -->
+  <div class="modal-footer p-3 bg-light border-top d-flex align-items-center justify-content-end flex-shrink-0">
+    <button mat-stroked-button class="btn-cancelar" (click)="cerrar()">Cerrar</button>
+  </div>
+
 </div>

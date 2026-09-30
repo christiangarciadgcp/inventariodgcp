@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HotToastService } from '@ngxpert/hot-toast';
+import { HotToastService } from '@ngneat/hot-toast';
 
 export type TipoSnack = 'exito' | 'error' | 'warning' | 'info' | 'loading';
 
@@ -15,8 +15,7 @@ export class Mensaje {
     const baseOptions = {
       position: 'top-center' as const,
       dismissible: true,
-      duration: tipo === 'error' ? 6000 : 4000,
-      theme: 'ios' as const
+      duration: tipo === 'error' ? 6000 : 4000
     };
 
     const sharedStyle = {
@@ -31,7 +30,7 @@ export class Mensaje {
       case 'exito':
         this._toast.success(mensaje, {
           ...baseOptions,
-          iconTheme: {primary: '#0f5132', secondary: '#d1e7dd'},
+          iconTheme: { primary: '#0f5132', secondary: '#d1e7dd' },
           style: {
             ...sharedStyle,
             background: '#d1e7dd',
@@ -44,7 +43,7 @@ export class Mensaje {
       case 'error':
         this._toast.error(mensaje, {
           ...baseOptions,
-          iconTheme: {primary: '#842029', secondary: '#f8d7da'},
+          iconTheme: { primary: '#842029', secondary: '#f8d7da' },
           style: {
             ...sharedStyle,
             background: '#f8d7da',
@@ -57,7 +56,7 @@ export class Mensaje {
       case 'warning':
         this._toast.warning(mensaje, {
           ...baseOptions,
-          iconTheme: {primary: '#664d03', secondary: '#fff3cd'},
+          iconTheme: { primary: '#664d03', secondary: '#fff3cd' },
           style: {
             ...sharedStyle,
             background: '#fff3cd',
@@ -70,7 +69,7 @@ export class Mensaje {
       case 'info':
         this._toast.info(mensaje, {
           ...baseOptions,
-          iconTheme: {primary: '#055160', secondary: '#cff4fc'},
+          iconTheme: { primary: '#055160', secondary: '#cff4fc' },
           style: {
             ...sharedStyle,
             background: '#cff4fc',
@@ -83,7 +82,7 @@ export class Mensaje {
       case 'loading':
         this._toast.loading(mensaje, {
           ...baseOptions,
-          iconTheme: {primary: '#495057', secondary: '#f8f9fa'},
+          iconTheme: { primary: '#495057', secondary: '#f8f9fa' },
           style: {
             ...sharedStyle,
             background: '#f8f9fa',

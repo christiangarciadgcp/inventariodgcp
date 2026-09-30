@@ -1,7 +1,7 @@
 <div class="container-wide px-5 mt-4">
 
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-5 px-2 gap-3">
-
+  <!-- CABECERA SUPERIOR -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 px-2 gap-3">
     <div class="d-flex align-items-center gap-3">
       <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/">
         <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
@@ -14,7 +14,6 @@
     </div>
 
     <div class="d-flex flex-wrap align-items-center gap-3">
-
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" routerLink="/presupuesto/nuevo_presupuesto">
         <mat-icon class="me-2">add_task</mat-icon> Nuevo Presupuesto
       </button>
@@ -25,204 +24,186 @@
           <mat-icon>search</mat-icon>
         </div>
       </div>
-
     </div>
-
   </div>
 
-  <div class="d-flex flex-wrap align-items-center gap-3 mb-4 px-2">
+  <!-- PESTAÑAS POR ESTADO (ESTILO PÍLDORA ESTANDARIZADO) -->
+  <div class="tabs-header-container d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 px-2">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <button type="button" class="tab-pill-btn" [class.active]="currentTab === 0" (click)="onTabChange(0)">
+        <mat-icon class="me-1 icon-tab">pending_actions</mat-icon>
+        Pendientes
+        <span class="tab-badge ms-2">{{ conteoPendientes() }}</span>
+      </button>
 
-    <div class="flex-grow-1" style="min-width: 350px;">
-      <mat-tab-group mat-align-tabs="start" [selectedIndex]="currentTab" (selectedIndexChange)="onTabChange($event)">
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon class="me-2 text-warning">pending_actions</mat-icon>PENDIENTES
-          </ng-template>
-        </mat-tab>
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon class="me-2 text-success">thumb_up</mat-icon>APROBADOS
-          </ng-template>
-        </mat-tab>
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon class="me-2 text-primary">local_shipping</mat-icon>DESPACHOS
-          </ng-template>
-        </mat-tab>
-      </mat-tab-group>
+      <button type="button" class="tab-pill-btn" [class.active]="currentTab === 1" (click)="onTabChange(1)">
+        <mat-icon class="me-1 icon-tab">thumb_up</mat-icon>
+        Aprobados
+        <span class="tab-badge ms-2">{{ conteoAprobados() }}</span>
+      </button>
+
+      <button type="button" class="tab-pill-btn" [class.active]="currentTab === 2" (click)="onTabChange(2)">
+        <mat-icon class="me-1 icon-tab">local_shipping</mat-icon>
+        Despachos
+        <span class="tab-badge ms-2">{{ conteoDespachos() }}</span>
+      </button>
+
+<!--      <button type="button" class="tab-pill-btn" [class.active]="currentTab === 3" (click)="onTabChange(3)">
+        <mat-icon class="me-1 icon-tab">cancel</mat-icon>
+        Cancelados
+        <span class="tab-badge ms-2">{{ conteoCancelados() }}</span>
+      </button>-->
+
+      <button type="button" class="tab-pill-btn" [class.active]="currentTab === 3" (click)="onTabChange(3)">
+        <mat-icon class="me-1 icon-tab">list_alt</mat-icon>
+        Todos
+        <span class="tab-badge ms-2">{{ todasLasSolicitudes().length }}</span>
+      </button>
     </div>
 
+    <!-- RANGO DE FECHAS EN DESPACHOS -->
     @if (currentTab === 2) {
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact m-0" style="width: 260px;">
-        <mat-label>Últimos 30 dias</mat-label>
-        <mat-date-range-input [formGroup]="rangoFechas" [rangePicker]="picker">
-          <input matStartDate formControlName="start" placeholder="Inicio">
-          <input matEndDate formControlName="end" placeholder="Fin">
-        </mat-date-range-input>
-        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
+      <div class="d-flex align-items-center">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="density-compact m-0" style="width: 250px;">
+          <mat-label>Últimos 30 días</mat-label>
+          <mat-date-range-input [formGroup]="rangoFechas" [rangePicker]="picker">
+            <input matStartDate formControlName="start" placeholder="Inicio">
+            <input matEndDate formControlName="end" placeholder="Fin">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </div>
     }
   </div>
 
+  <!-- TABLA DE RESULTADOS -->
   <mat-card class="custom-card mb-5">
+    <table mat-table [dataSource]="dataSource" matSort class="w-100">
 
-        <table mat-table [dataSource]="dataSource" matSort class="w-100">
+      <!-- N° -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> N° </th>
+        <td mat-cell *matCellDef="let element" class="text-center py-2 text-secondary">
+          {{ element.idPresupuesto }}
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header class="ps-4"> N° </th>
-                <td mat-cell *matCellDef="let element" class="ps-4 text-secondary">
-                    {{ element.idPresupuesto }}
-                </td>
-            </ng-container>
+      <!-- FECHA -->
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> FECHA </th>
+        <td mat-cell *matCellDef="let element" class="text-center py-2">
+          <span class="text-dark fw-bold d-block" style="font-size: 0.85rem;">
+            {{ element.fecha_creacion | date:'dd/MM/yyyy' }}
+          </span>
+          <small class="text-muted d-block" style="font-size: 0.75rem;">
+            <mat-icon style="font-size: 13px; width: 13px; height: 13px; vertical-align: middle;">schedule</mat-icon>
+            {{ element.fecha_creacion | date:'h:mm a' }}
+          </small>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="fecha">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> FECHA </th>
-                <td mat-cell *matCellDef="let element">
-                    <div class="d-flex flex-column py-1">
-                        <div class="d-flex align-items-center">
-                            <mat-icon class="text-muted me-2"
-                                style="font-size: 16px; width: 16px; height: 16px;">calendar_today</mat-icon>
-                            <span class="text-dark fw-bold" style="font-size: 0.85rem;">
-                                {{ element.fecha_creacion | date:'dd/MM/yyyy' }}
-                            </span>
-                        </div>
-                        <div style="padding-left: 9px;">
-                            <small class="text-muted" style="font-size: 0.75rem;">
-                                <mat-icon
-                                    style="font-size: 12px; width: 12px; height: 12px; vertical-align: middle;">schedule</mat-icon>
-                                {{ element.fecha_creacion | date:'h:mm a' }}
-                            </small>
-                        </div>
-                    </div>
-                </td>
-            </ng-container>
+      <!-- PROYECTO / ACTIVIDAD -->
+      <ng-container matColumnDef="destino">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> PROYECTO / ACTIVIDAD </th>
+        <td mat-cell *matCellDef="let element" class="text-center py-2">
+          <div class="d-flex flex-column align-items-center justify-content-center">
+            <span class="fw-bold text-dark text-muted-hover">{{ element.nombre_presupuesto }}</span>
+            <div class="d-flex align-items-center justify-content-center mt-1">
+              <mat-icon class="text-muted me-1" style="font-size: 14px; width: 14px; height: 14px;">place</mat-icon>
+              <small class="text-secondary">{{ element.ubicacion?.nombreubicacion || 'N/A' }}</small>
+            </div>
+          </div>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="destino">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> PROYECTO / ACTIVIDAD </th>
-                <td mat-cell *matCellDef="let element">
-                    <div class="d-flex flex-column py-2">
-                        <span class="fw-bold text-dark text-muted-hover">{{ element.nombre_presupuesto }}</span>
-                        <div class="d-flex align-items-center mt-1">
-                            <mat-icon class="text-muted me-1"
-                                style="font-size: 14px; width: 14px; height: 14px;">place</mat-icon>
-                            <small class="text-secondary"> {{ element.ubicacion?.nombreubicacion || 'N/A' }}</small>
-                        </div>
-                    </div>
-                </td>
-            </ng-container>
+      <!-- SOLICITANTE -->
+      <ng-container matColumnDef="solicitante">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> SOLICITANTE </th>
+        <td mat-cell *matCellDef="let element" class="text-center py-2">
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center text-primary fw-bold me-2"
+                 style="width: 32px; height: 32px; font-size: 0.75rem;">
+              {{ utils.obtenerIniciales(element.idusuariopresupuesto?.nombreusuario) }}
+            </div>
+            <span class="text-secondary font-weight-bold" style="font-size: 0.85rem;">
+              {{ element.idusuariopresupuesto?.nombreusuario }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="solicitante">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> SOLICITANTE </th>
-                <td mat-cell *matCellDef="let element">
-                    <div class="d-flex align-items-center">
-                        <div class="rounded-circle bg-light border d-flex justify-content-center align-items-center text-primary fw-bold me-2"
-                            style="width: 32px; height: 32px; font-size: 0.75rem;">
-                            {{ utils.obtenerIniciales(element.idusuariopresupuesto?.nombreusuario)}}
-                        </div>
-                        <span class="text-secondary font-weight-bold" style="font-size: 0.85rem;">
-                            {{ element.idusuariopresupuesto?.nombreusuario }}
-                        </span>
-                    </div>
-                </td>
-            </ng-container>
+      <!-- ESTADO -->
+      <ng-container matColumnDef="estado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> ESTADO </th>
+        <td mat-cell *matCellDef="let element" class="text-center py-2">
+          <span class="badge-soft" [ngClass]="{
+            'status-pendiente': element.estado === 'PENDIENTE',
+            'status-aprobada': element.estado === 'APROBADO',
+            'status-despacho-parcial': element.estado === 'DESPACHO PARCIAL',
+            'status-despachado': element.estado === 'DESPACHADO',
+            'status-cancelado': element.estado === 'CANCELADO'
+          }">
+            {{ element.estado }}
+          </span>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="estado">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> ESTADO </th>
-                <td mat-cell *matCellDef="let element">
-                    <span class="badge-soft" [ngClass]="{
-                            'status-pendiente': element.estado === 'PENDIENTE',
-                            'status-aprobada': element.estado === 'APROBADO',
-                            'status-despacho-parcial': element.estado === 'DESPACHO PARCIAL',
-                            'status-despachado': element.estado === 'DESPACHADO',
-                            'status-cancelado' : element.estado === 'CANCELADO'
-                          }">
-                        {{ element.estado }}
-                    </span>
-                </td>
-            </ng-container>
+      <!-- ACCIONES -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="text-center"> ACCIONES </th>
+        <td mat-cell *matCellDef="let element" class="col-acciones text-center py-2">
+          <button mat-icon-button class="action-btn text-dark" matTooltip="Ver Detalles" (click)="verDetallePresupuesto(element)">
+            <mat-icon>format_list_bulleted</mat-icon>
+          </button>
 
-            <ng-container matColumnDef="acciones">
-                <th mat-header-cell *matHeaderCellDef class="pe-4 text-center"> ACCIONES </th>
-              <td mat-cell *matCellDef="let element" class="col-acciones text-center">
+          @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO' && esEncargadoInventario())) {
+            <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
+                    [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
+                    [queryParams]="{ returnTab: currentTab }">
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
 
-                <button mat-icon-button class="action-btn text-dark" matTooltip="Ver Detalles"
-                        (click)="verDetallePresupuesto(element)">
-                  <mat-icon>format_list_bulleted</mat-icon>
-                </button>
+          @if (element.estado === 'PENDIENTE' && esEncargadoInventario()) {
+            <button mat-icon-button class="action-btn revision-color" matTooltip="Evaluar Presupuesto"
+                    (click)="evaluarPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
+              <mat-icon>fact_check</mat-icon>
+            </button>
+          }
 
-                <!--SI SE REQUIERE EDITAR DESPUES DE DESPACHADO-->
-               <!-- @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO') && esEncargadoInventario())) {-->
+          @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
+            <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
+                    [routerLink]="['/presupuesto/despachar', element.idPresupuesto]">
+              <mat-icon>inventory</mat-icon>
+            </button>
+          }
 
-                @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO'  && esEncargadoInventario())) {
-                  <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
-                          [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
-                          [queryParams]="{ returnTab: currentTab }">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                }
+          @if (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL') {
+            <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho" (click)="imprimirDespacho(element)">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
 
-<!--                @if (element.estado === 'PENDIENTE' && esJefeUTDI()) {
-                  <button mat-icon-button class="action-btn text-success" matTooltip="Aprobar Solicitud"
-                          (click)="aprobarSolicitud(element.idPresupuesto)">
-                    <mat-icon>check_circle_outline</mat-icon>
-                  </button>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
 
-                  <button mat-icon-button class="action-btn text-danger" matTooltip="Cancelar Solicitud"
-                          (click)="cancelarSolicitud(element.idPresupuesto)">
-                    <mat-icon>block_outline</mat-icon>
-                  </button>
-                }-->
-                @if (element.estado === 'PENDIENTE' && esEncargadoInventario() ) {
-                  <button mat-icon-button class="action-btn revision-color" matTooltip="Evaluar Presupuesto"
-                          (click)="evaluarPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
-                    <mat-icon>fact_check</mat-icon>
-                  </button>
-                }
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center py-5" colspan="6">
+          <div class="d-flex flex-column align-items-center justify-content-center text-muted">
+            <mat-icon style="font-size: 45px; width: 45px; height: 45px;" class="mb-2">assignment_late</mat-icon>
+            <span class="fw-medium">No se encontraron presupuestos</span>
+            @if (input.value) {
+              <small class="text-muted mt-1">Para la búsqueda "{{ input.value }}"</small>
+            }
+          </div>
+        </td>
+      </tr>
+    </table>
 
-<!--                @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
-                  <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
-                          (click)="revisionPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
-                    <mat-icon>inventory</mat-icon>
-                  </button>
-                }-->
-
-                @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
-                  <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
-                          [routerLink]="['/presupuesto/despachar', element.idPresupuesto]">
-                    <mat-icon>inventory</mat-icon>
-                  </button>
-                }
-
-                @if (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL') {
-                  <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho"
-                          (click)="imprimirDespacho(element)">
-                    <mat-icon>picture_as_pdf</mat-icon>
-                  </button>
-                }
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
-
-            <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell text-center py-5" colspan="7">
-                    <div class="d-flex flex-column align-items-center justify-content-center text-muted">
-                        <mat-icon style="font-size: 45px; width: 45px; height: 45px;"
-                            class="mb-2">assignment_late</mat-icon>
-                        <span class="fw-medium">No se encontraron presupuestos</span>
-                        @if (input.value){
-                        <small class="text-muted mt-1">Para la búsqueda "{{input.value}}"</small>
-                        }
-                    </div>
-                </td>
-            </tr>
-
-        </table>
-
-        <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons aria-label="Seleccionar página">
-        </mat-paginator>
-
-    </mat-card>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons aria-label="Seleccionar página">
+    </mat-paginator>
+  </mat-card>
 </div>

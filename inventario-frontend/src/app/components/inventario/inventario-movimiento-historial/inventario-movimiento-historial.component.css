@@ -5,6 +5,7 @@
   height: 48px;
   border: none;
 }
+
 .btn-confirmar {
   background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
   color: white !important;
@@ -13,20 +14,23 @@
   font-weight: 500;
   transition: all 0.3s ease;
 }
+
 .btn-confirmar:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 15px rgba(3, 30, 63, 0.4);
   filter: brightness(110%);
 }
+
 .animacion-fade {
   animation: fadeIn 0.4s ease-in-out;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-
+/* TABLA ELEGANTE Y ANCHOS FIJOS */
 .custom-card {
   border: 1px solid #e0e0e0 !important;
   border-radius: 16px !important;
@@ -37,7 +41,7 @@
 
 .mat-mdc-table {
   background: transparent;
-  table-layout: fixed; /* Obliga a la tabla a respetar estrictamente los anchos */
+  table-layout: fixed;
   width: 100%;
 }
 
@@ -63,7 +67,7 @@
 .hover-row:hover {
   background-color: #f8faff !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
   z-index: 1;
   position: relative;
 }
@@ -78,18 +82,34 @@
 ::ng-deep .mat-sort-header-arrow { color: #ffffff !important; }
 ::ng-deep .mat-sort-header-arrow.ng-trigger-arrowPosition { opacity: 0.9 !important; }
 
-.avatar-icon-compact { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.avatar-icon-compact mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.avatar-icon-compact {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon-compact mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
 
 /* BADGES DE COLOR */
-.bg-success-subtle { background-color: #d1fae5 !important; } .text-success { color: #10b981 !important; }
-.bg-danger-subtle { background-color: #fee2e2 !important; } .text-danger { color: #ef4444 !important; }
-.bg-primary-subtle { background-color: #e0f2fe !important; } .text-primary { color: #0ea5e9 !important; }
-.bg-warning-subtle { background-color: #fef08a !important; } .text-warning { color: #d97706 !important; }
+.bg-success-subtle { background-color: #d1fae5 !important; }
+.text-success { color: #10b981 !important; }
+.bg-danger-subtle { background-color: #fee2e2 !important; }
+.text-danger { color: #ef4444 !important; }
+.bg-primary-subtle { background-color: #e0f2fe !important; }
+.text-primary { color: #0ea5e9 !important; }
+.bg-warning-subtle { background-color: #fef08a !important; }
+.text-warning { color: #d97706 !important; }
 .bg-light { background-color: #f1f5f9 !important; }
 
 .badge-pill {
-  padding: 6px 16px;
+  padding: 6px 14px;
   font-size: 0.75rem;
   border-radius: 15px;
   background-color: #f1f5f9;
@@ -98,32 +118,41 @@
   font-weight: 700;
 }
 
-.mat-column-icono {
-  width: 75px;
-  min-width: 75px;
-  max-width: 75px;
-  padding-left: 0 !important; /* Evita doble margen con la fecha */
-}
-
-/* La columna combinada toma el espacio que antes usaba el ícono suelto */
-.mat-column-detalle {
-  width: 45%;
-  white-space: normal !important;
-  word-wrap: break-word;
-  padding-right: 15px !important;
-}
-
-.mat-column-bodega {
-  width: 25%;
-  white-space: normal !important;
-  word-wrap: break-word;
-  padding-right: 15px !important;
-}
-
-.mat-column-cantidad {
-  width: 15%;
+/* DISTRIBUCIÓN EXACTA DE LAS 7 COLUMNAS (100% TOTAL) */
+.mat-column-sku {
+  width: 14%;
 }
 
 .mat-column-fecha {
+  width: 7%;
+}
+
+.mat-column-detalle {
+  width: 27%;
+  white-space: normal !important;
+  word-wrap: break-word;
+  padding-right: 10px !important;
+}
+
+.mat-column-bodega {
   width: 15%;
+  white-space: normal !important;
+  word-wrap: break-word;
+  padding-right: 10px !important;
+}
+
+.mat-column-marca-modelo {
+  width: 13%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-serie-inventario {
+  width: 15%;
+  white-space: normal !important;
+  word-wrap: break-word;
+}
+
+.mat-column-cantidad {
+  width: 9%;
 }

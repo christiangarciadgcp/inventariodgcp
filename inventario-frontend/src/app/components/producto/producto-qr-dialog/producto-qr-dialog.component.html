@@ -1,0 +1,62 @@
+<div class="custom-modal-container">
+
+  <!-- CABECERA INSTITUCIONAL -->
+  <div class="modal-header d-flex justify-content-between align-items-center p-3 text-white">
+    <div class="d-flex align-items-center gap-2">
+      <mat-icon style="font-size: 22px; width: 22px; height: 22px;">qr_code_2</mat-icon>
+      <h6 class="m-0 fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.9rem;">
+        Código QR del Producto
+      </h6>
+    </div>
+    <button mat-icon-button class="text-white" (click)="cerrar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="p-4 text-center">
+
+    <!-- IMAGEN QR -->
+    <div class="qr-card p-3 rounded-4 shadow-sm mx-auto mb-3 bg-white border">
+      @if (cargandoQr()) {
+        <div class="d-flex align-items-center justify-content-center" style="width: 230px; height: 230px;">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      } @else {
+        <img [src]="qrDataUrl()" alt="Código QR del Producto" class="img-fluid rounded-3" style="width: 230px; height: 230px;">
+      }
+
+    </div>
+
+    <div class="mt-2 text-center mb-2">
+        <span class="badge bg-dark-subtle text-dark font-monospace fw-bold px-3 py-1" style="font-size: 0.85rem; letter-spacing: 1px;">
+          {{ data.producto.skuproducto }}
+        </span>
+    </div>
+
+    <!-- FICHA TÉCNICA DEL PRODUCTO -->
+    <div class="info-box text-start p-3 rounded-3 bg-light border">
+      <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;">
+        {{ data.producto.nombreproducto }}
+      </div>
+
+      <div class="text-secondary small mb-2">
+        <strong>Marca/Modelo:</strong> {{ data.producto.modelo?.marca?.nombremarca || 'N/A' }} {{ data.producto.modelo?.nombremodelo || '' }}
+      </div>
+
+      <div class="d-flex flex-column border-top pt-1 text-secondary small">
+        <span><strong>Serie:</strong> {{ data.producto.serieproducto || 'S/N' }}</span>
+        <span><strong>Inv:</strong> {{ data.producto.inventarioproducto || 'S/I' }}</span>
+      </div>
+    </div>
+
+  </mat-dialog-content>
+
+  <!-- ACCIONES -->
+  <mat-dialog-actions align="end" class="modal-footer p-3 bg-light border-top m-0 d-flex justify-content-end">
+    <button mat-button class="btn-imprimir rounded-pill px-3" (click)="imprimirEtiqueta()">
+      <mat-icon class="me-1">print</mat-icon> Imprimir
+    </button>
+
+  </mat-dialog-actions>
+
+</div>

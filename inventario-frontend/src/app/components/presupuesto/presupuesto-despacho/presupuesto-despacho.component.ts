@@ -47,7 +47,7 @@ export class PresupuestoDespachoComponent implements OnInit {
 
   ngOnInit() {
     const rolActual = this.authService.getRolUsuario();
-    this.esEncargadoInventario.set(rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
+    this.esEncargadoInventario.set(rolActual === 'coordinador utdi' || rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');

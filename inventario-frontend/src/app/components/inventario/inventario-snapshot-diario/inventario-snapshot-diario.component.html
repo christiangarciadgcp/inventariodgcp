@@ -6,7 +6,7 @@
         <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
       </button>
       <div>
-        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Stock  Diario</h6>
+        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Stock Diario</h6>
         <h3 class="fw-bold m-0 text-dark">Cierres de Inventario (Snapshots)</h3>
       </div>
     </div>
@@ -116,7 +116,7 @@
           <th mat-header-cell *matHeaderCellDef class="ps-4"> SKU </th>
           <td mat-cell *matCellDef="let element" class="ps-4 py-2">
             <span class="badge-pill font-monospace" style="font-size: 0.8rem; letter-spacing: 1px;">
-                {{ element.producto.skuproducto }}
+              {{ element.producto?.skuproducto }}
             </span>
           </td>
         </ng-container>
@@ -140,6 +140,28 @@
           </td>
         </ng-container>
 
+        <!-- MARCA / MODELO -->
+        <ng-container matColumnDef="marca-modelo">
+          <th mat-header-cell *matHeaderCellDef class="text-center"> MARCA / MODELO </th>
+          <td mat-cell *matCellDef="let element" class="text-center py-2">
+            <div class="d-flex flex-column align-items-center justify-content-center">
+              <span class="fw-bold text-dark">{{ element.producto?.modelo?.marca?.nombremarca || 'SIN MARCA' }}</span>
+              <small class="text-secondary mt-1">{{ element.producto?.modelo?.nombremodelo || 'SIN MODELO' }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- SERIE / INVENTARIO -->
+        <ng-container matColumnDef="serie-inventario">
+          <th mat-header-cell *matHeaderCellDef class="text-center"> SERIE / INVENTARIO </th>
+          <td mat-cell *matCellDef="let element" class="text-center py-2 font-monospace">
+            @if (element.producto?.serieproducto || element.producto?.inventarioproducto) {
+              <span class="fw-bold text-dark d-block"> {{ element.producto?.serieproducto || 'S/N' }}</span>
+              <small class="text-secondary d-block mt-1"> {{ element.producto?.inventarioproducto || 'S/I' }}</small>
+            }
+          </td>
+        </ng-container>
+
         <!-- CANTIDAD -->
         <ng-container matColumnDef="cantidad">
           <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> CANTIDAD </th>
@@ -153,9 +175,9 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover-row"></tr>
 
-        <!-- ESTADO VACÍO / BÚSQUEDA -->
+        <!-- ESTADO VACÍO / BÚSQUEDA (colspan actualizado a 6) -->
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell text-center py-5" colspan="4">
+          <td class="mat-cell text-center py-5" colspan="6">
             <div class="d-flex flex-column align-items-center justify-content-center text-muted">
               <mat-icon style="font-size: 45px; width: 45px; height: 45px;" class="mb-2">manage_search</mat-icon>
               @if (textoBusqueda){
@@ -172,6 +194,7 @@
     }
 
     @if (snapshots().length > 0) {
-      <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons class="border-top"></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[25, 50, 100]" showFirstLastButtons class="border-top"></mat-paginator>
     }
   </mat-card>
+</div>

@@ -84,12 +84,13 @@
   overflow: visible !important;
 }
 
+
 .mat-column-acciones {
-  width: 200px;
-  min-width: 160px;
-  max-width: 200px;
+  width: 220px;
+  min-width: 200px;
+  max-width: 230px;
   text-align: center;
-  padding-right: 24px !important;
+  padding-right: 16px !important;
   overflow: visible !important;
 }
 
@@ -153,4 +154,22 @@
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+  padding: 6px 16px;
+  border-radius: 50px;
+  background-color: #f1f5f9;
+  border: 1px solid #b2b3b6;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.qr-icon {
+  color: #153863 !important;
+}
+
+.qr-icon:hover {
+  color: #031e3f !important;
+  background-color: rgba(21, 56, 99, 0.08) !important;
 }

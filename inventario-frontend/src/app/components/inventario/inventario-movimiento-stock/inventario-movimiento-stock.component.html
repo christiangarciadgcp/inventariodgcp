@@ -1,245 +1,269 @@
 <div class="container-wide px-4 mt-4 mb-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex align-items-center gap-3">
-            <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
-                <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
-            </button>
-            <div>
-                <h6 class="text-uppercase text-muted mb-0 ls-1" style="font-size: 0.75rem;">Gestión de Inventario</h6>
-                <h3 class="fw-bold m-0 text-dark">Movimiento entre Bodegas</h3>
-            </div>
-        </div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/dashboard">
+        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+      </button>
+      <div>
+        <h6 class="text-uppercase text-muted mb-0 ls-1" style="font-size: 0.75rem;">Gestión de Inventario</h6>
+        <h3 class="fw-bold m-0 text-dark">Movimiento entre Bodegas</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+    <div class="card-header-brand p-4 text-white d-flex align-items-center gap-3">
+      <div class="icon-circle bg-white-20">
+        <mat-icon>swap_horiz</mat-icon>
+      </div>
+      <div>
+        <h5 class="m-0 fw-bold">Nuevo Movimiento</h5>
+        <small class="opacity-75">Mover existencias de una ubicación a otra</small>
+      </div>
     </div>
 
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="card-body p-4 bg-white">
 
-        <div class="card-header-brand p-4 text-white d-flex align-items-center gap-3">
-            <div class="icon-circle bg-white-20">
-                <mat-icon>swap_horiz</mat-icon>
+      <form [formGroup]="form">
+        <h6 class="text-muted fw-bold mb-3 small text-uppercase ls-1">Ubicaciones</h6>
+
+        <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+          <div class="row g-4 align-items-center mb-2">
+
+            <div class="col-md-5">
+              <label class="form-label text-muted small fw-bold ms-1">Bodega de Origen (Salida)</label>
+              <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable" subscriptSizing="dynamic">
+                <mat-label>Bodegas</mat-label>
+                <mat-select formControlName="bodegaOrigen" placeholder="Seleccione origen">
+                  @for (b of listaBodegas(); track b.idBodega) {
+                    <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
+                  }
+                </mat-select>
+                <mat-icon matSuffix class="text-secondary">outbound</mat-icon>
+              </mat-form-field>
+              @if (form.get('bodegaOrigen')?.hasError('required') && form.get('bodegaOrigen')?.touched) {
+                <mat-error class="small ms-2 mt-1">Debe seleccionar una bodega de Origen</mat-error>
+              }
             </div>
-            <div>
-                <h5 class="m-0 fw-bold">Nuevo Movimiento</h5>
-                <small class="opacity-75">Mover existencias de una ubicación a otra</small>
+
+            <div class="col-md-2 text-center d-none d-md-block pt-3">
+              <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
+                   style="width: 40px; height: 40px;">
+                <mat-icon class="text-muted">arrow_forward</mat-icon>
+              </div>
             </div>
+
+            <div class="col-md-5">
+              <label class="form-label text-muted small fw-bold ms-1">Bodega de Destino (Entrada)</label>
+              <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable" subscriptSizing="dynamic">
+                <mat-label>Bodegas</mat-label>
+                <mat-select formControlName="bodegaDestino" placeholder="Seleccione destino">
+                  @for (b of listaBodegas(); track b.idBodega) {
+                    <mat-option [value]="b.idBodega" [disabled]="b.idBodega === form.value.bodegaOrigen">
+                      {{ b.nombrebodega }}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-icon matSuffix class="text-secondary">inbox</mat-icon>
+              </mat-form-field>
+              @if (form.get('bodegaDestino')?.hasError('required') && form.get('bodegaDestino')?.touched) {
+                <mat-error class="small ms-2 mt-1">Debe seleccionar una bodega de Destino</mat-error>
+              }
+            </div>
+
+            <div class="col-md-12 mt-2">
+              <label class="form-label text-muted small fw-bold ms-1">Motivo del Movimiento</label>
+              <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+                <mat-label>Motivo</mat-label>
+                <textarea matInput formControlName="motivo" rows="2" placeholder="Ej. Reabastecimiento de bodega"></textarea>
+              </mat-form-field>
+              @if (form.get('motivo')?.hasError('required') && form.get('motivo')?.touched) {
+                <mat-error class="small ms-2 mt-1">Ingrese un motivo</mat-error>
+              }
+            </div>
+
+          </div>
         </div>
 
-        <div class="card-body p-4 bg-white">
+        <mat-divider class="my-4"></mat-divider>
 
-            <form [formGroup]="form">
-                <h6 class="text-muted fw-bold mb-3 small text-uppercase ls-1">Ubicaciones</h6>
+        <h6 class="text-muted fw-bold mb-3 small text-uppercase ls-1">DETALLE DEL MOVIMIENTO</h6>
 
-                <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+        <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
+          <div class="row g-3">
 
-                    <div class="row g-4 align-items-center mb-2">
-                        <div class="col-md-5">
-                            <label class="form-label text-muted small fw-bold ms-1">Bodega de Origen (Salida)</label>
-                            <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable" subscriptSizing="dynamic">
-                                <mat-label>Bodegas</mat-label>
-                                <mat-select formControlName="bodegaOrigen" placeholder="Seleccione origen">
-                                    @for (b of listaBodegas(); track b.idBodega) {
-                                        <mat-option [value]="b.idBodega">{{ b.nombrebodega }}</mat-option>
-                                    }
-                                </mat-select>
-                                <mat-icon matSuffix class="text-secondary">outbound</mat-icon>
-                            </mat-form-field>
-                          @if (form.get('bodegaOrigen')?.hasError('required') && form.get('bodegaOrigen')?.touched) {
-                            <mat-error class="small ms-2 mt-1">Debe seleccionar una bodega de Origen</mat-error>
+            <div class="col-md-6">
+              <label class="form-label text-dark small fw-bold ms-1">Producto</label>
+              <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+                <mat-label>Buscar producto en bodega...</mat-label>
+
+                <input type="text"
+                       matInput
+                       [(ngModel)]="busquedaTexto"
+                       [ngModelOptions]="{standalone: true}"
+                       (input)="filtrar($event)"
+                       [matAutocomplete]="auto"
+                       [disabled]="!form.get('bodegaOrigen')?.value"
+                       placeholder="Escriba nombre, serie, inventario o modelo...">
+
+                <mat-autocomplete #auto="matAutocomplete"
+                                  [displayWith]="displayFn"
+                                  (optionSelected)="seleccionarProducto($event)">
+                  @for (item of productosFiltrados(); track item.producto.idProducto) {
+                    <mat-option [value]="item">
+                      <div class="d-flex justify-content-between w-100 align-items-center">
+                        <div class="text-truncate me-2">
+                          <span class="text-dark fw-bold">{{ item.producto.nombreproducto }}</span>
+                          <small class="text-muted ms-2">[{{ item.producto.skuproducto }}]</small>
+                          @if (item.producto.serieproducto || item.producto.inventarioproducto) {
+                            <small class="text-secondary fst-italic ms-2">
+                              (Serie: {{ item.producto.serieproducto || 'S/N' }} - Inv: {{ item.producto.inventarioproducto || 'S/I' }})
+                            </small>
                           }
                         </div>
+                        <span class="badge bg-dark text-white border ms-2">Stock: {{ item.cantidad_actual }}</span>
+                      </div>
+                    </mat-option>
+                  }
 
-                        <div class="col-md-2 text-center d-none d-md-block pt-3">
-                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
-                                style="width: 40px; height: 40px;">
-                                <mat-icon class="text-muted">arrow_forward</mat-icon>
-                            </div>
-                        </div>
+                  @if (productosFiltrados().length === 0) {
+                    <mat-option disabled>No hay productos / Sin stock</mat-option>
+                  }
+                </mat-autocomplete>
 
-                        <div class="col-md-5">
-                            <label class="form-label text-muted small fw-bold ms-1">Bodega de Destino (Entrada)</label>
-                            <mat-form-field appearance="outline" class="w-100 custom-input density-comfortable" subscriptSizing="dynamic">
-                                <mat-label>Bodegas</mat-label>
-                                <mat-select formControlName="bodegaDestino" placeholder="Seleccione destino">
-                                    @for (b of listaBodegas(); track b.idBodega) {
-                                        <mat-option [value]="b.idBodega" [disabled]="b.idBodega === form.value.bodegaOrigen">
-                                            {{ b.nombrebodega }}
-                                        </mat-option>
-                                    }
-                                </mat-select>
-                                <mat-icon matSuffix class="text-secondary">inbox</mat-icon>
-                            </mat-form-field>
-                          @if (form.get('bodegaDestino')?.hasError('required') && form.get('bodegaDestino')?.touched) {
-                            <mat-error class="small ms-2 mt-1">Debe seleccionar una bodega de Destino</mat-error>
-                          }
-                        </div>
+                @if (busquedaTexto) {
+                  <button matSuffix mat-icon-button aria-label="Limpiar" (click)="limpiarInputsProducto()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
 
-                        <div class="col-md-12 mt-2">
-                            <label class="form-label text-muted small fw-bold ms-1">Motivo del Movimiento</label>
-                            <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
-                                <mat-label>Motivo</mat-label>
-                                <textarea matInput formControlName="motivo" rows="2"
-                                    placeholder="Ej. Reabastecimiento de bodega">
-                                </textarea>
-                            </mat-form-field>
-                          @if (form.get('motivo')?.hasError('required') && form.get('motivo')?.touched) {
-                            <mat-error class="small ms-2 mt-1">Ingrese un motivo</mat-error>
-                          }
-                        </div>
-                    </div>
+                <mat-icon matSuffix class="text-primary icon-small">search</mat-icon>
+              </mat-form-field>
+
+              @if (!form.value.bodegaOrigen) {
+                <div class="text-muted small">
+                  <mat-icon class="icon-tiny align-middle me-1">info</mat-icon>
+                  Seleccione la Bodega de Origen
                 </div>
+              }
+            </div>
 
-                <mat-divider class="my-4"></mat-divider>
+            <div class="col-md-2">
+              <label class="form-label text-dark small fw-bold ms-1 text-center w-100">Disponible</label>
+              <div class="form-control-plaintext text-center border rounded bg-white fw-bold text-dark" style="height: 55px; line-height: 45px;">
+                {{ stockDisponible }}
+              </div>
+            </div>
 
-                <h6 class="text-muted fw-bold mb-3 small text-uppercase ls-1">DETALLE DEL MOVIMIENTO</h6>
+            <!-- INPUT DE CANTIDAD CON CERO POR DEFECTO Y AUTO-SELECCIÓN -->
+            <div class="col-md-2">
+              <label class="form-label text-dark small fw-bold ms-1">Cantidad</label>
+              <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+                <input matInput
+                       type="number"
+                       formControlName="cantidad"
+                       min="1"
+                       [max]="stockDisponible"
+                       (keypress)="sn.soloNumeros($event)"
+                       (focus)="$any($event.target).select()">
+              </mat-form-field>
 
-                <div class="add-bar-container p-4 rounded-3 mb-4 border border-dashed">
-                    <div class="row g-3">
+            </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label text-muted small fw-bold ms-1">Producto</label>
-                            <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
+            <!-- BOTÓN AGREGAR SIEMPRE ACTIVO -->
+            <div class="col-md-2 mt-5">
+              <button type="button" class="btn-add-custom w-100" (click)="agregarProductoALista()">
+                <mat-icon class="me-2 icon-small">add_circle</mat-icon> Agregar
+              </button>
+            </div>
 
-                                <mat-label>Buscar producto en bodega...</mat-label>
-
-                                <input type="text"
-                                        matInput
-                                        [(ngModel)]="busquedaTexto"
-                                        [ngModelOptions]="{standalone: true}"
-                                        (input)="filtrar($event)"
-                                        [matAutocomplete]="auto"
-                                        [disabled]="!form.get('bodegaOrigen')?.value"
-                                        placeholder="Escriba nombre o código">
-
-                                <mat-autocomplete #auto="matAutocomplete"
-                                                  [displayWith]="displayFn"
-                                                  (optionSelected)="seleccionarProducto($event)">
-
-                                    @for (item of productosFiltrados(); track item.producto.idProducto) {
-                                        <mat-option [value]="item">
-                                            <div class="d-flex justify-content-between w-100 align-items-center">
-                                                <div>
-                                                    <span class="text-muted">{{ item.producto.nombreproducto }}</span>
-                                                    <small class="fw-bold ms-2">{{ item.producto.skuproducto }}</small>
-                                                </div>
-                                                <span class="badge bg-dark text-white border ms-2">Stock: {{ item.cantidad_actual }}</span>
-                                            </div>
-                                        </mat-option>
-                                    }
-
-                                    @if (productosFiltrados().length === 0) {
-                                        <mat-option disabled>No hay productos / Sin stock</mat-option>
-                                    }
-
-                                </mat-autocomplete>
-
-                                @if (busquedaTexto) {
-                                    <button matSuffix mat-icon-button aria-label="Limpiar" (click)="limpiarInputsProducto()">
-                                        <mat-icon>close</mat-icon>
-                                    </button>
-                                }
-
-                                <mat-icon matSuffix class="text-primary icon-small">search</mat-icon>
-
-                            </mat-form-field>
-
-                            @if (!form.value.bodegaOrigen) {
-                                <div class="text-muted small">
-                                    <mat-icon class="icon-tiny align-middle me-1">info</mat-icon>
-                                    Seleccione la Bodega de Origen
-                                </div>
-                                }
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label text-muted small fw-bold ms-1 w-100">Disponible</label>
-                            <div class="form-control-plaintext text-center border rounded bg-white fw-bold text-dark" style="height: 55px; line-height: 45px;">
-                                {{ stockDisponible }}
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label text-muted small fw-bold ms-1">Cantidad</label>
-                            <mat-form-field appearance="outline" class="w-100 custom-input" subscriptSizing="dynamic">
-                                <input matInput type="number" formControlName="cantidad" min="1" (keypress)="sn.soloNumeros($event)">
-                            </mat-form-field>
-                            @if (form.get('cantidad')?.hasError('max')) {
-                                <mat-error class="small mt-1">Excede la cantidad para movimiento</mat-error>
-                                }
-                        </div>
-
-                        <div class="col-md-2 mt-5">
-                            <button type="button" class="btn-add-custom w-100"
-                                    (click)="agregarProductoALista()"
-                                    [disabled]="!productoSeleccionado || !form.value.cantidad || form.get('cantidad')?.invalid">
-                                <mat-icon class="me-2 icon-small">add_circle</mat-icon> Agregar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="table-container border rounded-3 overflow-hidden mb-4">
-                    <table mat-table [dataSource]="productosDetalle()" class="w-100 table-hover">
-
-                        <ng-container matColumnDef="producto">
-                            <th mat-header-cell *matHeaderCellDef class="bg-light ps-4 py-3 text-secondary text-uppercase small fw-bold">PRODUCTO A MOVER</th>
-                            <td mat-cell *matCellDef="let element" class="ps-4">
-                                <div class="d-flex align-items-center gap-3 py-2">
-                                    <div class="avatar-item">
-                                        {{ element.producto.nombreproducto.charAt(0) }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
-                                        <div class="small text-muted">{{ element.producto.skuproducto || 'GEN' }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="cantidad">
-                            <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-secondary text-uppercase small fw-bold">CANTIDAD</th>
-                            <td mat-cell *matCellDef="let element" class="text-center">
-                                <span class="badge-pill-qty">{{ element.cantidad }}</span>
-                            </td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="acciones">
-                            <th mat-header-cell *matHeaderCellDef class="bg-light text-center"></th>
-                            <td mat-cell *matCellDef="let element; let i = index" class="text-center">
-                                <button mat-icon-button color="warn" class="btn-sm hover-danger" (click)="eliminarDetalle(i)">
-                                    <mat-icon>delete_outline</mat-icon>
-                                </button>
-                            </td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-                        <tr class="mat-row" *matNoDataRow>
-                            <td class="mat-cell text-center py-5 text-muted" colspan="3">
-                                <mat-icon class="mb-2 opacity-50" style="font-size: 32px; width: 32px; height: 32px;">playlist_add</mat-icon>
-                                <p class="m-0 small">No hay productos para Movimiento</p>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="d-flex justify-content-end pt-2 border-top">
-
-<!--                  <button mat-raised-button class="btn-guardar px-5 py-2 rounded-pill"
-                          (click)="guardarMovimientoStock()"
-                          [disabled]="productosDetalle().length === 0 || form.get('bodegaOrigen')?.invalid || form.get('bodegaDestino')?.invalid || form.get('motivo')?.invalid">
-                    <mat-icon class="me-2">check_circle</mat-icon>
-                    CONFIRMAR MOVIMIENTO
-                  </button> -->
-
-
-                    <button mat-raised-button class="btn-guardar px-5 py-2 rounded-pill"
-                            (click)="guardarMovimientoStock()">
-                        <mat-icon class="me-2">check_circle</mat-icon> CONFIRMAR MOVIMIENTO
-                    </button>
-                </div>
-
-            </form>
+          </div>
         </div>
+
+        <!-- TABLA DE PRODUCTOS AGREGADOS -->
+        <div class="table-container border rounded-3 overflow-hidden mb-4">
+          <table mat-table [dataSource]="detallesAgregados()" class="w-100 table-hover">
+
+            <!-- PRODUCTO -->
+            <ng-container matColumnDef="producto">
+              <th mat-header-cell *matHeaderCellDef class="bg-light ps-4 py-3 text-dark text-uppercase small fw-bold">PRODUCTO</th>
+              <td mat-cell *matCellDef="let element" class="ps-4">
+                <div class="d-flex align-items-center gap-3 py-2">
+                  <div class="avatar-item">
+                    {{ element.producto.nombreproducto.charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
+                    <div class="small text-muted font-monospace">{{ element.producto.skuproducto || 'GEN' }}</div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- MARCA / MODELO -->
+            <ng-container matColumnDef="marca-modelo">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-dark text-uppercase small fw-bold">MARCA / MODELO</th>
+              <td mat-cell *matCellDef="let element" class="text-center py-2">
+                <div class="d-flex flex-column align-items-center justify-content-center">
+                  <span class="fw-bold text-dark">{{ element.producto.modelo?.marca?.nombremarca || 'SIN MARCA' }}</span>
+                  <small class="text-secondary">{{ element.producto.modelo?.nombremodelo || 'SIN MODELO' }}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- SERIE / INVENTARIO -->
+            <ng-container matColumnDef="serie-inventario">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-dark text-uppercase small fw-bold">SERIE / INVENTARIO</th>
+              <td mat-cell *matCellDef="let element" class="text-center py-2 font-monospace">
+                @if (element.producto.serieproducto || element.producto.inventarioproducto) {
+                  <span class="fw-bold text-dark d-block">Serie: {{ element.producto.serieproducto || 'S/N' }}</span>
+                  <small class="text-secondary d-block">Inv: {{ element.producto.inventarioproducto || 'S/I' }}</small>
+                } @else {
+                  <span class="text-muted small">S/N - S/I</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- CANTIDAD -->
+            <ng-container matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-dark text-uppercase small fw-bold">CANTIDAD</th>
+              <td mat-cell *matCellDef="let element" class="text-center">
+                <span class="badge-pill-qty">{{ element.cantidad }}</span>
+              </td>
+            </ng-container>
+
+            <!-- ACCIONES -->
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-center"></th>
+              <td mat-cell *matCellDef="let element; let i = index" class="text-center">
+                <button mat-icon-button color="warn" class="btn-sm hover-danger" (click)="eliminarDetalle(i)" matTooltip="Quitar de la lista">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell text-center py-5 text-muted" colspan="5">
+                <mat-icon class="mb-2 opacity-50" style="font-size: 32px; width: 32px; height: 32px;">playlist_remove</mat-icon>
+                <p class="m-0 small">No hay materiales agregados para transferir.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-end pt-2 border-top">
+          <button mat-raised-button class="btn-guardar px-5 py-2 rounded-pill"
+                  (click)="guardarTransferencia()">
+            <mat-icon class="me-2">check_circle</mat-icon> REALIZAR MOVIMIENTO
+          </button>
+        </div>
+
+      </form>
     </div>
+  </div>
 </div>

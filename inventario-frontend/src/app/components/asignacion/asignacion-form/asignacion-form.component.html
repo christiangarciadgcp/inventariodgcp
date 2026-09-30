@@ -1,0 +1,189 @@
+<div class="container-wide px-4 mt-4 mb-5">
+
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <button mat-icon-button class="bg-white shadow-sm text-secondary" routerLink="/asignaciones">
+      <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+    </button>
+
+    <div>
+      <h6 class="text-uppercase text-muted mb-0" style="font-size: 0.75rem; letter-spacing: 1px;">Gestión de Asignaciones</h6>
+      <h3 class="fw-bold m-0 text-dark">
+        {{ esEdicion() ? 'Editar Asignación (Acta N° ' + numeroActa() + ')' : 'Nueva Asignación de Equipos' }}
+      </h3>
+    </div>
+  </div>
+
+  <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+    <div class="header-brand p-4 text-white d-flex align-items-center gap-3">
+      <div class="icon-circle bg-white-20">
+        <mat-icon>assignment_add</mat-icon>
+      </div>
+      <div>
+        <h5 class="m-0 fw-bold">Registro de Asignación</h5>
+        <small class="opacity-75">El acta se generará correlativamente y se descargará del inventario tras la aprobación de Jefatura</small>
+      </div>
+    </div>
+
+    <div class="card-body p-4 bg-white">
+      <form [formGroup]="form">
+        <h6 class="text-muted fw-bold mb-3 small text-uppercase" style="letter-spacing: 1px;">Datos de Destino</h6>
+
+        <div class="p-4 rounded-3 mb-4 border border-dashed bg-light">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-muted">Tipo de Movimiento *</label>
+              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                <mat-label>Seleccione Tipo</mat-label>
+                <mat-select formControlName="idAsignacionTipo">
+                  @for (t of tiposAsignacion(); track t.idAsignacionTipo) {
+                    <mat-option [value]="t.idAsignacionTipo">{{ t.nombre }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              @if (form.get('idAsignacionTipo')?.touched && form.get('idAsignacionTipo')?.hasError('required')) {
+                <small class="text-danger">El tipo es obligatorio</small>
+              }
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label small fw-bold text-muted">Responsable / Destino (Persona, Departamento, Edificio) *</label>
+              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                <input matInput formControlName="responsableDestino" placeholder="Ej. Christian Ordoñez">
+              </mat-form-field>
+              @if (form.get('responsableDestino')?.touched && form.get('responsableDestino')?.hasError('required')) {
+                <small class="text-danger">El responsable/destino es obligatorio</small>
+              }
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small fw-bold text-muted">Observaciones Generales</label>
+              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                <textarea matInput formControlName="observaciones" rows="2" placeholder="Detalles sobre las condiciones de entrega o justificación"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="text-muted fw-bold mb-3 small text-uppercase" style="letter-spacing: 1px;">Búsqueda de Equipos Físicos</h6>
+
+        <div class="p-4 rounded-3 mb-4 border border-dashed bg-white">
+          <label class="form-label small fw-bold text-muted">Buscar por Nombre, N° de Serie, N° de Inventario o SKU</label>
+          <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+            <mat-icon matPrefix class="text-primary me-2">search</mat-icon>
+            <input type="text"
+                   matInput
+                   [formControl]="filtroCtrl"
+                   [matAutocomplete]="auto"
+                   placeholder="Escriba para buscar..."
+                   (focus)="actualizarEquiposSilencioso()">
+
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarProducto($event)">
+              @if (cargandoEquipos) {
+                <mat-option disabled class="text-center">
+                  <div class="d-flex align-items-center justify-content-center text-muted py-2" style="height: 100%;">
+                    <mat-spinner diameter="20" strokeWidth="2" class="me-3"></mat-spinner>
+                    <span class="fst-italic">Cargando Catálogo de Equipos...</span>
+                  </div>
+                </mat-option>
+              } @else {
+                @for (item of (itemsFiltrados | async) ?? []; track item.producto.idProducto) {
+                  <mat-option [value]="item">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                      <div>
+                        <span class="fw-bold text-dark">{{ item.producto.nombreproducto }}</span>
+                        <small class="text-muted ms-2">[Serie: {{ item.producto.serieproducto || 'S/N' }}] - [Inv: {{ item.producto.inventarioproducto || 'S/I' }}]</small>
+                      </div>
+                      <span class="badge bg-light text-dark border ms-2">Bodega: {{ item.bodega.nombrebodega }}</span>
+                    </div>
+                  </mat-option>
+                }
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <div class="border rounded-3 overflow-hidden mb-4">
+          <table mat-table [dataSource]="itemsSeleccionados()" class="w-100">
+
+            <ng-container matColumnDef="producto">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-3"> EQUIPO </th>
+              <td mat-cell *matCellDef="let element" class="ps-4">
+                <div class="d-flex align-items-center gap-3 py-2">
+                  <div class="avatar-item">
+                    {{ element.producto.nombreproducto.charAt(0) }}
+                  </div>
+                  <div>
+                    <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
+                    <!--PARA QUE APAREZCA EL SKU DEL PRODUCTO-->
+                    <!--<div class="small text-muted">{{ element.producto.skuproducto || 'GEN-001' }}</div>-->
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="marca">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold"> MARCA </th>
+              <td mat-cell *matCellDef="let element" class="py-2">
+                {{ element.producto.modelo?.marca?.nombremarca || 'N/A' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="modelo">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold"> MODELO </th>
+              <td mat-cell *matCellDef="let element" class="py-2">
+                {{ element.producto.modelo?.nombremodelo || 'N/A' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="serie">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold"> SERIE </th>
+              <td mat-cell *matCellDef="let element" class="py-2 font-monospace">
+                {{ element.producto.serieproducto || 'S/N' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="inventario">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold"> INVENTARIO </th>
+              <td mat-cell *matCellDef="let element" class="py-2 font-monospace">
+                {{ element.producto.inventarioproducto || 'S/I' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="bodega">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold"> BODEGA DE SALIDA </th>
+              <td mat-cell *matCellDef="let element" class="py-2">
+                <span class="badge-pill bg-light text-info-emphasis ">{{ element.bodega.nombrebodega }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef class="bg-light text-center text-dark fw-bold">ACCIONES</th>
+              <td mat-cell *matCellDef="let element; let i = index" class="text-center py-2">
+                <button mat-icon-button class="btn-sm opacity-75 hover-opacity-100 action-btn delete" (click)="eliminarItem(i)">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell text-center py-5 text-muted" colspan="7">
+                <mat-icon style="font-size: 32px; width: 32px; height: 32px;" class="mb-2 opacity-50">devices</mat-icon>
+                <p class="m-0 small">No ha seleccionado ningún equipo para esta asignación.</p>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+          <button mat-raised-button class="btn-confirm px-5 py-2 rounded-pill text-white" (click)="guardar()" [disabled]="guardando()">
+            <mat-icon class="me-2">{{ esEdicion() ? 'save' : 'check_circle' }}</mat-icon>
+            {{ guardando() ? 'GUARDANDO...' : (esEdicion() ? 'GUARDAR CAMBIOS' : 'REGISTRAR ASIGNACIÓN') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

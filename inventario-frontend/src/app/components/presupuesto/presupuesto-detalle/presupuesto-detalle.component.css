@@ -1,74 +1,105 @@
+/* --- CONTENEDOR PRINCIPAL DEL MODAL --- */
+.custom-modal-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* --- ÚNICO SCROLL DEL MODAL (CORRIGE LA DOBLE BARRA Y LA POSICIÓN) --- */
+.dialog-content-scroll {
+  max-height: calc(90vh - 160px);
+  overflow-y: auto !important;
+  margin: 0 !important; /* Elimina el margen negativo (-24px) de Material que sacaba la barra */
+  padding-bottom: 2rem !important;
+}
+
+/* Estilo elegante para la barra de scroll */
+.dialog-content-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.dialog-content-scroll::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 4px;
+}
+.dialog-content-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.dialog-content-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* --- TABLA Y FILAS --- */
 .mat-mdc-header-row {
-    background-color: #ffffff;
-    border-bottom: 2px solid #f1f3f5;
-    height: 50px;
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #e9ecef !important;
+  height: 46px !important;
 }
 
 .mat-mdc-header-cell {
-    color: #8898aa;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  color: #212529 !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .hover-row:hover {
-    background-color: #f8faff !important;
+  background-color: #f8faff !important;
+  transform: translateY(-1px);
 }
 
 .mat-mdc-row {
-    height: 50px;
-    transition: all 0.2s ease-in-out;
+  height: 50px;
+  transition: all 0.2s ease-in-out;
 }
 
 .mat-mdc-cell {
-    font-size: 0.9rem;
-    color: #344767;
-    font-weight: 500;
-    border-bottom: 1px solid #ebebeb !important;
+  font-size: 0.9rem;
+  color: #344767;
+  font-weight: 500;
+  border-bottom: 1px solid #ebebeb !important;
 }
 
-.btn-confirmar {
-    background: linear-gradient(#031e3f 0%, #153863 100%);
-    box-shadow: 0 4px 10px rgba(63, 81, 181, 0.3);
-    border: none;
-    height: 45px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
+.badge-pill {
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  border-radius: 15px;
+  background-color: #f1f5f9;
+  border: 1px solid #b2b3b6;
+  color: #1e293b;
+  font-weight: 700;
+  display: inline-block;
 }
 
-/* Efecto Hover */
-.btn-confirmar:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    filter: brightness(105%);
-}
-
+/* --- BADGES DE ESTADO (CABECERA) --- */
 .badge-soft {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid transparent;
 }
 
 .status-pendiente {
-    background-color: #fff8dd;
-    color: #d6a800;
-    border-color: #ffedb8;
+  background-color: #fff8dd;
+  color: #d6a800;
+  border-color: #ffedb8;
 }
 
 .status-aprobada {
-    background-color: #e8fff3;
-    color: #19cb69;
-    border-color: #d1fbe4;
+  background-color: #e8fff3;
+  color: #19cb69;
+  border-color: #d1fbe4;
 }
 
 .status-despachado {
-    background-color: #e1f0ff;
-    color: #009ef7;
-    border-color: #cce9ff;
+  background-color: #e1f0ff;
+  color: #009ef7;
+  border-color: #cce9ff;
 }
 
 .status-recepcion-parcial {
@@ -78,88 +109,31 @@
 }
 
 .status-rechazada {
-    background-color: #fff5f8;
-    color: #f1416c;
-    border-color: #ffe1e9;
+  background-color: #fff5f8;
+  color: #f1416c;
+  border-color: #ffe1e9;
 }
 
+/* --- BOTÓN CERRAR --- */
 .btn-cancelar {
-    background: #ffffff;
-    color: #f72828;
-    border: 1px solid #d3d3d3;
-    height: 45px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    box-shadow: none;
-}
-
-/* Efecto al pasar el mouse */
-.btn-cancelar:hover {
-    background-color: #f72828;
-    /* border-color: #000000; */
-    color: #ffffff;
-}
-
-/* --- LÍNEA DE TIEMPO (TIMELINE) --- */
-.timeline-item {
-  position: relative;
-}
-
-.timeline-item:last-child .timeline-connector {
-  display: none;
-}
-
-.timeline-line {
-  width: 20px;
-  padding-top: 10px;
-}
-
-.timeline-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  z-index: 2;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8);
-}
-
-.timeline-connector {
-  width: 2px;
-  background-color: #e2e8f0 !important;
-}
-
-.badge-accion {
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  background: #ffffff;
+  color: #f72828;
+  border: 1px solid #d3d3d3;
+  height: 40px;
+  font-weight: 500;
   letter-spacing: 0.5px;
+  box-shadow: none;
+  border-radius: 50px;
+  padding: 0 24px;
+  transition: all 0.2s ease;
 }
 
-.bg-creacion-subtle { background-color: #91e47e; }
-.text-creacion { color: #ffffff !important; }
+.btn-cancelar:hover {
+  background-color: #f72828;
+  color: #ffffff;
+}
 
-.bg-warning-subtle { background-color: #fff8dd; }
-.text-warning { color: #d6a800 !important; }
-
-.bg-info-subtle { background-color: #e1f0ff; }
-.text-info { color: #009ef7 !important; }
-
-.bg-success-subtle { background-color: #e8fff3; }
-.text-success { color: #19cb69 !important; }
-
-.bg-danger-subtle { background-color: #fff5f8; }
-.text-danger { color: #f1416c !important; }
-
-.bg-parcial-subtle {background-color: #fef1ed;}
-.text-parcial {color: #f36739 !important;}
-
-.bg-parcial {background-color: #f36739 !important;}
-.bg-creacion { background-color: #91e47e !important;}
-.bg-reactivacion-subtle{ background-color: rgb(57 243 72 / 0.64) !important;}
-
-.text-custom { color: #9b9797 !important; }
-
+/* --- LÍNEA DE TIEMPO HORIZONTAL --- */
 .border-dashed {
   border: 1px dashed #cbd5e1 !important;
 }
@@ -170,7 +144,6 @@
   padding-bottom: 5px;
 }
 
-/* Scrollbar minimalista para poder deslizar si hay muchos pasos */
 .horizontal-timeline-wrapper::-webkit-scrollbar {
   height: 6px;
 }
@@ -185,10 +158,10 @@
 
 .horizontal-timeline-step {
   position: relative;
-  flex: 0 0 auto; /* Evita que los pasos se encojan y aplasten */
+  flex: 0 0 auto;
+  width: 175px !important;
 }
 
-/* Círculo central interactivo */
 .step-dot {
   width: 48px;
   height: 48px;
@@ -198,16 +171,14 @@
   transition: transform 0.2s ease-in-out, box-shadow 0.2s;
 }
 
-/* Efecto al pasar el mouse por encima del paso */
 .horizontal-timeline-step:hover .step-dot {
   transform: scale(1.15);
-  box-shadow: 0 10px 15px rgba(0,0,0,0.15) !important;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15) !important;
 }
 
-/* Línea base conectora horizontal */
 .step-connector {
   position: absolute;
-  top: 22px; /* Centrado respecto a la altura del dot de 48px */
+  top: 22px;
   left: 50%;
   width: 100%;
   height: 4px;
@@ -215,36 +186,66 @@
   opacity: 0.6;
 }
 
-/* Flecha apuntando al siguiente paso integrada a la línea */
 .step-connector::after {
   content: '';
   position: absolute;
   right: -6px;
-  top: -4px; /* Centrar la flecha con la línea base */
+  top: -4px;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
 }
 
-/* --- COLORES DEFINIDOS PARA CÍRCULOS Y LÍNEAS CONECTIVAS --- */
+.badge-accion {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+  white-space: nowrap !important;
+}
 
-.tl-creacion { background-color: #91e47e !important; }
-.tl-creacion::after { border-left: 8px solid #91e47e; }
+/* Colores de badges de acción */
+.bg-creacion-subtle { background-color: #e8edf5 !important; border-color: #c7d7eb !important; }
+.text-creacion { color: #153863 !important; }
 
-.tl-edicion { background-color: #ffbf00 !important; }
-.tl-edicion::after { border-left: 8px solid #ffbf00; }
+.bg-warning-subtle { background-color: #fff8dd !important; border-color: #fde68a !important; }
+.text-warning { color: #d97706 !important; }
 
-.tl-recepcion { background-color: #009ef7 !important; }
-.tl-recepcion::after { border-left: 8px solid #009ef7; }
+.bg-success-subtle { background-color: #e8fff3 !important; border-color: #bbf7d0 !important; }
+.text-success { color: #16a34a !important; }
 
-.tl-aprobacion { background-color: #19cb69 !important; }
-.tl-aprobacion::after { border-left: 8px solid #19cb69; }
+.bg-parcial-subtle { background-color: #fef1ed !important; border-color: #fed7aa !important; }
+.text-parcial { color: #ea580c !important; }
 
-.tl-parcial { background-color: #f36739 !important; }
-.tl-parcial::after { border-left: 8px solid #f36739; }
+.bg-info-subtle { background-color: #e1f0ff !important; border-color: #bae6fd !important; }
+.text-info { color: #0284c7 !important; }
 
-.tl-reactivacion { background-color: #39f348 !important; }
-.tl-reactivacion::after { border-left: 8px solid #39f348; }
+.bg-reactivacion-subtle { background-color: #ecfdf5 !important; border-color: #a7f3d0 !important; }
+.text-reactivacion { color: #059669 !important; }
 
-.tl-cancelacion { background-color: rgb(214 0 0) !important; }
-.tl-cancelacion::after { border-left: 8px solid rgb(214 0 0); }
+.bg-danger-subtle { background-color: #fff5f8 !important; border-color: #fecaca !important; }
+.text-danger { color: #dc2626 !important; }
 
+/* Colores de conectores y esferas */
+.tl-creacion { background-color: #153863 !important; }
+.tl-creacion::after { border-left: 8px solid #153863 !important; }
+
+.tl-edicion { background-color: #d97706 !important; }
+.tl-edicion::after { border-left: 8px solid #d97706 !important; }
+
+.tl-aprobacion { background-color: #16a34a !important; }
+.tl-aprobacion::after { border-left: 8px solid #16a34a !important; }
+
+.tl-parcial { background-color: #ea580c !important; }
+.tl-parcial::after { border-left: 8px solid #ea580c !important; }
+
+.tl-recepcion { background-color: #0284c7 !important; }
+.tl-recepcion::after { border-left: 8px solid #0284c7 !important; }
+
+.tl-reactivacion { background-color: #059669 !important; }
+.tl-reactivacion::after { border-left: 8px solid #059669 !important; }
+
+.tl-cancelacion { background-color: #dc2626 !important; }
+.tl-cancelacion::after { border-left: 8px solid #dc2626 !important; }

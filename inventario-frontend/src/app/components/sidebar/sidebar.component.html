@@ -8,9 +8,9 @@
     <button mat-icon-button class="toggle-btn ms-auto" (click)="layoutService.toggleSidebar()">
       <mat-icon style="margin-bottom: 5px;">
         @if (layoutService.sidebarState() === 'EXPANDED') {
-          menu
-        } @else if (layoutService.sidebarState() === 'HOVER') {
           keyboard_double_arrow_left
+        } @else if (layoutService.sidebarState() === 'HOVER') {
+          touch_app
         } @else {
           keyboard_double_arrow_right
         }
@@ -42,6 +42,8 @@
           <div class="nav-divider"></div>
         }
       }
+
+
 
       <!-- CATÁLOGOS RUTA PRINCIPAL -->
       @if (permiso(rolesPermitidos.INVENTARIO2)) {
@@ -193,6 +195,26 @@
            [matTooltip]="!isExpanded ? 'Descargo' : ''" matTooltipPosition="right">
           <div class="nav-icon"><mat-icon>remove_circle_outline</mat-icon></div>
           @if (isExpanded) { <span class="nav-text">Descargo</span> }
+        </a>
+      }
+
+      @if (permiso(rolesPermitidos.INVENTARIO)) {
+        @if (isExpanded) {
+          <div class="nav-header">ASIGNACIONES</div>
+        } @else {
+          <div class="nav-divider"></div>
+        }
+
+        <a routerLink="/asignaciones" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Asignaciones' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>assignment_ind</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Asignaciones</span> }
+        </a>
+
+        <a routerLink="/asignaciones/trazabilidad" routerLinkActive="active" class="nav-link"
+           [matTooltip]="!isExpanded ? 'Historial Asignaciones' : ''" matTooltipPosition="right">
+          <div class="nav-icon"><mat-icon>history_edu</mat-icon></div>
+          @if (isExpanded) { <span class="nav-text">Historial Asignaciones</span> }
         </a>
       }
 

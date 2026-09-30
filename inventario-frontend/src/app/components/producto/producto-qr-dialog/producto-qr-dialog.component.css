@@ -1,0 +1,31 @@
+.modal-header {
+  background: linear-gradient(#031e3f 0%, #153863 100%);
+}
+
+.qr-card {
+  width: fit-content;
+  background: #ffffff;
+}
+
+.info-box {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+.btn-imprimir {
+  color: #153863;
+  font-weight: 600;
+}
+
+.btn-cancelar {
+  background: #ffffff;
+  color: #f72828;
+  border: 1px solid #d3d3d3;
+  height: 38px;
+  font-weight: 500;
+}
+
+.btn-cancelar:hover {
+  background-color: #f72828;
+  color: #ffffff;
+}

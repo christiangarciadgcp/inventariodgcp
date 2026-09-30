@@ -9,7 +9,7 @@ import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginatorIntl } from './core/custom-paginator';
 import { authInterceptor } from './interceptors/auth-interceptor';
 import { actividadInterceptor } from './interceptors/actividad-interceptor';
-import { provideHotToastConfig } from '@ngxpert/hot-toast';
+import { provideHotToastConfig } from '@ngneat/hot-toast';
 import {MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 
 export const appConfig: ApplicationConfig = {

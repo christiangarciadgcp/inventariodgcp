@@ -1,0 +1,22 @@
+.header-brand {
+  background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
+}
+
+.bg-white-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #031e3f 0%, #153863 100%);
+  box-shadow: 0 4px 15px rgba(3, 30, 63, 0.3);
+  font-size: 0.95rem;
+  height: 48px;
+}
+
+
