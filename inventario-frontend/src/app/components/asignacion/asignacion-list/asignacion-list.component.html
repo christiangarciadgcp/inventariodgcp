@@ -1,60 +1,60 @@
 <div class="container-wide px-5 mt-4">
 
-  <!-- CABECERA SUPERIOR (Captura de pantalla) -->
-  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3 px-2">
-    <div class="d-flex align-items-center gap-3">
-      <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/dashboard">
-        <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
-      </button>
-      <div>
-        <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Control de Equipos</h6>
-        <h2 class="fw-bold text-dark m-0">Gestión de Asignaciones</h2>
-      </div>
-    </div>
-
-    <div class="d-flex flex-wrap align-items-center gap-3">
-      <button mat-raised-button class="rounded-pill px-4 btn-nuevo" routerLink="/asignaciones/nueva">
-        <mat-icon class="me-2">add_task</mat-icon> Nueva Asignación
-      </button>
-
-      <div class="search-elegant m-0" style="width: 300px;">
-        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." autocomplete="off">
-        <div class="search-btn-circle"><mat-icon>search</mat-icon></div>
-      </div>
+  <!-- CABECERA SUPERIOR -->
+  <div class="d-flex align-items-center gap-3 mb-2 px-2">
+    <button mat-icon-button class="bg-white shadow-sm text-dark" routerLink="/dashboard">
+      <mat-icon style="margin-bottom: 5px;">arrow_back</mat-icon>
+    </button>
+    <div>
+      <h6 class="text-uppercase text-muted mb-1" style="font-size: 0.8rem; letter-spacing: 1px;">Control de Equipos</h6>
+      <h2 class="fw-bold text-dark m-0">Gestión de Asignaciones</h2>
     </div>
   </div>
 
-  <!-- PESTAÑAS POR ESTADO (AGREGADAS EXACTAMENTE ABAJO DEL HEADER) -->
-  <div class="tabs-header-container d-flex flex-wrap align-items-center gap-2 mb-2 px-2">
-    <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'REGISTRADAS'" (click)="cambiarPestana('REGISTRADAS')">
-      <mat-icon class="me-1 icon-tab">pending_actions</mat-icon>
-      Registradas
-      <span class="tab-badge ms-2">{{ conteoRegistradas() }}</span>
-    </button>
+  <!-- PESTAÑAS, BOTÓN NUEVO Y BUSCADOR EN LA MISMA FILA -->
+  <div class="tabs-header-container d-flex flex-wrap justify-content-between align-items-center gap-3 mb-1 px-2">
 
-    <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'ASIGNADAS'" (click)="cambiarPestana('ASIGNADAS')">
-      <mat-icon class="me-1 icon-tab">verified</mat-icon>
-      Asignadas
-      <span class="tab-badge ms-2">{{ conteoAsignadas() }}</span>
-    </button>
+    <!-- PESTAÑAS (Izquierda) -->
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'REGISTRADAS'" (click)="cambiarPestana('REGISTRADAS')">
+        <mat-icon class="me-1 icon-tab">pending_actions</mat-icon>
+        Registradas
+        <span class="tab-badge ms-2">{{ conteoRegistradas() }}</span>
+      </button>
 
-    <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'DEVOLUCIONES'" (click)="cambiarPestana('DEVOLUCIONES')">
-      <mat-icon class="me-1 icon-tab">assignment_return</mat-icon>
-      Devoluciones
-      <span class="tab-badge ms-2">{{ conteoDevoluciones() }}</span>
-    </button>
+      <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'ASIGNADAS'" (click)="cambiarPestana('ASIGNADAS')">
+        <mat-icon class="me-1 icon-tab">verified</mat-icon>
+        Asignadas
+        <span class="tab-badge ms-2">{{ conteoAsignadas() }}</span>
+      </button>
 
-<!--    <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'CANCELADAS'" (click)="cambiarPestana('CANCELADAS')">
-      <mat-icon class="me-1 icon-tab">cancel</mat-icon>
-      Canceladas
-      <span class="tab-badge ms-2">{{ conteoCanceladas() }}</span>
-    </button>-->
+      <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'DEVOLUCIONES'" (click)="cambiarPestana('DEVOLUCIONES')">
+        <mat-icon class="me-1 icon-tab">assignment_return</mat-icon>
+        Devoluciones
+        <span class="tab-badge ms-2">{{ conteoDevoluciones() }}</span>
+      </button>
 
-    <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'TODAS'" (click)="cambiarPestana('TODAS')">
-      <mat-icon class="me-1 icon-tab">list_alt</mat-icon>
-      Todas
-      <span class="tab-badge ms-2">{{ asignaciones().length }}</span>
-    </button>
+      <button type="button" class="tab-pill-btn" [class.active]="tabActiva() === 'TODAS'" (click)="cambiarPestana('TODAS')">
+        <mat-icon class="me-1 icon-tab">list_alt</mat-icon>
+        Todas
+        <span class="tab-badge ms-2">{{ asignaciones().length }}</span>
+      </button>
+    </div>
+
+    <!-- BOTÓN NUEVA ASIGNACIÓN Y BUSCADOR (Derecha) -->
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" routerLink="/asignaciones/nueva">
+        <mat-icon class="me-2">add_task</mat-icon> Nueva Asignación
+      </button>
+
+      <div class="search-elegant m-0" style="width: 280px;">
+        <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." autocomplete="off">
+        <div class="search-btn-circle">
+          <mat-icon>search</mat-icon>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- TARJETA CON LA TABLA -->
@@ -115,7 +115,6 @@
         </ng-container>
 
         <!-- ACCIONES -->
-        <!-- ACCIONES (Limpio y en una sola fila) -->
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef class="text-center pe-4"> ACCIONES </th>
           <td mat-cell *matCellDef="let element" class="text-center pe-4 py-2 col-acciones">

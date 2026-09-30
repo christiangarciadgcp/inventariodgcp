@@ -151,16 +151,15 @@
   opacity: 0.9 !important;
 }
 
-/* CENTRADO DE LOS ENCABEZADOS ORDENABLES */
 ::ng-deep .mat-sort-header-container {
   justify-content: center !important;
   text-align: center !important;
 }
 
-/* --- PESTAÑAS TIPO PÍLDORA CON CONTADORES --- */
+/* PESTAÑAS TIPO PÍLDORA */
 .tabs-header-container {
   border-bottom: 1px solid #e9ecef;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 
 .tab-pill-btn {
@@ -219,16 +218,4 @@
 .tab-pill-btn.active .tab-badge {
   background-color: rgba(255, 255, 255, 0.25);
   color: #ffffff;
-}
-
-.density-compact ::ng-deep .mat-mdc-text-field-wrapper {
-  padding-top: 0;
-  padding-bottom: 0;
-  height: 38px;
-  border-radius: 50px !important;
-}
-
-.density-compact ::ng-deep .mat-mdc-form-field-flex {
-  height: 38px;
-  align-items: center;
 }

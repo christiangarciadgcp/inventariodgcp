@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, inject, effect, signal, computed, Injectable } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -10,14 +10,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 
 import { PresupuestoService } from '../../../services/presupuesto.service';
 import { Presupuesto } from '../../../models/presupuesto';
-import { MatDialog } from '@angular/material/dialog';
-import { PresupuestoRevisionComponent } from '../presupuesto-revision/presupuesto-revision.component';
 import { AuthService } from '../../../services/auth.service';
 import { PdfViewerDialogComponent } from '../../pdf-viewer-dialog/pdf-viewer-dialog.component';
 import { DespachoService } from '../../../services/reportes/despacho.service';
@@ -27,42 +23,13 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 import { PresupuestoAprobacionComponent } from '../presupuesto-aprobacion/presupuesto-aprobacion.component';
 import { Utils } from '../../../core/utils';
 
-@Injectable()
-export class CustomDateAdapter extends NativeDateAdapter {
-  override format(date: Date, displayFormat: Object): string {
-    if (displayFormat === 'input') {
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
-    return super.format(date, displayFormat);
-  }
-}
-
-export const MY_DATE_FORMATS = {
-  parse: { dateInput: 'input' },
-  display: {
-    dateInput: 'input',
-    monthYearLabel: 'MMMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY'
-  }
-};
-
 @Component({
   selector: 'app-presupuesto-list',
   standalone: true,
   imports: [
     CommonModule, RouterLink, MatTableModule, MatPaginatorModule,
     MatSortModule, MatButtonModule, MatIconModule, MatCardModule,
-    MatInputModule, MatFormFieldModule, MatTooltipModule,
-    MatDatepickerModule, MatNativeDateModule, ReactiveFormsModule
-  ],
-  providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }
+    MatInputModule, MatFormFieldModule, MatTooltipModule
   ],
   templateUrl: './presupuesto-list.component.html',
   styleUrl: './presupuesto-list.component.css',
@@ -88,16 +55,10 @@ export class PresupuestoListComponent implements OnInit {
   todasLasSolicitudes = signal<Presupuesto[]>([]);
   currentTab: number = 0;
 
-  // Contadores reactivos para los badges
+  // Contadores reactivos para los badges (Despachos solo cuenta DESPACHO PARCIAL)
   conteoPendientes = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'PENDIENTE').length);
   conteoAprobados = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'APROBADO').length);
-  conteoDespachos = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'DESPACHO PARCIAL' || p.estado === 'DESPACHADO').length);
-  // conteoCancelados = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'CANCELADO').length);
-
-  rangoFechas = new FormGroup({
-    start: new FormControl<Date | null>(null),
-    end: new FormControl<Date | null>(null),
-  });
+  conteoDespachos = computed(() => this.todasLasSolicitudes().filter(p => p.estado === 'DESPACHO PARCIAL').length);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -142,15 +103,6 @@ export class PresupuestoListComponent implements OnInit {
       this.currentTab = +tabParam;
     }
 
-    const hoy = new Date();
-    const intervaloSolicitudes = new Date();
-    intervaloSolicitudes.setDate(hoy.getDate() - 30);
-    this.rangoFechas.setValue({ start: intervaloSolicitudes, end: hoy });
-
-    this.rangoFechas.valueChanges.subscribe(() => {
-      if (this.currentTab === 2) this.filtrarDatos();
-    });
-
     this.cargarPresupuestos();
   }
 
@@ -188,32 +140,9 @@ export class PresupuestoListComponent implements OnInit {
       this.presupuestos.set(lista.filter(p => p.estado === 'PENDIENTE'));
     } else if (this.currentTab === 1) { // APROBADOS
       this.presupuestos.set(lista.filter(p => p.estado === 'APROBADO'));
-    } else if (this.currentTab === 2) { // CONTROL DE DESPACHOS
-      const start = this.rangoFechas.value.start;
-      let end = this.rangoFechas.value.end;
-
-      if (start) start.setHours(0, 0, 0, 0);
-      if (end) {
-        end = new Date(end);
-        end.setHours(23, 59, 59, 999);
-      }
-
-      // Parciales primero, luego Despachados
-      const parciales = lista.filter(p => p.estado === 'DESPACHO PARCIAL');
-      const despachados = lista.filter(p => p.estado === 'DESPACHADO');
-      const combinados = [...parciales, ...despachados];
-
-      const filtrados = combinados.filter(p => {
-        if (!start || !end) return true;
-        const fecha = new Date(p.fecha_creacion);
-        return fecha >= start && fecha <= end;
-      });
-
-      this.presupuestos.set(filtrados);
-    }
-/*    else if (this.currentTab === 3) { // CANCELADOS
-      this.presupuestos.set(lista.filter(p => p.estado === 'CANCELADO'));
-    }*/ else { // TODOS (currentTab === 4)
+    } else if (this.currentTab === 2) { // DESPACHOS: ÚNICAMENTE DESPACHO PARCIAL
+      this.presupuestos.set(lista.filter(p => p.estado === 'DESPACHO PARCIAL'));
+    } else { // TODOS (currentTab === 3)
       this.presupuestos.set(lista);
     }
 
