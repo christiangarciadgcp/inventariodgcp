@@ -22,8 +22,8 @@
 
                 <span class="badge ms-2 px-2 py-2 shadow-sm"
                       [ngClass]="form.get('esNuevo')?.value ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'">
-          {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
-        </span>
+                  {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
+                </span>
               </div>
 
             </mat-slide-toggle>
@@ -33,16 +33,44 @@
       </div>
     </div>
 
+    <!-- BUSCADOR CON AUTOCOMPLETE PARA VINCULAR A PRODUCTO BASE -->
     @if (!form.get('esGenerico')?.value) {
       <div class="col-md-12 mb-2">
         <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
           <mat-label>Vincular a Producto Base</mat-label>
-          <mat-select formControlName="idProductoPadre">
-            <mat-option [value]="null">Ninguno</mat-option>
-            @for (g of listaGenericos; track g.idProducto) {
-              <mat-option [value]="g.idProducto">{{ g.nombreproducto }}</mat-option>
+          <input type="text"
+                 matInput
+                 [formControl]="padreFiltroCtrl"
+                 [matAutocomplete]="autoPadre"
+                 placeholder="Escriba el Nombre del Producto Base..."
+                 (focus)="$any($event.target).select()"
+                 autocomplete="off">
+
+          @if (form.get('idProductoPadre')?.value || padreFiltroCtrl.value) {
+            <button matSuffix mat-icon-button type="button" aria-label="Limpiar selección" (click)="limpiarPadre()" matTooltip="Desvincular">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
+            </button>
+          } @else {
+            <mat-icon matSuffix class="text-secondary" style="font-size: 20px; width: 20px; height: 20px;">search</mat-icon>
+          }
+
+          <mat-autocomplete #autoPadre="matAutocomplete"
+                            [displayWith]="displayFnPadre"
+                            (optionSelected)="seleccionarPadre($event)">
+            @for (g of (genericosFiltrados | async) ?? []; track g.idProducto) {
+              <mat-option [value]="g">
+                <div class="d-flex align-items-center justify-content-between w-100">
+                  <span class=" text-dark">{{ g.nombreproducto }}</span>
+<!--                  <small class="badge bg-light text-secondary border font-monospace ms-2">{{ g.skuproducto }}</small>-->
+                </div>
+              </mat-option>
             }
-          </mat-select>
+            @if ((genericosFiltrados | async)?.length === 0) {
+              <mat-option disabled>
+                <span class="text-muted small">No se encontraron productos base coincidentes</span>
+              </mat-option>
+            }
+          </mat-autocomplete>
         </mat-form-field>
       </div>
     }
@@ -81,7 +109,6 @@
       </mat-form-field>
     </div>
 
-    <!-- ENVOLVEMOS MARCA Y MODELO EN UN IF -->
     @if (!form.get('esGenerico')?.value) {
       <div class="col-md-6">
         <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
@@ -111,17 +138,16 @@
         </mat-form-field>
       </div>
 
-
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <mat-label>Proveedor</mat-label>
-        <mat-select formControlName="idProveedor">
-          @for (p of listaProveedores; track p.idProveedor) {
-            <mat-option [value]="p.idProveedor">{{p.nombreproveedor}}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Proveedor</mat-label>
+          <mat-select formControlName="idProveedor">
+            @for (p of listaProveedores; track p.idProveedor) {
+              <mat-option [value]="p.idProveedor">{{p.nombreproveedor}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
     }
 
     <div class="col-md-6">
@@ -139,19 +165,19 @@
     </div>
 
     @if (!form.get('esGenerico')?.value) {
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <mat-label>Serie</mat-label>
-        <input matInput formControlName="serieproducto" (input)="onInputMayusculas($event, 'serieproducto')">
-      </mat-form-field>
-    </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Serie</mat-label>
+          <input matInput formControlName="serieproducto" (input)="onInputMayusculas($event, 'serieproducto')">
+        </mat-form-field>
+      </div>
 
-    <div class="col-md-6">
-      <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-        <mat-label>Inventario</mat-label>
-        <input matInput formControlName="inventarioproducto" (input)="onInputMayusculas($event, 'inventarioproducto')">
-      </mat-form-field>
-    </div>
+      <div class="col-md-6">
+        <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+          <mat-label>Inventario</mat-label>
+          <input matInput formControlName="inventarioproducto" (input)="onInputMayusculas($event, 'inventarioproducto')">
+        </mat-form-field>
+      </div>
     }
 
     <div class="col-12">
@@ -161,26 +187,21 @@
       </mat-form-field>
     </div>
 
-
     <div class="col-12 mt-1 mb-1">
-
       @if (form.get('esGenerico')?.value) {
-      <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>
+        <label class="text-secondary small fw-bold mb-2 d-block">Fotografías del Producto</label>
 
-      <input type="file" #fileInput hidden multiple accept="image/png, image/jpeg, image/webp" (change)="onFilesSelected($event)">
+        <input type="file" #fileInput hidden multiple accept="image/png, image/jpeg, image/webp" (change)="onFilesSelected($event)">
 
-      <button mat-stroked-button color="primary" type="button" class="rounded-pill mb-3" (click)="fileInput.click()">
-        <mat-icon class="me-2">add_a_photo</mat-icon> Agregar Fotos
-      </button>
+        <button mat-stroked-button color="primary" type="button" class="rounded-pill mb-3" (click)="fileInput.click()">
+          <mat-icon class="me-2">add_a_photo</mat-icon> Agregar Fotos
+        </button>
       }
       <div class="d-flex flex-wrap gap-3">
-
         @for (img of imagenesActuales; track $index) {
           <div class="position-relative shadow-sm" style="border-radius: 8px;">
             <span class="badge bg-success position-absolute" style="bottom: 5px; left: 5px; font-size: 0.6rem;">Guardada</span>
-
             <img [src]="img.rutaimagen" class="img-thumbnail bg-white border" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
-
             <button mat-mini-fab type="button"
                     class="position-absolute shadow-sm delete-img"
                     style="top: -10px; right: -10px; transform: scale(0.65);"
@@ -194,9 +215,7 @@
         @for (img of previsualizaciones; track $index) {
           <div class="position-relative shadow-sm" style="border-radius: 8px;">
             <span class="badge bg-warning text-dark position-absolute" style="bottom: 5px; left: 5px; font-size: 0.6rem;">Nueva</span>
-
             <img [src]="img" class="img-thumbnail bg-white border border-warning" style="width: 105px; height: 105px; object-fit: cover; border-radius: 8px;">
-
             <button mat-mini-fab color="warn" type="button"
                     class="position-absolute shadow-sm delete-img"
                     style="top: -10px; right: -10px; transform: scale(0.65);"
@@ -206,7 +225,6 @@
             </button>
           </div>
         }
-
       </div>
     </div>
 

@@ -1,13 +1,17 @@
-import { Component, OnInit, inject,ChangeDetectorRef, Inject} from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIcon } from '@angular/material/icon';
+import { Observable } from 'rxjs';
+import { startWith, map } from 'rxjs/operators';
 
 // servicios de catálogos
 import { CategoriaService } from '../../../services/categoria.service';
@@ -19,7 +23,6 @@ import { Utils } from '../../../core/utils';
 import { Mensaje } from '../../../core/mensaje';
 import { ProductoService } from '../../../services/producto.service';
 import { ProductoRegistroDTO } from '../../../models/producto';
-import { MatIcon } from '@angular/material/icon';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -27,10 +30,10 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltip, MatIcon, MatSlideToggleModule
+    MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatTooltip, MatIcon, MatSlideToggleModule, MatAutocompleteModule
   ],
   templateUrl: './producto-dialog.component.html',
-  //styleUrl: './producto-dialog.component.css',
 })
 export class ProductoDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -48,13 +51,13 @@ export class ProductoDialogComponent implements OnInit {
   private modeloService = inject(ModeloService);
   private productoService = inject(ProductoService);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public productoData:any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public productoData: any) {}
 
-  esEdicion=false;
-  mostrarPrecioCompra=false;
-  mostrarPrecioVenta=false;
-  guardando=false;
-  skuPreview : string = 'XXX-XXX-XXXXX';
+  esEdicion = false;
+  mostrarPrecioCompra = false;
+  mostrarPrecioVenta = false;
+  guardando = false;
+  skuPreview: string = 'XXX-XXX-XXXXX';
 
   // Listas para los selects
   listaCategorias: any[] = [];
@@ -63,6 +66,10 @@ export class ProductoDialogComponent implements OnInit {
   listaMarcas: any[] = [];
   listaModelos: any[] = [];
   listaGenericos: any[] = [];
+
+  // Control y lista observable para autocompletar el Producto Base
+  padreFiltroCtrl = new FormControl<any>('');
+  genericosFiltrados!: Observable<any[]>;
 
   archivosSeleccionados: File[] = [];
   previsualizaciones: string[] = [];
@@ -79,75 +86,14 @@ export class ProductoDialogComponent implements OnInit {
     idCategoria: [null, Validators.required],
     idProveedor: [null],
     idUnidadMedida: [null, Validators.required],
-    idMarca : [null, Validators.required],
-    idModelo : [null, Validators.required],
+    idMarca: [null, Validators.required],
+    idModelo: [null, Validators.required],
     esGenerico: [false],
     idProductoPadre: [null],
     esNuevo: [true]
   });
 
-
-  // CODIGO ANTES DE SELECT DEPENDIENTES
-
-/*  ngOnInit(): void {
-    // Carga paralela de catálogos
-    this.catService.getCategorias().subscribe(data => {
-      this.listaCategorias = data;
-      this.cdr.detectChanges();
-    });
-
-    this.provService.getProveedores().subscribe(data => {
-      this.listaProveedores = data;
-      this.cdr.detectChanges();
-    });
-
-    this.unitService.getUnidadesMedida().subscribe(data => {
-      this.listaUnidades = data;
-      this.cdr.detectChanges();
-    });
-
-    this.marcaService.getMarcasActivas().subscribe(data => {
-      this.listaMarcas = data;
-      this.cdr.detectChanges();
-    });
-
-    this.modeloService.getModelosActivos().subscribe(data => {
-      this.listaModelos = data;
-      this.cdr.detectChanges();
-    })
-
-    if(this.productoData && this.productoData.producto){
-      this.esEdicion = true;
-      const p = this.productoData.producto;
-
-      //console.log(p);
-
-      this.form.patchValue({
-        nombreproducto: p.nombreproducto,
-        skuproducto: p.skuproducto,
-        descripcionproducto: p.descripcionproducto,
-        serieproducto : p.serieproducto,
-        inventarioproducto : p.inventarioproducto,
-        preciocostoproducto: p.preciocostoproducto,
-        precioventaproducto: p.precioventaproducto,
-        idCategoria: p.categoria?.idCategoria,
-        idProveedor: p.proveedor?.idProveedor,
-        idUnidadMedida: p.unidadMedida?.idUnidadMedida,
-        idMarca : p.modelo?.marca?.idMarca
-      });
-
-      setTimeout(() => {
-        this.form.patchValue({ idModelo: p.modelo?.idModelo });
-      }, 150);
-
-      this.form.get('precioventaproducto')?.disable();
-    }
-  }*/
-
   ngOnInit(): void {
-
-   /* this.catService.getCategoriasActivas().subscribe(data => this.listaCategorias = data);*/
-
     this.catService.getCategoriasActivas().subscribe(data => {
       this.listaCategorias = data;
       this.actualizarPreviewSKU(this.form.get('idCategoria')?.value, this.form.get('nombreproducto')?.value);
@@ -156,54 +102,64 @@ export class ProductoDialogComponent implements OnInit {
     this.provService.getProveedoresActivos().subscribe(data => this.listaProveedores = data);
     this.unitService.getUnidadesMedidaActivas().subscribe(data => this.listaUnidades = data);
 
+    // Carga de productos base con inicialización del autocompletado
     this.productoService.getProductosGenericos().subscribe(data => {
-      // Ordenar la lista alfabéticamente por nombreproducto antes de asignarla a la variable
       this.listaGenericos = data.sort((a, b) =>
         a.nombreproducto.localeCompare(b.nombreproducto, 'es', { sensitivity: 'base' })
       );
+
+      this.genericosFiltrados = this.padreFiltroCtrl.valueChanges.pipe(
+        startWith(''),
+        map(valor => this.filtrarGenericos(valor || ''))
+      );
+
+      // Si es edición y ya tenía producto padre, lo preseleccionamos en el input
+      if (this.esEdicion && this.productoData?.producto) {
+        const p = this.productoData.producto;
+        const idPadre = p.productoPadre?.idProducto || p.idProductoPadre;
+        if (idPadre) {
+          const padreEncontrado = this.listaGenericos.find(g => g.idProducto === idPadre);
+          if (padreEncontrado) {
+            this.padreFiltroCtrl.setValue(padreEncontrado);
+          }
+        }
+      }
     });
 
     this.marcaService.getMarcasActivas().subscribe(data => {
       this.listaMarcas = data;
-      //this.actualizarPreviewSKU(this.form.get('idCategoria')?.value, this.form.get('idMarca')?.value);
     });
 
     if (this.productoData && this.productoData.sugerenciaParaConvertir) {
       const sug = this.productoData.sugerenciaParaConvertir;
-
       this.form.patchValue({
         nombreproducto: sug.nombreSugerido,
         descripcionproducto: `Sugerencia por Técnico UTDI.\nMotivo: ${sug.justificacion}`,
         idCategoria: sug.categoriaSugerida?.idCategoria
       });
-
     }
 
-/*    this.form.valueChanges.subscribe( valores => {
-      if(!this.esEdicion){
-        this.actualizarPreviewSKU(valores.idCategoria, valores.idMarca);
-      }
-    });*/
-
-    this.form.valueChanges.subscribe( valores => {
+    this.form.valueChanges.subscribe(valores => {
       this.actualizarPreviewSKU(valores.idCategoria, valores.nombreproducto);
     });
 
+    // Si el usuario borra todo el texto del input, desvinculamos el id
+    this.padreFiltroCtrl.valueChanges.subscribe(val => {
+      if (typeof val === 'string' && val.trim() === '') {
+        this.form.get('idProductoPadre')?.setValue(null);
+      }
+    });
 
     this.form.get('idMarca')?.valueChanges.subscribe(idMarcaSeleccionada => {
       if (idMarcaSeleccionada) {
-
         this.modeloService.getModelosPorMarca(idMarcaSeleccionada).subscribe(modelos => {
           this.listaModelos = modelos;
-
-
           const idModeloActual = this.form.get('idModelo')?.value;
           if (idModeloActual && !this.listaModelos.some(m => m.idModelo === idModeloActual)) {
             this.form.get('idModelo')?.setValue(null);
           }
         });
       } else {
-
         this.listaModelos = [];
         this.form.get('idModelo')?.setValue(null);
       }
@@ -214,25 +170,22 @@ export class ProductoDialogComponent implements OnInit {
       const modeloCtrl = this.form.get('idModelo');
 
       if (esGen) {
-        // ES GENÉRICO: Limpiamos validadores y los ponemos nulos
         this.form.get('idProductoPadre')?.setValue(null);
+        this.padreFiltroCtrl.setValue('');
         marcaCtrl?.clearValidators();
         modeloCtrl?.clearValidators();
         marcaCtrl?.setValue(null);
         modeloCtrl?.setValue(null);
       } else {
-        // NO ES GENÉRICO: Volvemos a hacerlos obligatorios
         marcaCtrl?.setValidators([Validators.required]);
         modeloCtrl?.setValidators([Validators.required]);
       }
 
-      // Actualizamos el estado del formulario
       marcaCtrl?.updateValueAndValidity();
       modeloCtrl?.updateValueAndValidity();
     });
 
-
-    if(this.productoData && this.productoData.producto){
+    if (this.productoData && this.productoData.producto) {
       this.esEdicion = true;
       const p = this.productoData.producto;
 
@@ -240,20 +193,18 @@ export class ProductoDialogComponent implements OnInit {
         this.imagenesActuales = [...p.imagenes];
       }
 
-      //console.log("IMÁGENES DESDE EL BACKEND:", this.imagenesActuales);
-
       this.form.patchValue({
         nombreproducto: p.nombreproducto,
         skuproducto: p.skuproducto,
         descripcionproducto: p.descripcionproducto,
-        serieproducto : p.serieproducto,
-        inventarioproducto : p.inventarioproducto,
+        serieproducto: p.serieproducto,
+        inventarioproducto: p.inventarioproducto,
         preciocostoproducto: p.preciocostoproducto,
         precioventaproducto: p.precioventaproducto,
         idCategoria: p.categoria?.idCategoria,
         idProveedor: p.proveedor?.idProveedor,
         idUnidadMedida: p.unidadMedida?.idUnidadMedida,
-        idMarca : p.modelo?.marca?.idMarca,
+        idMarca: p.modelo?.marca?.idMarca,
         esGenerico: p.esGenerico,
         idProductoPadre: p.productoPadre?.idProducto,
         esNuevo: p.esNuevo !== undefined ? p.esNuevo : false
@@ -268,6 +219,38 @@ export class ProductoDialogComponent implements OnInit {
     }
   }
 
+  // Métodos para el Autocomplete de Producto Base
+  filtrarGenericos(valor: any): any[] {
+    const texto = (typeof valor === 'string' ? valor : valor?.nombreproducto || '').toLowerCase().trim();
+    if (!texto) {
+      return this.listaGenericos;
+    }
+    return this.listaGenericos.filter(g =>
+      (g.nombreproducto && g.nombreproducto.toLowerCase().includes(texto)) ||
+      (g.skuproducto && g.skuproducto.toLowerCase().includes(texto))
+    );
+  }
+
+  displayFnPadre(item: any): string {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    return item.nombreproducto || '';
+  }
+
+  seleccionarPadre(event: any) {
+    const item = event.option.value;
+    if (item && item.idProducto) {
+      this.form.get('idProductoPadre')?.setValue(item.idProducto);
+    } else {
+      this.limpiarPadre();
+    }
+  }
+
+  limpiarPadre() {
+    this.padreFiltroCtrl.setValue('');
+    this.form.get('idProductoPadre')?.setValue(null);
+  }
+
   actualizarPreviewSKU(idCat: number | null, nombreProd: string | null) {
     let catStr = 'XXX';
     let nomStr = 'XXX';
@@ -280,7 +263,6 @@ export class ProductoDialogComponent implements OnInit {
     if (nombreProd) {
       nomStr = this.generarPrefijoNombre(nombreProd);
     }
-
 
     if (this.esEdicion && this.productoData?.producto) {
       const idStr = this.productoData.producto.idProducto.toString().padStart(5, '0');
@@ -299,17 +281,6 @@ export class ProductoDialogComponent implements OnInit {
   generarPrefijoNombre(texto: string): string {
     if (!texto) return "XXX";
     let limpio = texto.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-    return limpio.length >= 3 ? limpio.substring(0, 3) : limpio.padEnd(3, 'X');
-  }
-
-  generarPrefijoMarca(texto: string): string {
-    if (!texto) return "XXX";
-    let limpio = texto.trim().toUpperCase();
-
-    if (limpio === "SIN ESPECIFICAR") return "SIN";
-    if (limpio === "HP" || limpio === "LG") return limpio;
-
-    limpio = limpio.replace(/[^a-zA-Z0-9]/g, "");
     return limpio.length >= 3 ? limpio.substring(0, 3) : limpio.padEnd(3, 'X');
   }
 
@@ -336,7 +307,6 @@ export class ProductoDialogComponent implements OnInit {
   }
 
   eliminarImagenExistente(idImagen: number, index: number) {
-    // Usamos el confirm dialog que ya tienes importado para evitar borrados por accidente
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
@@ -351,7 +321,6 @@ export class ProductoDialogComponent implements OnInit {
       if (confirmado) {
         this.productoService.eliminarImagenProducto(idImagen).subscribe({
           next: () => {
-            // Si el backend la borró, la quitamos visualmente del arreglo
             this.imagenesActuales.splice(index, 1);
             this.mensaje.open('Imagen eliminada correctamente', 'exito');
           },
@@ -364,7 +333,6 @@ export class ProductoDialogComponent implements OnInit {
   }
 
   guardar() {
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.mensaje.open('Complete los campos requeridos', 'warning');
@@ -372,7 +340,6 @@ export class ProductoDialogComponent implements OnInit {
     }
 
     this.guardando = true;
-
     const valores = this.form.getRawValue();
 
     const productoDTO: ProductoRegistroDTO = {
@@ -392,12 +359,9 @@ export class ProductoDialogComponent implements OnInit {
       esNuevo: valores.esNuevo
     };
 
-    //console.log(valores);
-
-    // 2. Evaluamos si es edición o registro
     if (this.esEdicion) {
       const id = this.productoData.producto.idProducto;
-      this.productoService.updateProducto(id, productoDTO,this.archivosSeleccionados).subscribe({
+      this.productoService.updateProducto(id, productoDTO, this.archivosSeleccionados).subscribe({
         next: () => {
           this.mensaje.open("Producto actualizado exitosamente", 'exito');
           this.dialogRef.close(true);
