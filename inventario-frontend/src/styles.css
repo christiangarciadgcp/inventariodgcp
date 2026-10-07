@@ -2,9 +2,22 @@
 /*******************************************************************************
 /*******************************************************************************
 /*******************************************************************************/
-html {
+
+
+html, body {
+
   font-size: 14px;
+
+  /* Suavizado obligatorio para Firefox en Mac */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Suavizado para WebKit / Chrome / Edge */
+  -webkit-font-smoothing: antialiased;
+
+  text-rendering: optimizeLegibility;
 }
+
+
 
 
 .btn-success {
