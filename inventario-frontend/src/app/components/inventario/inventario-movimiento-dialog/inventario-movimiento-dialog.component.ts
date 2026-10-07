@@ -18,7 +18,7 @@ import { Utils } from '../../../core/utils';
   selector: 'app-inventario-movimiento-dialog',
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, 
+    MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule
   ],
   templateUrl: './inventario-movimiento-dialog.component.html',
@@ -105,7 +105,7 @@ export class InventarioMovimientoDialogComponent implements OnInit{
       error : (err) => {
         const mensajeError = err.error?.mensaje || err.error?.message || 'Error en el movimiento';
         this.mensaje.open(mensajeError,'error');
-      } 
+      }
     });
   }
 

@@ -312,3 +312,16 @@ html, body {
   font-weight: 700;
   font-size: 1.2rem;
 }
+
+/* Anula el fondo y padding por defecto de MatSnackBar */
+.toast-custom-panel.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Posicionamiento global y permeabilidad de clics para la pila de toasts */
+.toast-stack-overlay-panel {
+  pointer-events: none !important;
+  z-index: 999999 !important;
+}

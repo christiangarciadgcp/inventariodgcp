@@ -10,7 +10,7 @@ export const permisosGuard: CanActivateFn = (route, state) => {
 
   const rol = authService.getRolUsuario();
 
-  const expectedRoles = route.data?.['roles'] as Array<string>; 
+  const expectedRoles = route.data?.['roles'] as Array<string>;
 
   if (!expectedRoles || expectedRoles.length === 0) {
     return true;

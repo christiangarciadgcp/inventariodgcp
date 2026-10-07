@@ -20,8 +20,8 @@ import { Bodega } from '../../../models/bodega';
 @Component({
   selector: 'app-inventario-movimiento',
   imports: [
-    CommonModule, ReactiveFormsModule, FormsModule, 
-    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, 
+    CommonModule, ReactiveFormsModule, FormsModule,
+    MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatSelectModule, MatIconModule, RouterLink, MatDividerModule
   ],
   templateUrl: './inventario-movimiento.component.html',
@@ -38,7 +38,7 @@ export class InventarioMovimientoComponent implements OnInit{
   listaBodegas = signal(<Bodega[]>([]));
   productosOrigen = signal(<any[]>([]));
 
-  stockDisponible = 0; 
+  stockDisponible = 0;
 
   form = this.fb.group({
     bodegaOrigen: [null, Validators.required],
@@ -68,8 +68,8 @@ export class InventarioMovimientoComponent implements OnInit{
         this.stockDisponible = producto.cantidad_actual;
         // Validar que la cantidad no exceda
         this.form.get('cantidad')?.setValidators([
-            Validators.required, 
-            Validators.min(1), 
+            Validators.required,
+            Validators.min(1),
             Validators.max(this.stockDisponible)
         ]);
         this.form.get('cantidad')?.updateValueAndValidity();
@@ -97,7 +97,7 @@ export class InventarioMovimientoComponent implements OnInit{
     const values = this.form.value;
 
     const idUser = this.authService.getIdUsuarioActual();
-    
+
     if (!idUser) {
         this.mensaje.open('Error: No se pudo identificar al usuario. Inicie sesión nuevamente.', 'error');
         return;

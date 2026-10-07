@@ -1,0 +1,24 @@
+<div class="toast-stack-wrapper">
+  @for (item of toasts(); track item.id) {
+    <div class="toast-card"
+         [ngClass]="'toast-' + item.tipo"
+         [class.toast-saliendo]="item.saliendo"
+         (click)="removerToast(item.id)"
+         title="Clic para descartar">
+
+      <!-- ICONO LÍQUIDO CUADRADO -->
+      <div class="toast-icon-circle">
+        <mat-icon>{{ item.icono }}</mat-icon>
+      </div>
+
+      <!-- TEXTO BLANCO EN NEGRITA -->
+      <div class="toast-body">
+        @if (item.titulo) {
+          <div class="toast-title">{{ item.titulo }}</div>
+        }
+        <div class="toast-message">{{ item.mensaje }}</div>
+      </div>
+
+    </div>
+  }
+</div>
