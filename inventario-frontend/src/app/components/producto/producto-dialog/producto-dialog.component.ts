@@ -34,6 +34,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
     MatTooltip, MatIcon, MatSlideToggleModule, MatAutocompleteModule
   ],
   templateUrl: './producto-dialog.component.html',
+  styleUrls: ['./producto-dialog.component.css']
 })
 export class ProductoDialogComponent implements OnInit {
   private fb = inject(FormBuilder);

@@ -166,10 +166,11 @@ export class ProductoListComponent implements OnInit {
 
   abrirFormulario(producto?: Producto) {
     const dialogRef = this.dialog.open(ProductoDialogComponent, {
-      width: '800px',
+      width: '900px',
 /*      height: '85vh',*/
       maxHeight: '90vh',
       disableClose: true,
+      autoFocus: false,
       data: producto ? { producto: producto } : null
     });
 

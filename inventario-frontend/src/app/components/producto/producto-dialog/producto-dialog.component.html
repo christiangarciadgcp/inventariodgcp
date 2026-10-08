@@ -1,39 +1,58 @@
-<h2 mat-dialog-title>{{esEdicion ? 'Modificar Producto' : 'Registro de Producto'}}</h2>
+<h2 mat-dialog-title class="fw-bold text-dark pb-2 border-bottom m-0">
+  {{ esEdicion ? 'Modificar Producto' : 'Registro de Producto' }}
+</h2>
 
-<mat-dialog-content class="dialog-scroll-container">
+<mat-dialog-content class="dialog-scroll-container pt-3">
 
   <form [formGroup]="form" class="row g-2">
 
-    <div class="col-12 mb-1 mt-1 pb-2 border-bottom">
-      <div class="row align-items-center">
+    <div class="col-12 mb-3">
+      <div class="row g-2">
 
-        <div class="col-md-6">
-          <mat-slide-toggle formControlName="esGenerico" color="primary">
-            <strong>Producto Base</strong> <br>
-          </mat-slide-toggle>
+        <div [ngClass]="form.get('esGenerico')?.value ? 'col-12' : 'col-md-6'">
+          <div class="radio-card"
+               [class.radio-card-selected]="form.get('esGenerico')?.value"
+               (click)="form.get('esGenerico')?.setValue(!form.get('esGenerico')?.value)">
+            <div class="d-flex align-items-center gap-3">
+              <div class="radio-check-circle">
+                <mat-icon>{{ form.get('esGenerico')?.value ? 'check' : 'layers' }}</mat-icon>
+              </div>
+              <div>
+                <div class="card-label">Producto Base</div>
+                <small class="card-subtext">Plantilla de catálogo</small>
+              </div>
+            </div>
+            <span class="badge-status-dot" [class.dot-active]="form.get('esGenerico')?.value"></span>
+          </div>
         </div>
 
         @if (!form.get('esGenerico')?.value) {
-          <div class="col-md-6 d-flex align-items-center">
-            <mat-slide-toggle formControlName="esNuevo" color="primary">
+          <div class="col-md-6">
+            <div class="radio-card"
+                 [class.radio-card-condition]="true"
+                 (click)="form.get('esNuevo')?.setValue(!form.get('esNuevo')?.value)">
+              <div class="d-flex align-items-center gap-3">
+                <div class="radio-check-circle"
+                     [ngClass]="form.get('esNuevo')?.value ? 'circle-nuevo' : 'circle-usado'">
+                  <mat-icon>{{ form.get('esNuevo')?.value ? 'verified' : 'autorenew' }}</mat-icon>
+                </div>
+                <div>
+                  <div class="card-label">Condición del Activo</div>
 
-              <div class="d-flex align-items-center">
-                <strong>Condición:</strong>
-
-                <span class="badge ms-2 px-2 py-2 shadow-sm"
-                      [ngClass]="form.get('esNuevo')?.value ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning-emphasis border border-warning-subtle'">
-                  {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
-                </span>
+                </div>
               </div>
-
-            </mat-slide-toggle>
+              <span class="badge-condition-pill"
+                    [ngClass]="form.get('esNuevo')?.value ? 'cond-nuevo' : 'cond-usado'">
+            {{ form.get('esNuevo')?.value ? 'NUEVO' : 'USADO' }}
+          </span>
+            </div>
           </div>
         }
 
       </div>
     </div>
 
-    <!-- BUSCADOR CON AUTOCOMPLETE PARA VINCULAR A PRODUCTO BASE -->
+
     @if (!form.get('esGenerico')?.value) {
       <div class="col-md-12 mb-2">
         <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
@@ -60,8 +79,7 @@
             @for (g of (genericosFiltrados | async) ?? []; track g.idProducto) {
               <mat-option [value]="g">
                 <div class="d-flex align-items-center justify-content-between w-100">
-                  <span class=" text-dark">{{ g.nombreproducto }}</span>
-<!--                  <small class="badge bg-light text-secondary border font-monospace ms-2">{{ g.skuproducto }}</small>-->
+                  <span class="text-dark">{{ g.nombreproducto }}</span>
                 </div>
               </mat-option>
             }
@@ -78,10 +96,8 @@
     <div class="col-md-6">
       <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
         <mat-label>SKU / Código</mat-label>
-
         <input matInput [value]="skuPreview" readonly class="text-primary fw-bolder"
                matTooltip="Código autogenerado y actualizado por el sistema">
-
       </mat-form-field>
     </div>
 
@@ -248,13 +264,13 @@
       </div>
     }
 
-    <div class="col-12 mt-4 pt-3 d-flex justify-content-end gap-3 mb-2">
-      <button mat-button class="btn-cancel px-4 rounded-pill" type="button" (click)="cancelar()">Cancelar</button>
-
-      <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="guardando" type="button" (click)="guardar()">
-        {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}
-      </button>
-    </div>
-
   </form>
 </mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dialog-actions-fixed px-3 py-2 border-top bg-light m-0">
+  <button mat-button class="btn-cancel px-4 rounded-pill" type="button" (click)="cancelar()">Cancelar</button>
+
+  <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="guardando" type="button" (click)="guardar()">
+    {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}
+  </button>
+</mat-dialog-actions>
