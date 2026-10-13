@@ -6,6 +6,11 @@
   overflow: hidden;
 }
 
+td.mat-column-destino {
+  text-align: left !important;
+}
+
+
 .mat-mdc-table { background: transparent; }
 
 .mat-mdc-header-row {

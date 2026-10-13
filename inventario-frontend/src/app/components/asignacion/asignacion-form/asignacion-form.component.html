@@ -26,11 +26,14 @@
 
     <div class="card-body p-4 bg-white">
       <form [formGroup]="form">
+
         <h6 class="text-muted fw-bold mb-3 small text-uppercase" style="letter-spacing: 1px;">Datos de Destino</h6>
 
         <div class="p-4 rounded-3 mb-4 border border-dashed bg-light">
           <div class="row g-3">
-            <div class="col-md-4">
+
+            <!-- TIPO DE MOVIMIENTO -->
+            <div class="col-md-2">
               <label class="form-label small fw-bold text-muted">Tipo de Movimiento *</label>
               <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
                 <mat-label>Seleccione Tipo</mat-label>
@@ -45,22 +48,74 @@
               }
             </div>
 
-            <div class="col-md-8">
-              <label class="form-label small fw-bold text-muted">Responsable / Destino (Persona, Departamento, Edificio) *</label>
+            <!-- UBICACIÓN DESTINO -->
+            <div class="col-md-7">
+              <label class="form-label small fw-bold text-muted">Ubicación Destino *</label>
               <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
-                <input matInput formControlName="responsableDestino" placeholder="Ej. Christian Ordoñez">
+                <mat-label>Seleccione o escriba ubicación...</mat-label>
+                <input type="text"
+                       matInput
+                       #triggerUbicacion="matAutocompleteTrigger"
+                       [formControl]="ubicacionFiltroCtrl"
+                       [matAutocomplete]="autoUbicacion"
+                       placeholder="Buscar por nombre o siglas..."
+                       (focus)="abrirUbicaciones(triggerUbicacion)"
+                       (click)="abrirUbicaciones(triggerUbicacion)"
+                       autocomplete="off">
+
+                <!-- BOTÓN LIMPIAR -->
+                @if (form.get('idUbicacion')?.value || ubicacionFiltroCtrl.value) {
+                  <button matSuffix mat-icon-button type="button" aria-label="Limpiar ubicación" (click)="limpiarUbicacion()" matTooltip="Limpiar selección">
+                    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
+                  </button>
+                }
+
+                <!-- FLECHA DROPDOWN -->
+                <button matSuffix mat-icon-button type="button" (click)="abrirUbicaciones(triggerUbicacion)" tabindex="-1">
+                  <mat-icon class="text-secondary" style="font-size: 22px; width: 22px; height: 22px;">arrow_drop_down</mat-icon>
+                </button>
+
+                <mat-autocomplete #autoUbicacion="matAutocomplete"
+                                  [displayWith]="displayFnUbicacion"
+                                  (optionSelected)="seleccionarUbicacion($event)">
+                  @for (u of ubicacionesFiltradas(); track u.idUbicacion) {
+                    <mat-option [value]="u">
+                      <div class="d-flex align-items-center justify-content-between w-100">
+                        <span class="text-dark">{{ u.nombreubicacion }}</span>
+                        @if (u.siglasubicacion) {
+                          <small class="badge bg-light text-secondary border font-monospace ms-2">{{ u.siglasubicacion }}</small>
+                        }
+                      </div>
+                    </mat-option>
+                  }
+                  @if (ubicacionesFiltradas().length === 0) {
+                    <mat-option disabled>
+                      <span class="text-muted small">No se encontraron ubicaciones coincidentes</span>
+                    </mat-option>
+                  }
+                </mat-autocomplete>
               </mat-form-field>
-              @if (form.get('responsableDestino')?.touched && form.get('responsableDestino')?.hasError('required')) {
-                <small class="text-danger">El responsable/destino es obligatorio</small>
+              @if (form.get('idUbicacion')?.touched && form.get('idUbicacion')?.hasError('required')) {
+                <small class="text-danger">La ubicación es obligatoria</small>
               }
             </div>
 
+            <!-- RESPONSABLE (OPCIONAL) -->
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-muted">Responsable (Opcional)</label>
+              <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
+                <input matInput formControlName="responsableDestino" placeholder="Ej. Christian Ordoñez">
+              </mat-form-field>
+            </div>
+
+            <!-- OBSERVACIONES -->
             <div class="col-12">
               <label class="form-label small fw-bold text-muted">Observaciones Generales</label>
               <mat-form-field appearance="outline" class="w-100" subscriptSizing="dynamic">
                 <textarea matInput formControlName="observaciones" rows="2" placeholder="Detalles sobre las condiciones de entrega o justificación"></textarea>
               </mat-form-field>
             </div>
+
           </div>
         </div>
 
@@ -114,8 +169,6 @@
                   </div>
                   <div>
                     <div class="fw-bold text-dark">{{ element.producto.nombreproducto }}</div>
-                    <!--PARA QUE APAREZCA EL SKU DEL PRODUCTO-->
-                    <!--<div class="small text-muted">{{ element.producto.skuproducto || 'GEN-001' }}</div>-->
                   </div>
                 </div>
               </td>

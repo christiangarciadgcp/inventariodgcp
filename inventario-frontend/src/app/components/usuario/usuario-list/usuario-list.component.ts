@@ -21,6 +21,7 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
 
 @Component({
   selector: 'app-usuario-list',
+  standalone: true,
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
     MatIconModule, MatDialogModule, MatSnackBarModule, MatCardModule,MatTooltipModule, RouterLink,

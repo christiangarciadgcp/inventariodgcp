@@ -2,6 +2,7 @@ import { Producto } from './producto';
 import { Bodega } from './bodega';
 import { TipoAsignacion } from './tipo-asignacion';
 import { Usuario } from './usuario';
+import {Ubicacion} from './ubicacion';
 
 export interface AsignacionDetalle {
   idAsignacionDetalle?: number;
@@ -29,7 +30,8 @@ export interface Asignacion {
   correlativo: number;
   anio: number;
   tipoAsignacion: TipoAsignacion;
-  responsableDestino: string;
+  ubicacion : Ubicacion;
+  responsableDestino?: string;
   observaciones?: string;
   fechaAsignacion: string;
   estado: 'REGISTRADA' | 'ASIGNADA' | 'DEVOLUCION PARCIAL' | 'DEVOLUCION TOTAL' | 'CANCELADA';
@@ -42,7 +44,8 @@ export interface Asignacion {
 
 export interface AsignacionCreacionDTO {
   idAsignacionTipo: number;
-  responsableDestino: string;
+  idUbicacion: number;
+  responsableDestino?: string;
   observaciones?: string;
   idUsuario: number;
   items: { idProducto: number; idBodegaOrigen: number }[];

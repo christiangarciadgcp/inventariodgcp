@@ -24,6 +24,7 @@ public class AsignacionService {
     private final InventarioRepository inventarioRepository;
     private final InventarioService inventarioService;
     private final NotificacionService notificacionService;
+    private final UbicacionRepository ubicacionRepository;
 
     public AsignacionService(AsignacionRepository asignacionRepository,
                              AsignacionDetalleRepository detalleRepository,
@@ -34,7 +35,8 @@ public class AsignacionService {
                              UsuarioRepository usuarioRepository,
                              InventarioRepository inventarioRepository,
                              InventarioService inventarioService,
-                             NotificacionService notificacionService) {
+                             NotificacionService notificacionService,
+                            UbicacionRepository ubicacionRepository) {
         this.asignacionRepository = asignacionRepository;
         this.detalleRepository = detalleRepository;
         this.secuenciaRepository = secuenciaRepository;
@@ -45,6 +47,7 @@ public class AsignacionService {
         this.inventarioRepository = inventarioRepository;
         this.inventarioService = inventarioService;
         this.notificacionService = notificacionService;
+        this.ubicacionRepository = ubicacionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -97,6 +100,9 @@ public class AsignacionService {
         AsignacionTipo tipo = tipoAsignacionRepository.findById(dto.getIdAsignacionTipo())
                 .orElseThrow(() -> new RuntimeException("Tipo de Asignación no encontrado con ID: " + dto.getIdAsignacionTipo()));
 
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
+                .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
+
         int anioActual = Year.now().getValue();
         int siguienteCorrelativo = calcularSiguienteCorrelativo(anioActual);
         String numeroActa = siguienteCorrelativo + "-" + anioActual;
@@ -106,7 +112,8 @@ public class AsignacionService {
         asignacion.setCorrelativo(siguienteCorrelativo);
         asignacion.setAnio(anioActual);
         asignacion.setTipoAsignacion(tipo);
-        asignacion.setResponsableDestino(dto.getResponsableDestino());
+        asignacion.setUbicacion(ubicacion);
+        asignacion.setResponsableDestino(dto.getResponsableDestino() != null ? dto.getResponsableDestino().trim() : "");
         asignacion.setObservaciones(dto.getObservaciones());
         asignacion.setUsuarioCreacion(solicitante);
         asignacion.setFechaAsignacion(Instant.now());
@@ -163,7 +170,11 @@ public class AsignacionService {
         AsignacionTipo tipo = tipoAsignacionRepository.findById(dto.getIdAsignacionTipo())
                 .orElseThrow(() -> new RuntimeException("Tipo de Asignación no encontrado"));
 
+        Ubicacion ubicacion = ubicacionRepository.findById(dto.getIdUbicacion())
+                .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
+
         asignacion.setTipoAsignacion(tipo);
+        asignacion.setUbicacion(ubicacion);
         asignacion.setResponsableDestino(dto.getResponsableDestino());
         asignacion.setObservaciones(dto.getObservaciones());
 
@@ -225,7 +236,7 @@ public class AsignacionService {
                     "SALIDA",
                     1,
                     idUsuarioJefe,
-                    "Salida por Asignación - Acta N° " + asignacion.getNumeroActa() + " para " + asignacion.getResponsableDestino()
+                    "Salida por Asignación - Acta N° " + asignacion.getNumeroActa() + " para " + asignacion.getUbicacion().getNombreubicacion()
             );
 
             // CAMBIO DE ESTADO DEL EQUIPO: Pasa formalmente a ASIGNADO

@@ -33,7 +33,11 @@ public class Asignacion {
     @JoinColumn(name = "idasignaciontipo", nullable = false)
     private AsignacionTipo tipoAsignacion;
 
-    @Column(name = "responsable_destino", nullable = false, length = 255)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_ubicacion", nullable = false)
+    private Ubicacion ubicacion;
+
+    @Column(name = "responsable_destino", length = 255)
     private String responsableDestino;
 
     @Column(name = "observaciones", columnDefinition = "TEXT")

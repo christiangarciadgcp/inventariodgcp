@@ -6,6 +6,7 @@ import java.util.List;
 @Data
 public class AsignacionCreacionDTO {
     private Integer idAsignacionTipo;
+    private Integer idUbicacion;
     private String responsableDestino;
     private String observaciones;
     private Integer idUsuario;

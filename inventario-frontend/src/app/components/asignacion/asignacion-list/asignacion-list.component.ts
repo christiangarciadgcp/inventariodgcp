@@ -106,8 +106,10 @@ export class AsignacionListComponent implements OnInit {
     this.dataSource.filterPredicate = (data: Asignacion, filter: string) => {
       const searchStr = (
         data.numeroActa +
-        data.responsableDestino +
         data.tipoAsignacion.nombre +
+        (data.responsableDestino || '') +
+        (data.ubicacion?.nombreubicacion || '') +
+        (data.ubicacion?.siglasubicacion || '') +
         data.estado +
         (data.observaciones || '')
       ).toLowerCase();

@@ -36,8 +36,17 @@ export class ProductoDiccionarioComponent implements OnInit {
   productos = signal<Producto[]>([]);
   cargando: boolean = true;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    if (mp) {
+      this.dataSource.paginator = mp;
+    }
+  }
+
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    if (ms) {
+      this.dataSource.sort = ms;
+    }
+  }
 
   private productoService = inject(ProductoService);
   private dialog = inject(MatDialog);
@@ -46,18 +55,16 @@ export class ProductoDiccionarioComponent implements OnInit {
   constructor() {
     effect(() => {
       this.dataSource.data = this.productos();
-      if (this.paginator) this.dataSource.paginator = this.paginator;
-      if (this.sort) this.dataSource.sort = this.sort;
     });
 
     this.dataSource.filterPredicate = (data: Producto, filter: string) => {
 
       const searchStr = (
-        data.nombreproducto +
-        data.skuproducto +
-        (data.categoria?.nombrecategoria ?? '') +
-        (data.modelo?.marca?.nombremarca ?? '')
+        (data.nombreproducto || '') +
+        (data.skuproducto || '') +
+        (data.categoria?.nombrecategoria || '')
       ).toLowerCase();
+
 
       return searchStr.includes(filter);
     };
@@ -65,11 +72,14 @@ export class ProductoDiccionarioComponent implements OnInit {
 
     this.dataSource.sortingDataAccessor = (item: Producto, property: string) => {
       switch (property) {
-        case 'sku': return item.skuproducto;
-        case 'nombre': return item.nombreproducto;
-        case 'categoria': return item.categoria?.nombrecategoria;
-        case 'marca': return item.modelo?.marca?.nombremarca;
-        default: return (item as any)[property];
+        case 'sku':
+          return item.skuproducto ? item.skuproducto.toLowerCase() : '';
+        case 'nombre':
+          return item.nombreproducto ? item.nombreproducto.toLowerCase() : '';
+        case 'categoria':
+          return item.categoria?.nombrecategoria ? item.categoria.nombrecategoria.toLowerCase() : '';
+        default:
+          return (item as any)[property] || '';
       }
     };
   }

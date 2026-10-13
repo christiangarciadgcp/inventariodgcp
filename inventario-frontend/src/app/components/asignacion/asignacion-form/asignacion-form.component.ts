@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
@@ -11,15 +11,18 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Observable, forkJoin } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 
 import { AsignacionService } from '../../../services/asignacion.service';
 import { TipoAsignacionService } from '../../../services/tipo-asignacion.service';
+import { UbicacionService } from '../../../services/ubicacion.service';
 import { InventarioService } from '../../../services/inventario.service';
 import { AuthService } from '../../../services/auth.service';
 import { Mensaje } from '../../../core/mensaje';
 import { TipoAsignacion } from '../../../models/tipo-asignacion';
+import { Ubicacion } from '../../../models/ubicacion';
 import { AsignacionCreacionDTO } from '../../../models/asignacion';
 
 @Component({
@@ -28,7 +31,8 @@ import { AsignacionCreacionDTO } from '../../../models/asignacion';
   imports: [
     CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
-    MatTableModule, MatAutocompleteModule, MatProgressSpinner, RouterLink
+    MatTableModule, MatAutocompleteModule, MatProgressSpinner, RouterLink,
+    MatTooltipModule
   ],
   templateUrl: './asignacion-form.component.html',
   styleUrls: ['./asignacion-form.component.css']
@@ -38,6 +42,7 @@ export class AsignacionFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private asignacionService = inject(AsignacionService);
   private tipoAsignacionService = inject(TipoAsignacionService);
+  private ubicacionService = inject(UbicacionService);
   private inventarioService = inject(InventarioService);
   private authService = inject(AuthService);
   private mensaje = inject(Mensaje);
@@ -46,6 +51,28 @@ export class AsignacionFormComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   tiposAsignacion = signal<TipoAsignacion[]>([]);
+  ubicaciones = signal<Ubicacion[]>([]);
+
+  // CONTROL Y SIGNAL REACTIVO PARA EL AUTOCOMPLETE DE UBICACIÓN
+  ubicacionFiltroCtrl = new FormControl<any>('');
+  textoFiltroUbicacion = signal<string>('');
+
+  // COMPUTED REACTIVO: Se actualiza en automático cuando llegan las ubicaciones o cuando el usuario escribe
+  ubicacionesFiltradas = computed(() => {
+    const query = this.textoFiltroUbicacion().toLowerCase().trim();
+    const list = this.ubicaciones();
+
+    if (!query) {
+      return list;
+    }
+
+    return list.filter(u =>
+      (u.nombreubicacion && u.nombreubicacion.toLowerCase().includes(query)) ||
+      (u.siglasubicacion && u.siglasubicacion.toLowerCase().includes(query))
+    );
+  });
+
+  // BÚSQUEDA DE EQUIPOS
   itemsDisponibles: any[] = [];
   filtroCtrl = new FormControl('');
   itemsFiltrados!: Observable<any[]>;
@@ -56,19 +83,36 @@ export class AsignacionFormComponent implements OnInit {
   guardando = signal<boolean>(false);
   cargandoEquipos: boolean = false;
 
-  // Variables para controlar la Edición
   esEdicion = signal<boolean>(false);
   idAsignacion = signal<number | null>(null);
   numeroActa = signal<string>('');
 
   form: FormGroup = this.fb.group({
     idAsignacionTipo: [null, Validators.required],
-    responsableDestino: ['', [Validators.required, Validators.minLength(3)]],
+    idUbicacion: [null, Validators.required],
+    responsableDestino: [''],
     observaciones: ['']
   });
 
   ngOnInit(): void {
     this.tipoAsignacionService.listarActivos().subscribe(data => this.tiposAsignacion.set(data));
+
+    // Cargar catálogo de ubicaciones
+    this.cargarCatalogoUbicaciones();
+
+    // Escuchar lo que escribe el usuario en el buscador de ubicación
+    this.ubicacionFiltroCtrl.valueChanges.subscribe(val => {
+      if (typeof val === 'string') {
+        this.textoFiltroUbicacion.set(val);
+        if (val.trim() === '') {
+          this.form.get('idUbicacion')?.setValue(null);
+        }
+      } else if (val) {
+        // Si es el objeto seleccionado, dejamos el filtro de texto limpio para que al hacer clic se vean todas
+        this.textoFiltroUbicacion.set('');
+      }
+    });
+
     this.cargarInventarioConsolidado(true);
 
     this.itemsFiltrados = this.filtroCtrl.valueChanges.pipe(
@@ -76,7 +120,6 @@ export class AsignacionFormComponent implements OnInit {
       map(val => this.filtrarItems(val || ''))
     );
 
-    // Detección de edición por parámetro de ruta
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       const id = +idParam;
@@ -86,6 +129,65 @@ export class AsignacionFormComponent implements OnInit {
     }
   }
 
+  cargarCatalogoUbicaciones() {
+    // Compatibilidad por si el servicio tiene getUbicacionesActivas() o getUbicaciones()
+    const req$ = typeof (this.ubicacionService as any).getUbicacionesActivas === 'function'
+      ? this.ubicacionService.getUbicacionesActivas()
+      : this.ubicacionService.getUbicaciones();
+
+    req$.subscribe({
+      next: (data: Ubicacion[]) => {
+        const activas = data.filter(u => u.activo !== false);
+        this.ubicaciones.set(activas);
+
+        if (this.esEdicion() && this.form.get('idUbicacion')?.value) {
+          const uEncontrada = activas.find(u => u.idUbicacion === this.form.get('idUbicacion')?.value);
+          if (uEncontrada) {
+            this.ubicacionFiltroCtrl.setValue(uEncontrada, { emitEvent: false });
+          }
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error al cargar ubicaciones:', err);
+      }
+    });
+  }
+
+  // Abre el panel y asegura que se muestren todas las opciones
+  abrirUbicaciones(trigger: any) {
+    if (typeof this.ubicacionFiltroCtrl.value !== 'string') {
+      this.textoFiltroUbicacion.set('');
+    }
+    trigger.openPanel();
+  }
+
+  displayFnUbicacion = (item: any): string => {
+    if (!item) return '';
+    if (typeof item === 'string') return item;
+    return item.siglasubicacion
+      ? `${item.nombreubicacion} (${item.siglasubicacion})`
+      : item.nombreubicacion || '';
+  };
+
+  seleccionarUbicacion(event: any) {
+    const u: Ubicacion = event.option.value;
+    if (u && u.idUbicacion) {
+      this.form.get('idUbicacion')?.setValue(u.idUbicacion);
+      this.textoFiltroUbicacion.set('');
+    } else {
+      this.limpiarUbicacion();
+    }
+  }
+
+  limpiarUbicacion() {
+    this.ubicacionFiltroCtrl.setValue('');
+    this.form.get('idUbicacion')?.setValue(null);
+    this.textoFiltroUbicacion.set('');
+    this.form.get('idUbicacion')?.markAsTouched();
+  }
+
+  // --- EDICIÓN ---
   cargarDatosEdicion(id: number) {
     forkJoin({
       asignacion: this.asignacionService.obtenerPorId(id),
@@ -101,9 +203,14 @@ export class AsignacionFormComponent implements OnInit {
         this.numeroActa.set(asignacion.numeroActa);
         this.form.patchValue({
           idAsignacionTipo: asignacion.tipoAsignacion.idAsignacionTipo,
-          responsableDestino: asignacion.responsableDestino,
+          idUbicacion: asignacion.ubicacion?.idUbicacion,
+          responsableDestino: asignacion.responsableDestino || '',
           observaciones: asignacion.observaciones
         });
+
+        if (asignacion.ubicacion) {
+          this.ubicacionFiltroCtrl.setValue(asignacion.ubicacion, { emitEvent: false });
+        }
 
         const itemsMapeados = detalles.map(d => ({
           producto: d.producto,
@@ -186,6 +293,7 @@ export class AsignacionFormComponent implements OnInit {
   guardar() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.ubicacionFiltroCtrl.markAsTouched();
       this.mensaje.open('Complete los datos obligatorios', 'warning');
       return;
     }
@@ -198,7 +306,8 @@ export class AsignacionFormComponent implements OnInit {
 
     const dto: AsignacionCreacionDTO = {
       idAsignacionTipo: this.form.value.idAsignacionTipo,
-      responsableDestino: this.form.value.responsableDestino,
+      idUbicacion: this.form.value.idUbicacion,
+      responsableDestino: this.form.value.responsableDestino?.trim() || '',
       observaciones: this.form.value.observaciones,
       idUsuario: this.authService.getIdUsuarioActual(),
       items: this.itemsSeleccionados().map(i => ({

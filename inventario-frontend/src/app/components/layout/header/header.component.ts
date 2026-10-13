@@ -47,6 +47,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private idUsuarioActual: number = 0;
   private subRouter!: Subscription;
 
+
   ngOnInit(): void {
     const usuarioActual = this.authService.getUsuarioActual();
     this.idUsuarioActual = this.authService.getIdUsuarioActual();
@@ -56,7 +57,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const rolActual = this.authService.getRolUsuario();
     this.rolUsuario = this.fn.formatearNombre(rolActual);
 
-    this.avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.nombreUsuario)}&background=random&color=fff`;
+    const { bg, color } = this.obtenerColoresAvatar(rolActual);
+
+    this.avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.nombreUsuario)}&background=${bg}&color=${color}&bold=true`;
+
+
+    //this.avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.nombreUsuario)}&background=random&color=fff`;
+
+    //this.avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.nombreUsuario)}&background=random&color=fff&t=${Date.now()}`;
+
 
     this.cargarNotificaciones();
 
@@ -127,4 +136,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.authService.logout();
   }
+
+
+  private obtenerColoresAvatar(rol: string): { bg: string; color: string } {
+    const r = (rol || '').toLowerCase().trim();
+
+    if (r.includes('administrador'))        return { bg: '00b215', color: 'ffffff' };
+    if (r.includes('coordinador utdi'))  return { bg: '795548', color: 'ffffff' };
+    if (r.includes('jefe utdi'))         return { bg: 'b20000', color: 'ffffff' };
+    if (r.includes('inventario utdi'))   return { bg: '0695af', color: 'ffffff' };
+    if (r.includes('tecnico utdi'))       return { bg: 'fb8c00', color: 'ffffff' };
+
+    return { bg: '5d6676', color: 'ffffff' };
+  }
+
+
 }
