@@ -195,9 +195,11 @@
                       }
                     }
 
+                    @if(!element.esGenerico){
                     <button mat-icon-button class="action-btn qr-icon" matTooltip="Ver Código QR" (click)="verCodigoQr(element)">
                       <mat-icon class="icon-acciones align-middle">qr_code_2</mat-icon>
                     </button>
+                    }
 
                     <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Producto" (click)="abrirFormulario(element)">
                       <mat-icon class="icon-acciones align-middle">edit_note</mat-icon>

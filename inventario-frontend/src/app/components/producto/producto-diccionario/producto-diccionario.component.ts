@@ -31,10 +31,13 @@ import {RouterLink} from '@angular/router';
 })
 export class ProductoDiccionarioComponent implements OnInit {
 
-  displayedColumns: string[] = ['sku', 'nombre', 'categoria', 'acciones'];
+  // displayedColumns: string[] = [ 'sku', 'nombre', 'categoria', 'acciones']; // SI SE DESEA MOSTRAR EL SKU
+  displayedColumns: string[] = [ 'nombre', 'categoria', 'acciones'];
+
+
   dataSource = new MatTableDataSource<Producto>([]);
   productos = signal<Producto[]>([]);
-  cargando: boolean = true;
+  cargando = signal<boolean>(true);
 
   @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -97,21 +100,20 @@ export class ProductoDiccionarioComponent implements OnInit {
   }
 
   cargarProductos() {
-    this.cargando = true;
-    this.productoService.getProductosActivos().subscribe({
+    this.cargando.set(true);
+    this.productoService.getProductosGenericos().subscribe({
       next: (data) => {
 
-        const productosGenericos = data.filter(producto => producto.esGenerico);
 
-        const dataOrdenada = productosGenericos.sort((a, b) =>
+        const dataOrdenada = data.sort((a, b) =>
           a.nombreproducto.localeCompare(b.nombreproducto, 'es', { sensitivity: 'base' })
         );
 
         this.productos.set(dataOrdenada);
-        this.cargando = false;
+        this.cargando.set(false);
       },
       error: (err) => {
-        this.cargando = false;
+        this.cargando.set(false);
         const msg = err.error?.mensaje || 'Error al cargar los materiales/equipos';
         this.mensaje.open(msg, 'warning');
       }

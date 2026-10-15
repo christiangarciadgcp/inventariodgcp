@@ -4,10 +4,11 @@ export interface Usuario {
     idUsuario : number;
     nombreusuario: string;
     passwordusuario?: string;
+    iniciales?: string;
     rol: Rol;
 
-    estado?: boolean;         
-    ultimaConexion?: string; 
+    estado?: boolean;
+    ultimaConexion?: string;
     ultimaIp?: string;
 }
 

@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Data
 @Entity
 @Table(name = "producto")
@@ -42,6 +45,7 @@ public class Producto {
     @JoinColumn(name = "id_producto_padre")
     private Producto productoPadre;
 
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductoImagen> imagenes = new ArrayList<>();
 

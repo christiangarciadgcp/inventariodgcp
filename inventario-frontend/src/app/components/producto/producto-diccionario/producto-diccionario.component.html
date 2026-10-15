@@ -39,7 +39,7 @@
 
     <!-- CONTENEDOR DE LA TABLA -->
     <div class="p-3 bg-white">
-      @if (cargando) {
+      @if (cargando()) {
         <div class="d-flex flex-column justify-content-center align-items-center py-5">
           <mat-spinner diameter="50" strokeWidth="5" color="primary"></mat-spinner>
           <h6 class="mt-3 text-dark fw-bold m-0" style="letter-spacing: 1px;">Cargando catálogo...</h6>

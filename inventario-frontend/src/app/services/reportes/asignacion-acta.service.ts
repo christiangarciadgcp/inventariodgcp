@@ -4,11 +4,13 @@ import autoTable from 'jspdf-autotable';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-
 import { Asignacion, AsignacionDetalle } from '../../models/asignacion';
 import { Utils } from '../../core/utils';
 import {TipoAsignacionService} from '../tipo-asignacion.service';
 import { TipoAsignacion } from '../../models/tipo-asignacion';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../environments/environment.development';
+import {Usuario} from '../../models/usuario';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +19,26 @@ export class AsignacionActaService {
 
   private utils = inject(Utils);
   private tipoAsignacionService = inject(TipoAsignacionService);
+  private http = inject(HttpClient);
+  private apiUrl = `${environment.apiUrl}/usuarios`;
+
+  private inicialesJefe: string = '';
+
+  constructor() {
+    this.cargarDatosIniciales();
+  }
+
+  private cargarDatosIniciales(): void {
+
+    this.http.get<Usuario[]>(this.apiUrl).subscribe({
+      next: (usuarios) => {
+        const jefe = usuarios.find(
+          u => u.estado !== false && u.rol?.nombrerol?.toLowerCase().trim() === 'jefe utdi'
+        );
+        this.inicialesJefe = (jefe?.iniciales || '').trim();
+      }
+    });
+  }
 
   generarActaPdf(asignacion: Asignacion, detalles: AsignacionDetalle[]): string {
     const doc = new jsPDF({
@@ -67,7 +89,7 @@ export class AsignacionActaService {
     // ==========================================
     // TÍTULO CENTRADO
     // ==========================================
-    const yTitulo = logoY + logoHeight + 7; // ~41 mm
+    const yTitulo = logoY + logoHeight + 7;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -83,14 +105,14 @@ export class AsignacionActaService {
       year: 'numeric'
     });
 
-    const yFecha = yTitulo + 15; // ~49 mm
+    const yFecha = yTitulo + 15;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text(`San Salvador, ${fechaAsignacion}`, 202, yFecha, { align: 'right' });
 
     // ==========================================
-    // 5. DATOS DEL ENCARGADO
+    // DATOS DEL ENCARGADO
     // ==========================================
     const yNombre = yFecha + 15;
     const nombreResponsable = 'Mauricio Gustavo Toledo López'
@@ -113,13 +135,13 @@ export class AsignacionActaService {
     doc.text('Presente', 14, yPresente);
 
     // ==========================================
-    // 6. TEXTO INTRODUCTORIO
+    // TEXTO INTRODUCTORIO
     // ==========================================
     const yTextoDetalle = yPresente + 10;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9.5);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('Atentamente, se solicita que para este dia se realice Acta de Movimiento de Bienes del Equipo que a continuación se detalla:', 14, yTextoDetalle);
+    doc.text('Atentamente, se solicita que para este día se realice Acta de Movimiento de Bienes del Equipo que a continuación se detalla:', 14, yTextoDetalle);
 
     const yTipoMov = yTextoDetalle + 6;
     doc.setFont('helvetica', 'bold');
@@ -135,15 +157,15 @@ export class AsignacionActaService {
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text(tipoMovimiento, xTipoMov, yTipoMov);
 
-// --- SUBRAYADO ---
+
     const anchoTexto = doc.getTextWidth(tipoMovimiento);
-    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]); // Mismo color del texto
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setLineWidth(0.35); // Grosor del trazo
     doc.line(xTipoMov, yTipoMov + 1, xTipoMov + anchoTexto, yTipoMov + 1); // 1 mm debajo de la línea base
 
 
     // ==========================================
-    // 7. TABLA DE EQUIPOS CON DESTINO UNIFICADO
+    // TABLA DE EQUIPOS CON DESTINO UNIFICADO
     // ==========================================
     // Se extrae la ubicación seleccionada
     const destinoTexto = asignacion.ubicacion?.nombreubicacion ? asignacion.ubicacion.nombreubicacion : 'N/A';
@@ -212,7 +234,7 @@ export class AsignacionActaService {
     });
 
 // ==========================================
-    // 9. OBSERVACIONES (STRING DIRECTO)
+    // OBSERVACIONES (STRING DIRECTO)
     // ==========================================
     const obsTexto = asignacion.observaciones?.trim() || 'Sin observaciones registradas.';
     const lineasObs = doc.splitTextToSize(obsTexto, 188);
@@ -239,7 +261,7 @@ export class AsignacionActaService {
 
 
     // ==========================================
-    // 10. EVALUACIÓN Y SECCIÓN DE FIRMA CENTRADA
+    // EVALUACIÓN Y SECCIÓN DE FIRMA CENTRADA
     // ==========================================
     const altoFirmaRequerido = 35;
     let yLineaFirma: number;
@@ -248,7 +270,7 @@ export class AsignacionActaService {
       doc.addPage();
       yLineaFirma = 55;
     } else {
-      yLineaFirma = yFinObservaciones + 25;
+      yLineaFirma = yFinObservaciones + 40;
     }
 
     const centroPagina = pageWidth / 2;
@@ -274,18 +296,36 @@ export class AsignacionActaService {
       'www.dgcp.gob.sv'
     ];
 
+    const inicialesCreacion = (asignacion.usuarioCreacion?.iniciales || '').trim();
+
+    const inicialesActa = [this.inicialesJefe, inicialesCreacion]
+      .filter(ini => ini.length > 0)
+      .join('/');
+
     const totalPaginas = doc.getNumberOfPages();
     for (let i = 1; i <= totalPaginas; i++) {
       doc.setPage(i);
 
-      doc.setDrawColor(203, 213, 225);
-      doc.setLineWidth(0.2);
-      doc.line(14, 258, 202, 258);
-      // Texto de dirección centrado
-      doc.setFont('helvetica', 'normal');
+
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.1);
+      doc.line(90, 260, 125, 260);
+
+      if (inicialesActa) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6);
+        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+        doc.text(inicialesActa, 14, 266.5);
+      }
+
+      doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
       doc.setTextColor(grayText[0], grayText[1], grayText[2]);
       doc.text(lineasDireccion[0], centroPagina, 263, { align: 'center' });
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
       doc.text(lineasDireccion[1], centroPagina, 266.5, { align: 'center' });
       doc.text(lineasDireccion[2], centroPagina, 270, { align: 'center' });
     }

@@ -2,10 +2,8 @@ package com.sistemainventario.inventario.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "asignacion_detalle")
 public class AsignacionDetalle {
@@ -44,4 +42,79 @@ public class AsignacionDetalle {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario_devolucion")
     private Usuario usuarioDevolucion;
+
+    public AsignacionDetalle() {
+    }
+
+    public void setIdAsignacionDetalle(Long idAsignacionDetalle) {
+        this.idAsignacionDetalle = idAsignacionDetalle;
+    }
+
+    public void setAsignacion(Asignacion asignacion) {
+        this.asignacion = asignacion;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public void setBodegaOrigen(Bodega bodegaOrigen) {
+        this.bodegaOrigen = bodegaOrigen;
+    }
+
+    public void setBodegaDevolucion(Bodega bodegaDevolucion) {
+        this.bodegaDevolucion = bodegaDevolucion;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setFechaDevolucion(Instant fechaDevolucion) {
+        this.fechaDevolucion = fechaDevolucion;
+    }
+
+    public void setObservacionDevolucion(String observacionDevolucion) {
+        this.observacionDevolucion = observacionDevolucion;
+    }
+
+    public void setUsuarioDevolucion(Usuario usuarioDevolucion) {
+        this.usuarioDevolucion = usuarioDevolucion;
+    }
+
+    public Long getIdAsignacionDetalle() {
+        return idAsignacionDetalle;
+    }
+
+    public Asignacion getAsignacion() {
+        return asignacion;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public Bodega getBodegaOrigen() {
+        return bodegaOrigen;
+    }
+
+    public Bodega getBodegaDevolucion() {
+        return bodegaDevolucion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public Instant getFechaDevolucion() {
+        return fechaDevolucion;
+    }
+
+    public String getObservacionDevolucion() {
+        return observacionDevolucion;
+    }
+
+    public Usuario getUsuarioDevolucion() {
+        return usuarioDevolucion;
+    }
 }

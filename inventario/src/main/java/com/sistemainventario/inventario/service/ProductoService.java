@@ -65,15 +65,14 @@ public class ProductoService {
         this.productoImagenRepository = productoImagenRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<Producto> listarProductos(){
-        return productoRepository.findAll(Sort.by(Sort.Direction.ASC, "idProducto"));
-        // return productoRepository.findAll(Sort.by(Sort.Direction.ASC, "categoria.idCategoria"));
-        // return productoRepository.findAll();
+        return productoRepository.findAllOptimizado(Sort.by(Sort.Direction.ASC, "idProducto"));
     }
 
+    @Transactional(readOnly = true)
     public List<Producto> listarProductosActivos(){
-        return productoRepository.findByActivoTrue(Sort.by(Sort.Direction.ASC, "idProducto"));
-        // return productoRepository.findByActivoTrue();
+        return productoRepository.findByActivoTrueOptimizado(Sort.by(Sort.Direction.ASC, "idProducto"));
     }
 
     public List<Producto> listarProductosGenericos() {
