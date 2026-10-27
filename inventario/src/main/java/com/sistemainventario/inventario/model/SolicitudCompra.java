@@ -1,12 +1,10 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import java.util.List;
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "solicitud_compra")
 public class SolicitudCompra {
@@ -52,5 +50,66 @@ public class SolicitudCompra {
             this.estado = "PENDIENTE";
         }
     }
+
+    public SolicitudCompra() {
+    }
+
+    public Long getIdSolicitudCompra() {
+        return idSolicitudCompra;
+    }
+
+    public void setIdSolicitudCompra(Long idSolicitudCompra) {
+        this.idSolicitudCompra = idSolicitudCompra;
+    }
+
+    public String getNombresolicitud() {
+        return nombresolicitud;
+    }
+
+    public void setNombresolicitud(String nombresolicitud) {
+        this.nombresolicitud = nombresolicitud;
+    }
+
+    public Instant getFechacreacionsolicitud() {
+        return fechacreacionsolicitud;
+    }
+
+    public void setFechacreacionsolicitud(Instant fechacreacionsolicitud) {
+        this.fechacreacionsolicitud = fechacreacionsolicitud;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Usuario getIdusuariosolicitante() {
+        return idusuariosolicitante;
+    }
+
+    public void setIdusuariosolicitante(Usuario idusuariosolicitante) {
+        this.idusuariosolicitante = idusuariosolicitante;
+    }
+
+    public Bodega getIdbodegadestino() {
+        return idbodegadestino;
+    }
+
+    public void setIdbodegadestino(Bodega idbodegadestino) {
+        this.idbodegadestino = idbodegadestino;
+    }
+
+    public List<SolicitudCompraHistorial> getHistorial() {
+        return historial;
+    }
+
+    public void setHistorial(List<SolicitudCompraHistorial> historial) {
+        this.historial = historial;
+    }
+
+    
 
 }

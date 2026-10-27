@@ -8,7 +8,7 @@
 
         <mat-form-field appearance="outline" class="w-100 mb-2">
             <mat-label>Unidad de Medida</mat-label>
-            <input matInput formControlName="nombre" placeholder="Ej. Metro" autocomplete="off">
+            <input matInput formControlName="nombre" placeholder="Ej. Metro" autocomplete="off" Mayusculas>
             @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }

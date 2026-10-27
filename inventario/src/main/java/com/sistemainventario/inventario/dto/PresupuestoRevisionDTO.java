@@ -10,6 +10,7 @@ public class PresupuestoRevisionDTO {
     private String nombreProducto;
     private String unidadMedida;
     private Boolean esGenerico;
+    private Boolean esMaterial;
     private Integer cantidadSolicitada;
     private Integer cantidadDespachada;
     private Integer cantidadPendiente;

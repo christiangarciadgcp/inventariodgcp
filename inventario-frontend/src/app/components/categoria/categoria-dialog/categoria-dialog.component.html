@@ -9,7 +9,7 @@
 
         <mat-form-field appearance="outline">
             <mat-label>Nombre de la Categoría</mat-label>
-            <input matInput formControlName="nombre" placeholder="Ej. Electrónica" autocomplete="off">
+            <input matInput formControlName="nombre" placeholder="Ej. Electrónica" autocomplete="off" Mayusculas>
             @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }

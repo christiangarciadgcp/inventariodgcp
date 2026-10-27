@@ -166,9 +166,9 @@ export class CategoriaComponent implements OnInit{
         this.cargarCategorias();
         this.mensaje.open('¡Categoría creada con éxito!', 'exito');
       },
-      error: (e) => {
-        console.error('Error al guardar:', e);
-        this.mensaje.open('Error al crear la categoría', 'error');
+    error: (err) => {
+        const msg = err.error?.mensaje || 'Error al guardar la categoria';
+        this.mensaje.open(msg, 'error');
       }
     });
 

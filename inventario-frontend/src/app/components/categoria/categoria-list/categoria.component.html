@@ -74,13 +74,12 @@
                     <button mat-icon-button class="action-btn edit-icon" matTooltip="Editar Categoria" (click)="abrirFormulario(element)">
                         <mat-icon class="icon-acciones">edit_note</mat-icon> </button>
 
-
                   @if (element.activo) {
-                    <button mat-icon-button class="action-btn icon-success" matTooltip="Desactivar Bodega" (click)="desactivarCategoria(element.idCategoria)">
+                    <button mat-icon-button class="action-btn icon-success" matTooltip="Desactivar Categoría" (click)="desactivarCategoria(element.idCategoria)">
                       <mat-icon class="icon-acciones align-middle">toggle_on</mat-icon>
                     </button>
                   } @else {
-                    <button mat-icon-button class="action-btn restore icon-danger" matTooltip="Reactivar Bodega" (click)="reactivarCategoria(element.idCategoria)">
+                    <button mat-icon-button class="action-btn restore icon-danger" matTooltip="Reactivar Categoría" (click)="reactivarCategoria(element.idCategoria)">
                       <mat-icon class="icon-acciones align-middle">toggle_off</mat-icon>
                     </button>
                   }

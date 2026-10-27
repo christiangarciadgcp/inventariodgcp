@@ -1,10 +1,8 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "notificaciones")
 public class Notificacion {
@@ -25,4 +23,33 @@ public class Notificacion {
             this.fecha = Instant.now();
         }
     }
+
+    public Notificacion() {
+    }
+
+    public Long getIdNotificacion() {
+        return idNotificacion;
+    }
+
+    public void setIdNotificacion(Long idNotificacion) {
+        this.idNotificacion = idNotificacion;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public Instant getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Instant fecha) {
+        this.fecha = fecha;
+    }
+
+    
 }

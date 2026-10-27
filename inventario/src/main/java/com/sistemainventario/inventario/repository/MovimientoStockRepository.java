@@ -73,5 +73,12 @@ public interface MovimientoStockRepository extends JpaRepository<MovimientoStock
         @Param("tipo") String tipo
     );
 
+    @Query("SELECT m FROM MovimientoStock m WHERE m.producto.idProducto = :idProducto AND m.bodega.idBodega = :idBodega ORDER BY m.fecha ASC")
+    List<MovimientoStock> findByProductoAndBodegaOrdenado(
+        @Param("idProducto") Integer idProducto, 
+        @Param("idBodega") Integer idBodega
+);
+
+
 }
 

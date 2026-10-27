@@ -147,9 +147,9 @@ export class ProveedorListComponent {
         this.cargarProveedores();
         this.mensaje.open('Proveedor registrado exitosamente', 'exito');
       },
-      error: (e) => {
-        console.error(e);
-        this.mensaje.open('Error al guardar el proveedor', 'error')
+      error : (err) => {
+        const msg = err.error?.mensaje || 'Error al guardar el proveedor';
+        this.mensaje.open(msg, 'error');
       }
     });
 

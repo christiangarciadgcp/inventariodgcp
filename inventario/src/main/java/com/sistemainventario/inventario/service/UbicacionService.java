@@ -35,23 +35,50 @@ public class UbicacionService {
         return ubicacionRepository.findById(id);
     }
 
-    // GUARDAR NUEVA UBICACION
-    @Transactional
+@Transactional
     public Ubicacion guardarUbicacion(Ubicacion ubicacion) {
+        String nombreLimpio = ubicacion.getNombreubicacion() != null ? ubicacion.getNombreubicacion().trim() : "";
+
+
+        if (ubicacionRepository.findFirstByNombreubicacionIgnoreCase(nombreLimpio).isPresent()) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
+        boolean esNueva = (ubicacion.getIdUbicacion() == null);
+        if (esNueva) {
+            ubicacion.setActivo(true);
+        }
+
+        ubicacion.setNombreubicacion(nombreLimpio);
+
+        if (ubicacion.getSiglasubicacion() != null) {
+            ubicacion.setSiglasubicacion(ubicacion.getSiglasubicacion().trim().toUpperCase());
+        }
+
         return ubicacionRepository.save(ubicacion);
     }
 
     @Transactional
-    public Ubicacion actualizarUbicacion(Integer id, Ubicacion ubicacion){
+    public Ubicacion actualizarUbicacion(Integer id, Ubicacion ubicacion) {
+        String nombreLimpio = ubicacion.getNombreubicacion() != null ? ubicacion.getNombreubicacion().trim() : "";
+
+        Optional<Ubicacion> ubicacionExistente = ubicacionRepository.findFirstByNombreubicacionIgnoreCase(nombreLimpio);
+        if (ubicacionExistente.isPresent() && !ubicacionExistente.get().getIdUbicacion().equals(id)) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
         Ubicacion ubicacionActual = ubicacionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ubicacion no encontrada"));
 
-        ubicacionActual.setNombreubicacion(ubicacion.getNombreubicacion());
-        ubicacionActual.setSiglasubicacion(ubicacion.getSiglasubicacion());
+        ubicacionActual.setNombreubicacion(nombreLimpio);
+
+        if (ubicacion.getSiglasubicacion() != null) {
+            ubicacionActual.setSiglasubicacion(ubicacion.getSiglasubicacion().trim().toUpperCase());
+        }
 
         return ubicacionRepository.save(ubicacionActual);
-
     }
+
 
 
     @Transactional

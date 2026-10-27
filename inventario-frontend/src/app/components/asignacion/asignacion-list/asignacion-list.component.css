@@ -68,22 +68,24 @@
   font-family: monospace;
 }
 
-/* COLORES DE TIPO */
 .tipo-traslado {
-  background-color: #f5ebe0;
-  color: #795548;
-  border: 1px solid #d7ccc8;
+  background-color: #ebf3fe;
+  color: #1a56db;
+  border: 1px solid #c3d9fe;
 }
+
+.tipo-prestamo {
+  background-color: #fdf4ea;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
 .tipo-asignacion {
   background-color: #fff6e5;
   color: #fb8c00;
   border: 1px solid #ffcc80;
 }
-.tipo-prestamo {
-  background-color: #f3e8ff;
-  color: #7e22ce;
-  border: 1px solid #d8b4fe;
-}
+
 .tipo-revision {
   background-color: #f5ebe0;
   color: #795548;

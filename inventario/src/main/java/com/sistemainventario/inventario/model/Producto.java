@@ -1,8 +1,6 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +8,6 @@ import java.util.List;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-@Data
 @Entity
 @Table(name = "producto")
 public class Producto {
@@ -82,5 +79,153 @@ public class Producto {
     @Column(name = "es_asignable", columnDefinition = "boolean default false", nullable = false)
     private Boolean esAsignable = false;
 
+    public Producto() {
+    }
+
+    public Integer getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(Integer idProducto) {
+        this.idProducto = idProducto;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    public UnidadMedida getUnidadMedida() {
+        return unidadMedida;
+    }
+
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
+        this.unidadMedida = unidadMedida;
+    }
+
+    public Modelo getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(Modelo modelo) {
+        this.modelo = modelo;
+    }
+
+    public Producto getProductoPadre() {
+        return productoPadre;
+    }
+
+    public void setProductoPadre(Producto productoPadre) {
+        this.productoPadre = productoPadre;
+    }
+
+    public List<ProductoImagen> getImagenes() {
+        return imagenes;
+    }
+
+    public void setImagenes(List<ProductoImagen> imagenes) {
+        this.imagenes = imagenes;
+    }
+
+    public String getNombreproducto() {
+        return nombreproducto;
+    }
+
+    public void setNombreproducto(String nombreproducto) {
+        this.nombreproducto = nombreproducto;
+    }
+
+    public String getSkuproducto() {
+        return skuproducto;
+    }
+
+    public void setSkuproducto(String skuproducto) {
+        this.skuproducto = skuproducto;
+    }
+
+    public String getDescripcionproducto() {
+        return descripcionproducto;
+    }
+
+    public void setDescripcionproducto(String descripcionproducto) {
+        this.descripcionproducto = descripcionproducto;
+    }
+
+    public String getSerieproducto() {
+        return serieproducto;
+    }
+
+    public void setSerieproducto(String serieproducto) {
+        this.serieproducto = serieproducto;
+    }
+
+    public String getInventarioproducto() {
+        return inventarioproducto;
+    }
+
+    public void setInventarioproducto(String inventarioproducto) {
+        this.inventarioproducto = inventarioproducto;
+    }
+
+    public BigDecimal getPreciocostoproducto() {
+        return preciocostoproducto;
+    }
+
+    public void setPreciocostoproducto(BigDecimal preciocostoproducto) {
+        this.preciocostoproducto = preciocostoproducto;
+    }
+
+    public BigDecimal getPrecioventaproducto() {
+        return precioventaproducto;
+    }
+
+    public void setPrecioventaproducto(BigDecimal precioventaproducto) {
+        this.precioventaproducto = precioventaproducto;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Boolean getEsGenerico() {
+        return esGenerico;
+    }
+
+    public void setEsGenerico(Boolean esGenerico) {
+        this.esGenerico = esGenerico;
+    }
+
+    public Boolean getEsNuevo() {
+        return esNuevo;
+    }
+
+    public void setEsNuevo(Boolean esNuevo) {
+        this.esNuevo = esNuevo;
+    }
+
+    public Boolean getEsAsignable() {
+        return esAsignable;
+    }
+
+    public void setEsAsignable(Boolean esAsignable) {
+        this.esAsignable = esAsignable;
+    }
+
+    
 
 }

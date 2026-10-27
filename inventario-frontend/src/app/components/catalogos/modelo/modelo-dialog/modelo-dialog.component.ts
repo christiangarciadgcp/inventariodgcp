@@ -9,16 +9,28 @@ import {MarcaService} from '../../../../services/marca.service';
 import { MatSelectModule} from '@angular/material/select';
 import {MatIconModule} from '@angular/material/icon';
 import {Mensaje} from '../../../../core/mensaje';
+import {MayusculasDirective} from '../../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-modelo-dialog',
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatIconModule
+    MatIconModule, MayusculasDirective
   ],
   templateUrl: './modelo-dialog.component.html',
-  styles: [`mat-form-field { width: 100%; margin-bottom: 10 px; }`]
+  styles: [`
+    mat-form-field { width: 100%; margin-bottom: 10px; }
+
+    .readonly-select {
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .readonly-select .mat-mdc-select-arrow-wrapper {
+      opacity: 0 !important;
+    }
+  `]
 })
 export class ModeloDialogComponent implements OnInit {
 

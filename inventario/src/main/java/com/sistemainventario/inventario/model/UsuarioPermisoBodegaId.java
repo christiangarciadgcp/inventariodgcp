@@ -1,11 +1,10 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Data;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Data
+
 @Embeddable
 public class UsuarioPermisoBodegaId implements Serializable{
 
@@ -30,4 +29,25 @@ public class UsuarioPermisoBodegaId implements Serializable{
     public int hashCode() {
         return Objects.hash(idUsuario, idBodega);
     }
+
+    public UsuarioPermisoBodegaId() {
+    }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Integer getIdBodega() {
+        return idBodega;
+    }
+
+    public void setIdBodega(Integer idBodega) {
+        this.idBodega = idBodega;
+    }
+
+    
 }

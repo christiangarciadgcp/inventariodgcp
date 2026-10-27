@@ -40,10 +40,18 @@ public class MarcaService {
     @Transactional
     public Marca guardarMarca(Marca marca){
 
+        String nombreLimpio = marca.getNombremarca().trim();
+
+        // VALIDACIÓN PREVIA
+        if (marcaRepository.findFirstByNombremarcaIgnoreCase(nombreLimpio).isPresent()) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio);
+        }
+
         boolean esNuevaMarca = (marca.getIdMarca() == null);
 
         if (esNuevaMarca) {
             marca.setActivo(true);
+            marca.setNombremarca(nombreLimpio);
         }
 
         Marca marcaGuardada = marcaRepository.save(marca);
@@ -62,10 +70,19 @@ public class MarcaService {
 
     @Transactional
     public Marca actualizarMarca(Integer id, Marca marca){
+
+        String nombreLimpio = marca.getNombremarca().trim();
+
+        // Si ya existe con ese nombre y pertenece a otra marca distinta a la actual
+        Optional<Marca> existente = marcaRepository.findFirstByNombremarcaIgnoreCase(nombreLimpio);
+        if (existente.isPresent() && !existente.get().getIdMarca().equals(id)) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio);
+        }
+
         Marca marcaActual = marcaRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
 
-        marcaActual.setNombremarca(marca.getNombremarca());
+        marcaActual.setNombremarca(nombreLimpio);
 
         return marcaRepository.save(marcaActual);
     }

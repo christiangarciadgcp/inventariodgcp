@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {Mensaje} from '../../../core/mensaje';
+import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-categoria-dialog',
@@ -18,7 +19,8 @@ import {Mensaje} from '../../../core/mensaje';
     MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MayusculasDirective
   ],
   templateUrl: './categoria-dialog.component.html',
   styles: [`

@@ -33,19 +33,41 @@ public class ProveedorService {
 
     @Transactional
     public Proveedor guardarProveedor(Proveedor proveedor){
+        String nombreLimpio = proveedor.getNombreproveedor() != null ? proveedor.getNombreproveedor().trim() : "";
+
+        // 1. Evita quemar la secuencia de IDs si ya existe
+        if (proveedorRepository.findFirstByNombreproveedorIgnoreCase(nombreLimpio).isPresent()) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
+        boolean esNuevo = (proveedor.getIdProveedor() == null);
+        if (esNuevo) {
+            proveedor.setActivo(true);
+        }
+        proveedor.setNombreproveedor(nombreLimpio);
+
         return proveedorRepository.save(proveedor);
     }
 
     @Transactional
     public Proveedor actualizaProveedor(Integer id, Proveedor proveedor){
+        String nombreLimpio = proveedor.getNombreproveedor() != null ? proveedor.getNombreproveedor().trim() : "";
+
+        // 2. Valida duplicados contra otros proveedores distintos al actual
+        Optional<Proveedor> proveedorExistente = proveedorRepository.findFirstByNombreproveedorIgnoreCase(nombreLimpio);
+        if (proveedorExistente.isPresent() && !proveedorExistente.get().getIdProveedor().equals(id)) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
         Proveedor proveedorActual = proveedorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
 
-        proveedorActual.setNombreproveedor(proveedor.getNombreproveedor());
+        proveedorActual.setNombreproveedor(nombreLimpio);
         proveedorActual.setTelefonoproveedor(proveedor.getTelefonoproveedor());
 
         return proveedorRepository.save(proveedorActual);
     }
+
 
     @Transactional
     public void eliminarProveedor(Integer idProveedor){

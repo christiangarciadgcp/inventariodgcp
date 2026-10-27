@@ -7,13 +7,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Utils } from '../../../../core/utils';
 import {Mensaje} from '../../../../core/mensaje';
+import {MayusculasDirective} from '../../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-ubicacion-dialog',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatButtonModule, MatFormFieldModule, MatInputModule
+    MatButtonModule, MatFormFieldModule, MatInputModule,
+    MayusculasDirective
   ],
   templateUrl: './ubicacion-dialog.component.html',
   styles: [`mat-form-field { width: 100%; margin-bottom: 10px; }`]
@@ -42,11 +44,6 @@ export class UbicacionDialogComponent implements OnInit {
         siglas : this.ubicacionData.ubicacion.siglasubicacion
       })
     }
-  }
-
-  onInputMayusculas(event: Event, controlName: string) {
-    const control = this.form.get(controlName);
-    this.ft.convertirAMayusculas(event, control);
   }
 
   guardar(){

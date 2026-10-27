@@ -42,13 +42,19 @@ public class ModeloService {
         return modeloRepository.findById(id);
     }
 
-    @Transactional
-    public Modelo guardarModelo(ModeloDTO modeloDTO){
+@Transactional
+    public Modelo guardarModelo(ModeloDTO modeloDTO) {
+        String nombreLimpio = modeloDTO.getNombremodelo() != null ? modeloDTO.getNombremodelo().trim() : "";
+
+        if (modeloRepository.findFirstByNombremodeloIgnoreCaseAndMarca_IdMarca(nombreLimpio, modeloDTO.getIdMarca()).isPresent()) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
         Marca marca = marcaRepository.findById(modeloDTO.getIdMarca())
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
 
         Modelo modelo = new Modelo();
-        modelo.setNombremodelo(modeloDTO.getNombremodelo());
+        modelo.setNombremodelo(nombreLimpio);
         modelo.setMarca(marca);
         modelo.setActivo(true);
 
@@ -56,18 +62,28 @@ public class ModeloService {
     }
 
     @Transactional
-    public Modelo actualizarModelo(Integer id, ModeloDTO modeloDTO){
+    public Modelo actualizarModelo(Integer id, ModeloDTO modeloDTO) {
+        String nombreLimpio = modeloDTO.getNombremodelo() != null ? modeloDTO.getNombremodelo().trim() : "";
+
+        Optional<Modelo> modeloExistente = modeloRepository
+                .findFirstByNombremodeloIgnoreCaseAndMarca_IdMarca(nombreLimpio, modeloDTO.getIdMarca());
+
+        if (modeloExistente.isPresent() && !modeloExistente.get().getIdModelo().equals(id)) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
         Modelo modeloActual = modeloRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Modelo no encontrado"));
 
         Marca marca = marcaRepository.findById(modeloDTO.getIdMarca())
-        .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
 
-        modeloActual.setNombremodelo(modeloDTO.getNombremodelo());
+        modeloActual.setNombremodelo(nombreLimpio);
         modeloActual.setMarca(marca);
 
         return modeloRepository.save(modeloActual);
     }
+
 
     @Transactional
     public void desactivarModelo(Integer id){

@@ -1,7 +1,6 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
 @Entity
 @Table(name = "asignacion")
 public class Asignacion {
@@ -81,4 +79,129 @@ public class Asignacion {
             this.estado = "REGISTRADA";
         }
     }
+
+    public Asignacion() {
+    }
+
+    public Long getIdAsignacion() {
+        return idAsignacion;
+    }
+
+    public void setIdAsignacion(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
+    }
+
+    public String getNumeroActa() {
+        return numeroActa;
+    }
+
+    public void setNumeroActa(String numeroActa) {
+        this.numeroActa = numeroActa;
+    }
+
+    public Integer getCorrelativo() {
+        return correlativo;
+    }
+
+    public void setCorrelativo(Integer correlativo) {
+        this.correlativo = correlativo;
+    }
+
+    public Integer getAnio() {
+        return anio;
+    }
+
+    public void setAnio(Integer anio) {
+        this.anio = anio;
+    }
+
+    public AsignacionTipo getTipoAsignacion() {
+        return tipoAsignacion;
+    }
+
+    public void setTipoAsignacion(AsignacionTipo tipoAsignacion) {
+        this.tipoAsignacion = tipoAsignacion;
+    }
+
+    public Ubicacion getUbicacion() {
+        return ubicacion;
+    }
+
+    public void setUbicacion(Ubicacion ubicacion) {
+        this.ubicacion = ubicacion;
+    }
+
+    public String getResponsableDestino() {
+        return responsableDestino;
+    }
+
+    public void setResponsableDestino(String responsableDestino) {
+        this.responsableDestino = responsableDestino;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public Instant getFechaAsignacion() {
+        return fechaAsignacion;
+    }
+
+    public void setFechaAsignacion(Instant fechaAsignacion) {
+        this.fechaAsignacion = fechaAsignacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Usuario getUsuarioCreacion() {
+        return usuarioCreacion;
+    }
+
+    public void setUsuarioCreacion(Usuario usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
+    }
+
+    public Usuario getUsuarioAprobacion() {
+        return usuarioAprobacion;
+    }
+
+    public void setUsuarioAprobacion(Usuario usuarioAprobacion) {
+        this.usuarioAprobacion = usuarioAprobacion;
+    }
+
+    public Instant getFechaAprobacion() {
+        return fechaAprobacion;
+    }
+
+    public void setFechaAprobacion(Instant fechaAprobacion) {
+        this.fechaAprobacion = fechaAprobacion;
+    }
+
+    public List<AsignacionDetalle> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<AsignacionDetalle> detalles) {
+        this.detalles = detalles;
+    }
+
+    public List<AsignacionHistorial> getHistorial() {
+        return historial;
+    }
+
+    public void setHistorial(List<AsignacionHistorial> historial) {
+        this.historial = historial;
+    }
+
+    
 }

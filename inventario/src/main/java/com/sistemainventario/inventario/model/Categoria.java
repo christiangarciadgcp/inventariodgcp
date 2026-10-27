@@ -1,8 +1,6 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "categoria")
 public class Categoria {
@@ -16,5 +14,34 @@ public class Categoria {
 
     @Column(name = "activo")
     private Boolean activo = true;
+
+    public Categoria() {
+    }
+
+    public Integer getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Integer idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public String getNombrecategoria() {
+        return nombrecategoria;
+    }
+
+    public void setNombrecategoria(String nombrecategoria) {
+        this.nombrecategoria = nombrecategoria;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    
 
 }

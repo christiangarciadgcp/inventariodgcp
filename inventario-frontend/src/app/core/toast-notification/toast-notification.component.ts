@@ -34,12 +34,10 @@ export class ToastContainerComponent {
     const item = this.toasts().find(t => t.id === id);
     if (!item || item.saliendo) return;
 
-    // 1. Activa la animación CSS de salida
     this.toasts.update(lista =>
       lista.map(t => (t.id === id ? { ...t, saliendo: true } : t))
     );
 
-    // 2. Remueve el elemento del DOM una vez terminada la animación (320ms)
     setTimeout(() => {
       this.toasts.update(lista => lista.filter(t => t.id !== id));
     }, 320);

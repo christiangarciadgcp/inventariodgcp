@@ -1,12 +1,10 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Data
 @Entity
 @Table(name = "solicitud_historial")
 public class SolicitudCompraHistorial {
@@ -39,4 +37,46 @@ public class SolicitudCompraHistorial {
         this.accion = accion;
         this.fecha = Instant.now();
     }
+
+    public Long getIdSolicitudCompraHistorial() {
+        return idSolicitudCompraHistorial;
+    }
+
+    public void setIdSolicitudCompraHistorial(Long idSolicitudCompraHistorial) {
+        this.idSolicitudCompraHistorial = idSolicitudCompraHistorial;
+    }
+
+    public SolicitudCompra getSolicitudCompra() {
+        return solicitudCompra;
+    }
+
+    public void setSolicitudCompra(SolicitudCompra solicitudCompra) {
+        this.solicitudCompra = solicitudCompra;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getAccion() {
+        return accion;
+    }
+
+    public void setAccion(String accion) {
+        this.accion = accion;
+    }
+
+    public Instant getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Instant fecha) {
+        this.fecha = fecha;
+    }
+
+    
 }

@@ -201,10 +201,13 @@ export class UsuarioListComponent implements OnInit {
 
     this.usuarioService.actualizarUsuario(id, dto).subscribe({
       next: () => {
-        this.mensaje.open('Usuario actualizado con éxito', 'exito');
+        this.mensaje.open('Usuario actualizado exitosamente', 'exito');
         this.cargarUsuarios(); // Recarga la tabla
       },
-      error: () => this.mensaje.open('Error al actualizar usuario', 'error')
+      error: (err) => {
+        const msg = err.error?.mensaje || 'Error al actualizar el Usuario';
+        this.mensaje.open(msg, 'error');
+      }
     });
   }
 
@@ -217,13 +220,13 @@ export class UsuarioListComponent implements OnInit {
 
     this.usuarioService.registrarUsuario(dto).subscribe({
         next: () => {
-          this.mensaje.open('Usuario creado con éxito', 'exito');
+          this.mensaje.open('Usuario creado exitosamente', 'exito');
           this.cargarUsuarios();
         },
-        error: (e) => {
-            console.error(e);
-            this.mensaje.open('Error al crear usuario', 'error');
-        }
+      error: (err) => {
+        const msg = err.error?.mensaje || 'Error al registrar el Usuario';
+        this.mensaje.open(msg, 'error');
+      }
     });
   }
 

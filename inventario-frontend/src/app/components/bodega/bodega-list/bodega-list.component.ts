@@ -64,7 +64,7 @@ export class BodegaListComponent {
         case 'estado':
           return item.activo;
         case 'tipo':
-          return item.bodegaTipo;
+          return item.bodegaTipo.tipobodega;
         default:
           return (item as any)[property];
       }
@@ -153,9 +153,10 @@ export class BodegaListComponent {
         this.cargarBodegas();
         this.mensaje.open('Bodega registrada exitosamente', 'exito');
       },
-      error: (e) => {
-        console.error(e);
-        this.mensaje.open('Error al guardar la bodega', 'error')
+      error: (err) => {
+        // Extrae el mensaje amigable devuelto por GlobalExceptionHandler
+        const msg = err.error?.mensaje || 'Error al guardar la Bodega';
+        this.mensaje.open(msg, 'error');
       }
     });
 

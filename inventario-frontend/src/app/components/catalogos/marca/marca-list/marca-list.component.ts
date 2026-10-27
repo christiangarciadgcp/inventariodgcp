@@ -137,9 +137,10 @@ export class MarcaListComponent {
         this.cargarMarcas();
         this.mensaje.open('Marca registrada exitosamente', 'exito');
       },
-      error: (e) => {
-        console.error(e);
-        this.mensaje.open('Error al guardar la marca', 'error')
+      error: (err) => {
+        // Extrae el mensaje amigable devuelto por GlobalExceptionHandler
+        const msg = err.error?.mensaje || 'Error al guardar la marca';
+        this.mensaje.open(msg, 'error');
       }
     });
   }
@@ -195,6 +196,8 @@ export class MarcaListComponent {
         }
       });
     }
+
+
 
 
 }

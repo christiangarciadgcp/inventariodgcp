@@ -25,7 +25,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
            "ORDER BY p.idProducto ASC")
     List<Producto> findAllOptimizado(Sort sort);
 
-    // 2. PRODUCTOS ACTIVOS EN UNA SOLA CONSULTA
     @Query("SELECT DISTINCT p FROM Producto p " +
            "LEFT JOIN FETCH p.categoria " +
            "LEFT JOIN FETCH p.proveedor " +
@@ -49,7 +48,6 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
 
     //PRODUCTOS SOLAMENTE ACTIVOS
     List<Producto> findByActivoTrue(Sort sort);
-    // List<Producto> findByActivoTrue();
 
     // Llena el selector de padres en el formulario
     @Query("SELECT DISTINCT p FROM Producto p " +

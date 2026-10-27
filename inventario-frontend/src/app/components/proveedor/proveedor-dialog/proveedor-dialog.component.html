@@ -8,7 +8,7 @@
 
         <mat-form-field appearance="outline">
             <mat-label>Nombre del Proveedor</mat-label>
-            <input matInput formControlName="nombre" placeholder="Ej. Distribuidora S.A." autocomplete="off">
+            <input matInput formControlName="nombre" placeholder="Ej. Distribuidora S.A." autocomplete="off" Mayusculas>
             @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
                 <mat-error>El nombre es obligatorio</mat-error>
             }

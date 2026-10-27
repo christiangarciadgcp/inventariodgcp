@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Inject,signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { delay } from 'rxjs/operators';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -38,13 +38,15 @@ export class InventarioMovimientoDialogComponent implements OnInit{
   form : FormGroup;
   bodegasOrigen = signal<any[]>([]);
   stockDisponible: number = 0;
+  maxPermitido: number = this.data.cantidadFaltante || 1;
 
   readonly ID_BODEGA_DESTINO = 1;
 
   constructor(){
+    const inicial = this.data.cantidadFaltante > 0 ? this.data.cantidadFaltante : 1;
     this.form = this.fb.group({
       bodegaOrigen : [null, Validators.required],
-      cantidad : [this.data.cantidadFaltante, [Validators.required, Validators.min(1)]],
+      cantidad : [inicial, [Validators.required, Validators.min(1), Validators.max(inicial)]],
       motivo : [`Preparación para Presupuesto: ${this.data.idPresupuesto}`, Validators.required]
     });
   }
@@ -58,15 +60,42 @@ export class InventarioMovimientoDialogComponent implements OnInit{
         if(inv){
           this.stockDisponible = inv.cantidad_actual;
 
+          // El máximo no puede superar ni lo que falta por solicitar ni el stock de la bodega
+          this.maxPermitido = this.data.cantidadFaltante > 0
+            ? Math.min(this.data.cantidadFaltante, this.stockDisponible)
+            : this.stockDisponible;
+
           const cantControl = this.form.get('cantidad');
           cantControl?.setValidators([
             Validators.required,
             Validators.min(1),
-            Validators.max(this.stockDisponible)
+            Validators.max(this.maxPermitido)
           ]);
+
+          // Si el valor actual supera el nuevo máximo, se ajusta automáticamente
+          if (cantControl?.value > this.maxPermitido) {
+            cantControl?.setValue(this.maxPermitido);
+          } else if (cantControl?.value < 1) {
+            cantControl?.setValue(1);
+          }
+
           cantControl?.updateValueAndValidity();
         }
       });
+  }
+
+  validarRangoInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value === '') return;
+
+    let valor = Number(input.value);
+    if (valor > this.maxPermitido) {
+      input.value = String(this.maxPermitido);
+      this.form.get('cantidad')?.setValue(this.maxPermitido);
+    } else if (valor < 0) {
+      input.value = '1';
+      this.form.get('cantidad')?.setValue(1);
+    }
   }
 
   cargarBodegasStock(){

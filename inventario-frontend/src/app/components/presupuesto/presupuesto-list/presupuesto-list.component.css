@@ -10,8 +10,9 @@ td.mat-column-destino {
   text-align: left !important;
 }
 
-
-.mat-mdc-table { background: transparent; }
+.mat-mdc-table {
+  background: transparent;
+}
 
 .mat-mdc-header-row {
   background: linear-gradient(#031e3f 0%, #153863 100%);
@@ -38,7 +39,7 @@ td.mat-column-destino {
 .hover-row:hover {
   background-color: #f8faff !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
   z-index: 1;
   position: relative;
 }
@@ -64,22 +65,29 @@ td.mat-column-destino {
   justify-content: center;
 }
 
-.action-btn { transition: transform 0.2s; }
+.action-btn {
+  transition: transform 0.2s;
+}
+
 .action-btn:hover {
   transform: scale(1.1);
-  background-color: rgba(0,0,0,0.04);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .mat-column-acciones {
-  width: 180px;
-  min-width: 160px;
-  max-width: 200px;
+  width: 240px;
+  min-width: 200px;
+  max-width: 250px;
   text-align: center !important;
   overflow: visible !important;
 }
 
 .mat-column-estado {
   width: 15%;
+}
+
+.mat-column-solicitante {
+  width: 13%;
 }
 
 .btn-nuevo {
@@ -89,6 +97,7 @@ td.mat-column-destino {
   height: 40px;
   font-weight: 500;
   letter-spacing: 0.5px;
+  color: white !important;
 }
 
 .edit-color {
@@ -129,7 +138,10 @@ td.mat-column-destino {
   border-color: #ffe1e9;
 }
 
-.text-muted-hover:hover { color: #3f51b5 !important; cursor: pointer; }
+.text-muted-hover:hover {
+  color: #3f51b5 !important;
+  cursor: pointer;
+}
 
 .container-wide {
   width: 99%;
@@ -223,4 +235,111 @@ td.mat-column-destino {
 .tab-pill-btn.active .tab-badge {
   background-color: rgba(255, 255, 255, 0.25);
   color: #ffffff;
+}
+
+
+/* --- SELECTOR DE FECHAS: 40px EXACTOS, MISMA ALTURA Y CENTRADO COMPLETO --- */
+.form-fecha-historial {
+  width: 290px;
+  height: 50px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* 1. Fuerza los 40px de alto en el contenedor interno de Material */
+::ng-deep .form-fecha-historial .mat-mdc-text-field-wrapper {
+  background-color: #ffffff !important;
+  height: 40px !important;
+  max-height: 50px !important;
+  padding: 0 8px 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+::ng-deep .form-fecha-historial .mat-mdc-form-field-flex {
+  height: 40px !important;
+  align-items: center !important;
+}
+
+/* 2. Centra verticalmente las fechas dentro del input */
+::ng-deep .form-fecha-historial .mat-mdc-form-field-infix {
+  min-height: 40px !important;
+  height: 40px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* 3. Ajusta la etiqueta 'Fechas' a la escala de 40px */
+::ng-deep .form-fecha-historial .mat-mdc-floating-label {
+  top: 20px !important;
+}
+
+::ng-deep .form-fecha-historial .mat-date-range-input {
+  display: flex !important;
+  align-items: center !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+}
+
+/* 4. Contenedor de iconos: los alinea en fila horizontal y los centra verticalmente */
+::ng-deep .form-fecha-historial .mat-mdc-form-field-icon-suffix {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  gap: 2px !important;
+  align-self: center !important;
+}
+
+/* 5. Elimina el touch-target de 48px que empuja los iconos hacia abajo */
+::ng-deep .form-fecha-historial .mat-mdc-button-touch-target {
+  display: none !important;
+}
+
+/* 6. Centrado estricto de los botones (x y calendario) */
+::ng-deep .form-fecha-historial .btn-clear-date,
+::ng-deep .form-fecha-historial mat-datepicker-toggle button {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+::ng-deep .form-fecha-historial .btn-clear-date mat-icon,
+::ng-deep .form-fecha-historial mat-datepicker-toggle mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+::ng-deep .form-fecha-historial mat-datepicker-toggle mat-icon {
+  color: #153863 !important;
+}
+
+::ng-deep .form-fecha-historial .btn-clear-date mat-icon {
+  color: #94a3b8 !important;
+  transition: color 0.2s ease;
+}
+
+::ng-deep .form-fecha-historial .btn-clear-date:hover mat-icon {
+  color: #ef4444 !important;
+}
+
+/* 7. Elimina cualquier espacio residual de errores/subscripts debajo del input */
+::ng-deep .form-fecha-historial .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
 }

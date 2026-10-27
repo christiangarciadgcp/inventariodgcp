@@ -6,12 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {Mensaje} from '../../../core/mensaje';
+import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-unidades-medidas-dialog',
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatButtonModule, MatFormFieldModule, MatInputModule
+    MatButtonModule, MatFormFieldModule, MatInputModule,
+    MayusculasDirective
   ],
   templateUrl: './unidades-medidas-dialog.component.html',
   styles: [`mat-form-field { width: 100%; margin-bottom: 10px; }`]

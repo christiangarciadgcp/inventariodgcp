@@ -42,6 +42,8 @@ export class Mensaje {
 
     this.ensureContainer();
 
+    this.traerAlFrente();
+
     this.containerRef?.agregarToast({
       id: ++this.idCounter,
       tipo: tipoConfig,
@@ -55,7 +57,6 @@ export class Mensaje {
   private ensureContainer(): void {
     if (!this.overlayRef || !this.overlayRef.hasAttached()) {
       this.overlayRef = this.overlay.create({
-        // Posicionamiento arriba al centro
         positionStrategy: this.overlay.position().global().top('24px').centerHorizontally(),
         hasBackdrop: false,
         panelClass: 'toast-stack-overlay-panel'
@@ -66,4 +67,25 @@ export class Mensaje {
     }
   }
 
+  private traerAlFrente(): void {
+    if (!this.overlayRef) return;
+
+    // Obtiene el contenedor CDK del toast
+    const pane = this.overlayRef.overlayElement;
+    const wrapper = (this.overlayRef.hostElement || pane?.closest('.cdk-global-overlay-wrapper')) as HTMLElement | null;
+
+    if (pane) {
+      pane.style.zIndex = '99999';
+    }
+
+    if (wrapper) {
+      wrapper.style.zIndex = '99999';
+      wrapper.style.pointerEvents = 'none';
+
+      // Lo reubica al final del contenedor global de overlays
+      if (wrapper.parentElement && wrapper.parentElement.lastElementChild !== wrapper) {
+        wrapper.parentElement.appendChild(wrapper);
+      }
+    }
+  }
 }

@@ -84,4 +84,13 @@ public class PresupuestoController {
         presupuestoService.cancelarPresupuesto(id, idUsuario);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/revertir-preparacion")
+    public ResponseEntity<Void> revertirPreparacion(
+            @PathVariable Long id,
+            @RequestParam Integer idProductoFisico,
+            @RequestParam Integer idUsuario) {
+        presupuestoService.revertirPreparacionMaterial(id, idProductoFisico, idUsuario);
+        return ResponseEntity.ok().build();
+    }
 }

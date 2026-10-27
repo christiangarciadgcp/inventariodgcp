@@ -5,7 +5,7 @@
 .layout-wrapper {
     /* Si la pantalla es menor a 1024px, aparece barra de scroll abajo.
        Esto evita que tu diseño se rompa o se aplaste. */
-    min-width: 1024px; 
+    min-width: 1024px;
     position: relative;
 }
 

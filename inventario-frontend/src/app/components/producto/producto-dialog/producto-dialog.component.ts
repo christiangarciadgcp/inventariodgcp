@@ -24,6 +24,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { ProductoService } from '../../../services/producto.service';
 import { ProductoRegistroDTO } from '../../../models/producto';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
+import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -31,7 +32,8 @@ import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.comp
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatTooltip, MatIcon, MatSlideToggleModule, MatAutocompleteModule
+    MatTooltip, MatIcon, MatSlideToggleModule, MatAutocompleteModule,
+    MayusculasDirective
   ],
   templateUrl: './producto-dialog.component.html',
   styleUrls: ['./producto-dialog.component.css']
@@ -285,10 +287,7 @@ export class ProductoDialogComponent implements OnInit {
     return limpio.length >= 3 ? limpio.substring(0, 3) : limpio.padEnd(3, 'X');
   }
 
-  onInputMayusculas(event: Event, controlName: string) {
-    const control = this.form.get(controlName);
-    this.sn.convertirAMayusculas(event, control);
-  }
+
 
   onFilesSelected(event: any) {
     const files: FileList = event.target.files;

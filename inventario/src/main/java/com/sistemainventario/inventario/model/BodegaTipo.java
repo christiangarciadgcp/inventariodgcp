@@ -1,10 +1,8 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
-@Table(name = "bodegatipo")
+@Table(name = "bodega_tipo")
 public class BodegaTipo {
 
     @Id
@@ -17,5 +15,34 @@ public class BodegaTipo {
 
     @Column(name = "activo")
     private Boolean activo = true;
+
+    public BodegaTipo() {
+    }
+
+    public Integer getIdBodegaTipo() {
+        return idBodegaTipo;
+    }
+
+    public void setIdBodegaTipo(Integer idBodegaTipo) {
+        this.idBodegaTipo = idBodegaTipo;
+    }
+
+    public String getTipobodega() {
+        return tipobodega;
+    }
+
+    public void setTipobodega(String tipobodega) {
+        this.tipobodega = tipobodega;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    
 
 }

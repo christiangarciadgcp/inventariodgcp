@@ -23,6 +23,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { Utils } from '../../../core/utils';
 import { UbicacionService } from '../../../services/ubicacion.service';
 import { Ubicacion } from '../../../models/ubicacion';
+import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
 
 interface DetalleVista {
   producto: Producto;
@@ -37,7 +38,7 @@ interface DetalleVista {
     CommonModule, ReactiveFormsModule, FormsModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule,
     MatSelectModule, MatIconModule, MatTableModule, RouterLink,
-    MatDividerModule, MatTooltipModule, MatAutocompleteModule
+    MatDividerModule, MatTooltipModule, MatAutocompleteModule, MayusculasDirective
   ],
   templateUrl: './presupuesto-form.component.html',
   styleUrl: './presupuesto-form.component.css'

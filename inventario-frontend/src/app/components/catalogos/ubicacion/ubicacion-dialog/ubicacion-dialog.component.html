@@ -8,7 +8,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Nombre de Ubicación</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" (input)="onInputMayusculas($event, 'nombre')">
+      <input matInput formControlName="nombre" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" Mayusculas>
       @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
         <mat-error>El nombre es obligatorio</mat-error>
       }
@@ -16,7 +16,7 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Siglas de Ubicación</mat-label>
-      <input matInput formControlName="siglas" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" (input)="onInputMayusculas($event, 'siglas')">
+      <input matInput formControlName="siglas" placeholder="Ej. CP Apanteos, Edificio , Area ." autocomplete="off" Mayusculas>
       @if (form.get('siglas')?.hasError('required') && form.get('siglas')?.touched) {
         <mat-error>Las siglas son obligatorias</mat-error>
       }

@@ -1,3 +1,14 @@
+/* Asegura z-index máximo para el panel de notificaciones */
+.cdk-overlay-container .cdk-global-overlay-wrapper:has(.toast-stack-overlay-panel) {
+  z-index: 99999 !important;
+  pointer-events: none !important;
+}
+
+.toast-stack-overlay-panel {
+  z-index: 99999 !important;
+}
+
+
 /* --- CONTENEDOR CENTRADO --- */
 .toast-stack-wrapper {
   display: flex;

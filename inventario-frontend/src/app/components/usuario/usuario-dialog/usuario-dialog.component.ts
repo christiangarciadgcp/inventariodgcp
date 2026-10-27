@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RolService } from '../../../services/rol.service';
 import { MatIconModule } from '@angular/material/icon';
 import {Mensaje} from '../../../core/mensaje';
+import {MinusculasDirective} from '../../../core/directives/minusculas.directive';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -16,7 +17,7 @@ import {Mensaje} from '../../../core/mensaje';
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
     MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatIconModule
+    MatIconModule, MinusculasDirective
   ],
   templateUrl: './usuario-dialog.component.html',
   styles: [`mat-form-field { width: 100%; margin-bottom: 10px; }`]
@@ -76,7 +77,13 @@ export class UsuarioDialogComponent implements OnInit {
       this.mensaje.open('Complete los campos requeridos', 'warning');
       return;
     }
-      this.dialogRef.close(this.form.value);
+
+    const payload = {
+      ...this.form.value,
+      nombreusuario: this.form.value.nombreusuario ? this.form.value.nombreusuario.trim().toLowerCase() : ''
+    };
+
+    this.dialogRef.close(payload);
   }
 
   cancelar() {

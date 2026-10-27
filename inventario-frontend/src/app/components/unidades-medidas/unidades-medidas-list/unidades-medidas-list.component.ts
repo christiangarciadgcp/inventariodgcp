@@ -150,9 +150,10 @@ export class UnidadesMedidasListComponent {
         this.cargarUnidadesMedida();
         this.mensaje.open('Unidad de Medida registrada exitosamente', 'exito');
       },
-      error: (e) => {
-        console.error(e);
-        this.mensaje.open('Error al guardar la Unidad de Medida', 'error')
+      error: (err) => {
+        // Extrae el mensaje amigable devuelto por GlobalExceptionHandler
+        const msg = err.error?.mensaje || 'Error al guardar la Unidad de Medida';
+        this.mensaje.open(msg, 'error');
       }
     });
 

@@ -1,9 +1,7 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 public class Marca {
 
@@ -17,5 +15,34 @@ public class Marca {
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
+
+    public Marca() {
+    }
+
+    public Integer getIdMarca() {
+        return idMarca;
+    }
+
+    public void setIdMarca(Integer idMarca) {
+        this.idMarca = idMarca;
+    }
+
+    public String getNombremarca() {
+        return nombremarca;
+    }
+
+    public void setNombremarca(String nombremarca) {
+        this.nombremarca = nombremarca;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    
 
 }

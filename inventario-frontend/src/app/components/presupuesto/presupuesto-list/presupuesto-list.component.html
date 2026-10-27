@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <!-- PESTAÑAS POR ESTADO, ACCIÓN Y BÚSQUEDA EN LA MISMA FILA -->
+  <!-- PESTAÑAS POR ESTADO, ACCIÓN, FECHAS Y BÚSQUEDA -->
   <div class="tabs-header-container d-flex flex-wrap justify-content-between align-items-center gap-3 mb-1 px-2">
 
     <!-- PESTAÑAS (Izquierda) -->
@@ -42,13 +42,38 @@
       </button>
     </div>
 
-    <!-- BOTÓN NUEVO PRESUPUESTO Y BUSCADOR (Derecha) -->
-    <div class="d-flex flex-wrap align-items-center gap-3">
+    <!-- ACCIONES, RANGO DE FECHAS (SOLO EN TAB TODOS) Y BUSCADOR (Derecha) -->
+    <div class="d-flex flex-wrap align-items-center gap-2">
+
+      <!-- SELECTOR DE FECHAS -->
+      @if (currentTab === 3) {
+        <form [formGroup]="filtroFechas" class="d-flex align-items-center m-0">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="form-fecha-historial m-0">
+            <mat-label>Fechas</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate formControlName="inicio" placeholder="Inicio">
+              <input matEndDate formControlName="fin" placeholder="Fin">
+            </mat-date-range-input>
+
+            <!-- Cambiado a matIconSuffix para alineación central automática -->
+            @if (filtroFechas.value.inicio || filtroFechas.value.fin) {
+              <button mat-icon-button matIconSuffix (click)="limpiarFechas($event)" matTooltip="Limpiar fechas" type="button" class="btn-clear-date">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </form>
+      }
+
+
       <button mat-raised-button class="rounded-pill px-4 btn-nuevo m-0" routerLink="/presupuesto/nuevo_presupuesto">
         <mat-icon class="me-2">add_task</mat-icon> Nuevo Presupuesto
       </button>
 
-      <div class="search-elegant m-0" style="width: 280px;">
+      <div class="search-elegant m-0" style="width: 260px;">
         <input type="text" class="search-input" (keyup)="applyFilter($event)" placeholder="Buscar..." #input autocomplete="off">
         <div class="search-btn-circle">
           <mat-icon>search</mat-icon>
@@ -88,7 +113,6 @@
       <ng-container matColumnDef="destino">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> PROYECTO / ACTIVIDAD </th>
         <td mat-cell *matCellDef="let element" class="text-start py-2 ps-4">
-          <!-- align-items-start alinea los textos e icono a la izquierda -->
           <div class="d-flex flex-column align-items-start">
             <span class="fw-bold text-dark text-muted-hover">{{ element.nombre_presupuesto }}</span>
             <div class="d-flex align-items-center mt-1">
@@ -98,7 +122,6 @@
           </div>
         </td>
       </ng-container>
-
 
       <!-- SOLICITANTE -->
       <ng-container matColumnDef="solicitante">
@@ -110,7 +133,7 @@
               {{ utils.obtenerIniciales(element.idusuariopresupuesto?.nombreusuario) }}
             </div>
             <span class="text-secondary font-weight-bold" style="font-size: 0.85rem;">
-              {{ element.idusuariopresupuesto?.nombreusuario }}
+              {{ utils.formatearNombre(element.idusuariopresupuesto?.nombreusuario) }}
             </span>
           </div>
         </td>
@@ -140,7 +163,7 @@
             <mat-icon>format_list_bulleted</mat-icon>
           </button>
 
-          @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO' && esEncargadoInventario())) {
+          @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO' && esEncargadoInventario()) || ((element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO')) && esAdmin()) {
             <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
                     [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
                     [queryParams]="{ returnTab: currentTab }">
@@ -166,6 +189,13 @@
             <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho" (click)="imprimirDespacho(element)">
               <mat-icon>picture_as_pdf</mat-icon>
             </button>
+
+          }
+
+          @if(esEncargadoInventario() && (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL')){
+            <button mat-icon-button class="action-btn text-info-emphasis" matTooltip="Imprimir Acta de Movimiento de Materiales" (click)="imprimirActaMateriales(element)">
+              <mat-icon>description</mat-icon>
+            </button>
           }
         </td>
       </ng-container>
@@ -180,6 +210,8 @@
             <span class="fw-medium">No se encontraron presupuestos</span>
             @if (input.value) {
               <small class="text-muted mt-1">Para la búsqueda "{{ input.value }}"</small>
+            } @else if (currentTab === 3 && (filtroFechas.value.inicio || filtroFechas.value.fin)) {
+              <small class="text-muted mt-1">Para el rango de fechas seleccionado</small>
             }
           </div>
         </td>

@@ -15,6 +15,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { Utils } from '../../../core/utils';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { PresupuestoSeleccionFisicoComponent } from '../presupuesto-seleccion-fisico/presupuesto-seleccion-fisico.component';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-presupuesto-despacho',
@@ -47,7 +48,12 @@ export class PresupuestoDespachoComponent implements OnInit {
 
   ngOnInit() {
     const rolActual = this.authService.getRolUsuario();
-    this.esEncargadoInventario.set(rolActual === 'coordinador utdi' || rolActual === 'inventario utdi' || rolActual === 'administrador' || rolActual === 'jefe utdi');
+    this.esEncargadoInventario.set(
+      rolActual === 'coordinador utdi' ||
+      rolActual === 'inventario utdi' ||
+      rolActual === 'administrador' ||
+      rolActual === 'jefe utdi'
+    );
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -61,10 +67,8 @@ export class PresupuestoDespachoComponent implements OnInit {
   cargarDatos(id: number) {
     this.presupuestoService.obtenerDetalleRevision(id).subscribe({
       next: (data) => {
-        // Los tres puntos [...] fuerzan a la tabla a repintarse al instante
-
-        const dataOrdenada = data.sort((a,b) =>
-        a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
+        const dataOrdenada = data.sort((a, b) =>
+          a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
         );
         this.itemsRevision.set([...dataOrdenada]);
         this.evaluarBotonDespacho();
@@ -92,29 +96,43 @@ export class PresupuestoDespachoComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(resultado => {
-      // Si el modal devuelve un arreglo (datos frescos), actualizamos instantáneamente
       if (resultado && Array.isArray(resultado)) {
+        // Preservar selección en memoria de los Equipos Informáticos (!esMaterial)
+        const actuales = this.itemsRevision();
+        resultado.forEach((nuevoItem: PresupuestoRevisionItem) => {
+          if (nuevoItem.esMaterial === false) {
+            const previo = actuales.find(a => a.idProducto === nuevoItem.idProducto);
+            if (previo) {
+              nuevoItem.sustitutosDisponibles = previo.sustitutosDisponibles;
+            }
+          }
+        });
 
-        const resultadoOrdenado = resultado.sort((a, b) => a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' }));
+        const resultadoOrdenado = resultado.sort((a, b) =>
+          a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
+        );
         this.itemsRevision.set([...resultadoOrdenado]);
         this.evaluarBotonDespacho();
-      }
-      // Si solo devuelve 'true', hacemos la recarga normal por seguridad
-      else if (resultado === true) {
-        this.cargarDatos(this.idPresupuesto);
+      } else if (resultado === true) {
+        this.itemsRevision.set([...this.itemsRevision()]);
+        this.evaluarBotonDespacho();
       }
     });
   }
 
-  // Agrega esta función para calcular si ya hay material separado
   getCantidadLista(item: PresupuestoRevisionItem): number {
+    // 1. Si el requerimiento ya se despachó al 100%, no hay nada "LISTO" para despachar hoy.
+    if (item.cantidadPendiente <= 0) return 0;
+
     let totalPreparado = 0;
     if (item.sustitutosDisponibles) {
       item.sustitutosDisponibles.forEach(sust => {
         totalPreparado += sust.stockEnDespacho;
       });
     }
-    return totalPreparado;
+
+    // 2. Límite de seguridad: el estado "LISTO" nunca debe ser mayor a lo que falta.
+    return Math.min(totalPreparado, item.cantidadPendiente);
   }
 
   evaluarBotonDespacho() {
@@ -123,10 +141,8 @@ export class PresupuestoDespachoComponent implements OnInit {
 
     this.itemsRevision().forEach(item => {
       if (item.cantidadPendiente > 0) {
-        let disponibleEnDespacho = 0;
-        item.sustitutosDisponibles.forEach(sust => {
-          disponibleEnDespacho += sust.stockEnDespacho;
-        });
+
+        let disponibleEnDespacho = this.getCantidadLista(item);
 
         if (disponibleEnDespacho > 0) algoAsignado = true;
         if (disponibleEnDespacho < item.cantidadPendiente) todoAsignado = false;
@@ -170,10 +186,10 @@ export class PresupuestoDespachoComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+      width: '420px',
       data: {
         titulo: '¿Desea confirmar este despacho?',
-        mensaje: 'Los materiales seleccionados saldrán físicamente de Bodega de Despacho.',
+        mensaje: 'Se descontarán los materiales de Bodega Despacho y se generará el Acta de Movimiento de Materiales.',
         textoBoton: 'Confirmar',
         colorBoton: 'primary'
       }
@@ -188,6 +204,49 @@ export class PresupuestoDespachoComponent implements OnInit {
           },
           error: (err) => this.mensaje.open(err.error?.mensaje || 'Error al despachar', 'error')
         });
+      }
+    });
+  }
+
+  regresarMaterialListo(item: PresupuestoRevisionItem) {
+    const cantidadLista = this.getCantidadLista(item);
+    if (cantidadLista <= 0) return;
+
+    // Si es equipo informático (selección en memoria), solo se limpia en memoria
+    if (item.esMaterial === false) {
+      item.sustitutosDisponibles.forEach(s => s.stockEnDespacho = 0);
+      this.itemsRevision.set([...this.itemsRevision()]);
+      this.evaluarBotonDespacho();
+      this.mensaje.open('Selección de equipo liberada', 'info');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '420px',
+      data: {
+        titulo: '¿Regresar material listo?',
+        mensaje: `Se devolverán <b>${cantidadLista} ${item.unidadMedida}</b> de <b>${item.nombreProducto}</b> desde Bodega Despacho hacia su bodega de origen.`,
+        textoBoton: 'Confirmar',
+        colorBoton: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        const idUsuario = this.authService.getIdUsuarioActual();
+        const peticiones = item.sustitutosDisponibles
+          .filter(s => s.stockEnDespacho > 0)
+          .map(s => this.presupuestoService.revertirPreparacionMaterial(this.idPresupuesto, s.idProducto, idUsuario));
+
+        if (peticiones.length > 0) {
+          forkJoin(peticiones).subscribe({
+            next: () => {
+              this.mensaje.open('Material regresado a su bodega de origen exitosamente', 'exito');
+              this.cargarDatos(this.idPresupuesto);
+            },
+            error: (err) => this.mensaje.open(err.error?.mensaje || 'Error al regresar el material', 'error')
+          });
+        }
       }
     });
   }

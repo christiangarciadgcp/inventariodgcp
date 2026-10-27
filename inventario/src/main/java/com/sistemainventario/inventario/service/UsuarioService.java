@@ -21,12 +21,10 @@ public class UsuarioService {
     @Value("${password.reset}")
     private String PASSWORD_RESET;
 
-    //INICIALIZACION DE VARIABLES
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
 
-    //CONSTRUCTOR
     public UsuarioService(UsuarioRepository usuarioRepository,
                           RolRepository rolRepository,
                           PasswordEncoder passwordEncoder) {
@@ -35,23 +33,29 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    //METODO PARA LISTAR TODOS LOS USUARIOS
     public List<Usuario> listarUsuarios(){
         return usuarioRepository.findAll(Sort.by(Sort.Direction.ASC, "rol.nombrerol"));
     }
 
-    //METODO PARA BUSCAR UN USUARIO POR SU NOMBRE
     public Optional<Usuario> buscarPorNombreDeUsuario(String nombreusuario){
-        return usuarioRepository.findBynombreusuario(nombreusuario);
+        return usuarioRepository.findFirstByNombreusuarioIgnoreCase(nombreusuario);
     }
 
-    //METODO PARA GUARDAR UN USUARIO
+    // REGISTRO DE USUARIO CON VALIDACIÓN PREVIA
     @Transactional
     public Usuario registrarUsuario(Usuario usuario, Integer idRol){
+        String usernameLimpio = usuario.getNombreusuario() != null ? usuario.getNombreusuario().trim() : "";
+
+        if (usuarioRepository.findFirstByNombreusuarioIgnoreCase(usernameLimpio).isPresent()) {
+            throw new RuntimeException("Ya existe un registro para ese Usuario ");
+        }
+
         Rol rol = rolRepository.findById(idRol)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
+        usuario.setNombreusuario(usernameLimpio);
         usuario.setRol(rol);
+        usuario.setActivo(true);
 
         String passwordEncriptada = passwordEncoder.encode(usuario.getPasswordusuario());
         usuario.setPasswordusuario(passwordEncriptada);
@@ -59,35 +63,31 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    //CAMBIAR EL ESTADO DEL USUARIO
     @Transactional
     public void cambiarEstadoUsuario(Integer id, Boolean nuevoEstado){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow( () -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         usuario.setActivo(nuevoEstado);
         usuarioRepository.save(usuario);
     }
 
-    //RESETEAR LA PASSWORD DEL USUARIO
     @Transactional
     public void restablecerPassword(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow( () -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String passwordEncriptada = passwordEncoder.encode(PASSWORD_RESET);
         usuario.setPasswordusuario(passwordEncriptada);
 
         usuarioRepository.save(usuario);
-
     }
 
-    //REGISTRAR ULTIMA CONEXION Y LA IP A LA CUAL SE CONECTÓ
     @Transactional
     public void registrarIp(Integer id, String ip){
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
-        if(usuario != null){
+        if (usuario != null) {
             usuario.setUltimaConexion(Instant.now());
             usuario.setIp(ip);
             usuarioRepository.save(usuario);
@@ -116,13 +116,11 @@ public class UsuarioService {
         Usuario usuarioActual = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if(!passwordEncoder.matches(passwordActual,usuarioActual.getPasswordusuario())){
+        if (!passwordEncoder.matches(passwordActual, usuarioActual.getPasswordusuario())) {
             throw new RuntimeException("La contraseña actual es incorrecta");
         }
 
         usuarioActual.setPasswordusuario(passwordEncoder.encode(passwordNueva));
         usuarioRepository.save(usuarioActual);
-
     }
-
 }

@@ -32,24 +32,41 @@ public class CategoriaService {
 
     @Transactional
     public Categoria guardarCategoria(Categoria categoria) {
+        String nombreLimpio = categoria.getNombrecategoria() != null ? categoria.getNombrecategoria().trim() : "";
+
+        if (categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreLimpio).isPresent()) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
+        boolean esNueva = (categoria.getIdCategoria() == null);
+        if (esNueva) {
+            categoria.setActivo(true);
+        }
+        categoria.setNombrecategoria(nombreLimpio);
+
         return categoriaRepository.save(categoria);
+    }
+
+    @Transactional
+    public Categoria actualizarCategoria(Integer id, Categoria categoria) {
+        String nombreLimpio = categoria.getNombrecategoria() != null ? categoria.getNombrecategoria().trim() : "";
+
+        Optional<Categoria> categoriaExistente = categoriaRepository.findFirstByNombrecategoriaIgnoreCase(nombreLimpio);
+        if (categoriaExistente.isPresent() && !categoriaExistente.get().getIdCategoria().equals(id)) {
+            throw new RuntimeException("Ya existe un registro con este elemento " + nombreLimpio );
+        }
+
+        Categoria categoriaActual = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+
+        categoriaActual.setNombrecategoria(nombreLimpio);
+
+        return categoriaRepository.save(categoriaActual);
     }
 
     @Transactional
     public void eliminarCategoria(Integer idCategoria) {
         categoriaRepository.deleteById(idCategoria);
-    }
-
-    @Transactional
-    public Categoria actualizarCategoria(Integer id, Categoria categoria){
-
-        Categoria categoriaActual = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-
-        categoriaActual.setNombrecategoria(categoria.getNombrecategoria());
-
-        return categoriaRepository.save(categoriaActual);
-
     }
 
     @Transactional

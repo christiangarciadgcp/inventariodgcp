@@ -20,4 +20,6 @@ public interface ModeloRepository extends JpaRepository<Modelo, Integer>{
     // Buscar el modelo verificando también a qué marca pertenece
     Optional<Modelo> findFirstByNombremodeloIgnoreCaseAndMarca_NombremarcaIgnoreCase(String nombremodelo, String nombremarca);
 
+    Optional<Modelo> findFirstByNombremodeloIgnoreCaseAndMarca_IdMarca(String nombremodelo, Integer idMarca);
+
 }

@@ -1,10 +1,8 @@
 package com.sistemainventario.inventario.model;
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "snapshot_inventario")
 public class SnapshotInventario {
@@ -34,4 +32,49 @@ public class SnapshotInventario {
             this.fechasnapshot = Instant.now();
         }
     }
+
+    public SnapshotInventario() {
+    }
+
+    public Long getIdSnapshot() {
+        return idSnapshot;
+    }
+
+    public void setIdSnapshot(Long idSnapshot) {
+        this.idSnapshot = idSnapshot;
+    }
+
+    public Instant getFechasnapshot() {
+        return fechasnapshot;
+    }
+
+    public void setFechasnapshot(Instant fechasnapshot) {
+        this.fechasnapshot = fechasnapshot;
+    }
+
+    public Integer getCantidadactual() {
+        return cantidadactual;
+    }
+
+    public void setCantidadactual(Integer cantidadactual) {
+        this.cantidadactual = cantidadactual;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public Bodega getBodega() {
+        return bodega;
+    }
+
+    public void setBodega(Bodega bodega) {
+        this.bodega = bodega;
+    }
+
+    
 }

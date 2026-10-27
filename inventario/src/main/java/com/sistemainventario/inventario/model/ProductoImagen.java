@@ -13,9 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "producto_imagen")
 public class ProductoImagen {
@@ -34,4 +32,32 @@ public class ProductoImagen {
     @JsonIgnore
     private Producto producto;
 
+    public ProductoImagen() {
+    }
+
+    public Integer getIdProductoImagen() {
+        return idProductoImagen;
+    }
+
+    public void setIdProductoImagen(Integer idProductoImagen) {
+        this.idProductoImagen = idProductoImagen;
+    }
+
+    public String getRutaimagen() {
+        return rutaimagen;
+    }
+
+    public void setRutaimagen(String rutaimagen) {
+        this.rutaimagen = rutaimagen;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    
 }

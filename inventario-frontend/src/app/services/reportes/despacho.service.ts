@@ -1,7 +1,10 @@
 import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { environment } from '../../../environments/environment.development';
 import { DespachoReporteDTO } from '../../models/presupuesto';
+import { Usuario } from '../../models/usuario';
 import { Utils } from '../../core/utils';
 
 @Injectable({
@@ -9,7 +12,27 @@ import { Utils } from '../../core/utils';
 })
 export class DespachoService {
   private fn = inject(Utils);
+  private http = inject(HttpClient);
+  private inicialesJefe: string = '';
 
+  constructor() {
+    this.cargarInicialesJefe();
+  }
+
+  private cargarInicialesJefe(): void {
+    this.http.get<Usuario[]>(`${environment.apiUrl}/usuarios`).subscribe({
+      next: (usuarios) => {
+        const jefe = usuarios.find(
+          u => u.estado !== false && u.rol?.nombrerol?.toLowerCase().trim() === 'jefe utdi'
+        );
+        this.inicialesJefe = (jefe?.iniciales || '').trim();
+      }
+    });
+  }
+
+  // =========================================================================
+  // HOJA DE DESPACHO
+  // =========================================================================
   generarPdfDespacho(data: DespachoReporteDTO): string {
     const doc = new jsPDF();
 
@@ -60,7 +83,7 @@ export class DespachoService {
     doc.text('N° Solicitud:', 20, 44);
     doc.text('Solicitante:', 110, 44);
     doc.text('Despachado por:', 20, 50);
-    doc.text('Fecha Presupuesto:', 110, 50);
+    doc.text('Fecha Despacho:', 110, 50);
     doc.text('Destino:', 20, 56);
     doc.text('Área:', 20, 62);
     doc.text('Observaciones:', 20, 68);
@@ -92,14 +115,11 @@ export class DespachoService {
 
     // --- CONSTRUCCIÓN DE LA TABLA JERÁRQUICA ---
     data.items.forEach((itemPadre) => {
+      let colorEstado: [number, number, number] = [100, 100, 100];
+      if (itemPadre.estadoItem === 'COMPLETADO') colorEstado = [25, 135, 84];
+      if (itemPadre.estadoItem === 'PENDIENTE') colorEstado = [220, 53, 69];
+      if (itemPadre.estadoItem === 'PARCIAL') colorEstado = [253, 126, 20];
 
-      // Control de color para el estado
-      let colorEstado: [number, number, number] = [100, 100, 100]; // Gris por defecto
-      if (itemPadre.estadoItem === 'COMPLETADO') colorEstado = [25, 135, 84]; // Verde
-      if (itemPadre.estadoItem === 'PENDIENTE') colorEstado = [220, 53, 69]; // Rojo
-      if (itemPadre.estadoItem === 'PARCIAL') colorEstado = [253, 126, 20]; // Naranja
-
-      // 1. FILA DEL MATERIAL SOLICITADO (Padre - Color Gris Claro)
       bodyData.push([
         { content: indexGlobal++, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 242, 245] } },
         { content: '', styles: { fillColor: [240, 242, 245] } },
@@ -110,17 +130,16 @@ export class DespachoService {
         { content: itemPadre.estadoItem, styles: { halign: 'center', fontStyle: 'bold', textColor: colorEstado, fillColor: [240, 242, 245] } }
       ]);
 
-      // 2. FILAS FÍSICAS DESPACHADAS (Hijas - Fondo Blanco y letra Normal)
       if (itemPadre.entregasFisicas && itemPadre.entregasFisicas.length > 0) {
         itemPadre.entregasFisicas.forEach(sub => {
           bodyData.push([
-            '', // Columna # vacía
-            { content: sub.skuFisico, styles: { textColor: [80, 80, 80], fontStyle: 'bold' } }, // SKU FÍSICO
+            '',
+            { content: sub.skuFisico, styles: { textColor: [80, 80, 80], fontStyle: 'bold' } },
             { content: `${sub.nombreFisico}\n${sub.bodegaOrigen}`, styles: { textColor: [80, 80, 80], fontStyle: 'normal' } },
-            '', // U.M. vacía
-            '', // Req. vacía
-            { content: sub.cantidad, styles: { halign: 'center', textColor: [25, 135, 84], fontStyle: 'bold' } }, // DESPACHADO
-            ''  // Estado vacío para los hijos
+            '',
+            '',
+            { content: sub.cantidad, styles: { halign: 'center', textColor: [25, 135, 84], fontStyle: 'bold' } },
+            ''
           ]);
         });
       }
@@ -150,10 +169,7 @@ export class DespachoService {
       }
     });
 
-    // Obtenemos la altura total de la página actual
     const pageHeight = doc.internal.pageSize.getHeight();
-
-    // Fijamos la posición Y a 30 unidades desde el borde inferior
     const finalY = pageHeight - 30;
 
     doc.setDrawColor(0);
@@ -168,9 +184,8 @@ export class DespachoService {
     doc.setFont('helvetica', 'normal');
     doc.text('Recibido Conforme', 150, finalY + 5, { align: 'center' });
 
-    // --- PIE DE PÁGINA ---
     const pageCount = doc.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
+    for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(8);
       doc.setTextColor(150);
@@ -178,11 +193,11 @@ export class DespachoService {
     }
 
     const nombreArchivo = `Solicitud #${data.nombreProyecto}`;
-    doc.setProperties({
-      title: nombreArchivo
-    });
+    doc.setProperties({ title: nombreArchivo });
 
     const blob = doc.output('blob');
     return URL.createObjectURL(blob);
   }
+
+
 }

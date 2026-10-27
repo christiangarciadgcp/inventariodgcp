@@ -1,9 +1,7 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "bodega")
 public class Bodega {
@@ -16,7 +14,7 @@ public class Bodega {
     @JoinColumn(name = "idbodegatipo")
     private BodegaTipo bodegaTipo;
 
-    @Column(name = "nombrebodega", nullable = false, length = 150)
+    @Column(name = "nombrebodega", nullable = false, unique = true, length = 150)
     private String nombrebodega;
 
     @Column(name = "direccionbodega", length = 255)
@@ -27,5 +25,58 @@ public class Bodega {
 
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
+
+    public Bodega() {
+    }
+
+    public Integer getIdBodega() {
+        return idBodega;
+    }
+
+    public void setIdBodega(Integer idBodega) {
+        this.idBodega = idBodega;
+    }
+
+    public BodegaTipo getBodegaTipo() {
+        return bodegaTipo;
+    }
+
+    public void setBodegaTipo(BodegaTipo bodegaTipo) {
+        this.bodegaTipo = bodegaTipo;
+    }
+
+    public String getNombrebodega() {
+        return nombrebodega;
+    }
+
+    public void setNombrebodega(String nombrebodega) {
+        this.nombrebodega = nombrebodega;
+    }
+
+    public String getDireccionbodega() {
+        return direccionbodega;
+    }
+
+    public void setDireccionbodega(String direccionbodega) {
+        this.direccionbodega = direccionbodega;
+    }
+
+    public String getTelefonobodega() {
+        return telefonobodega;
+    }
+
+    public void setTelefonobodega(String telefonobodega) {
+        this.telefonobodega = telefonobodega;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    
 
 }

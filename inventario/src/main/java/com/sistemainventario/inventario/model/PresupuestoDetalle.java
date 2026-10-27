@@ -1,9 +1,7 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "presupuesto_detalle")
 public class PresupuestoDetalle {
@@ -32,4 +30,57 @@ public class PresupuestoDetalle {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto_fisico")
     private Producto productoFisico;
+
+    public PresupuestoDetalle() {
+    }
+
+    public Long getIdPresupuestoDetalle() {
+        return idPresupuestoDetalle;
+    }
+
+    public Integer getCantidad_solicitada() {
+        return cantidad_solicitada;
+    }
+
+    public Integer getCantidad_despachada() {
+        return cantidad_despachada;
+    }
+
+    public Presupuesto getPresupuesto() {
+        return presupuesto;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public Producto getProductoFisico() {
+        return productoFisico;
+    }
+
+    public void setIdPresupuestoDetalle(Long idPresupuestoDetalle) {
+        this.idPresupuestoDetalle = idPresupuestoDetalle;
+    }
+
+    public void setCantidad_solicitada(Integer cantidad_solicitada) {
+        this.cantidad_solicitada = cantidad_solicitada;
+    }
+
+    public void setCantidad_despachada(Integer cantidad_despachada) {
+        this.cantidad_despachada = cantidad_despachada;
+    }
+
+    public void setPresupuesto(Presupuesto presupuesto) {
+        this.presupuesto = presupuesto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public void setProductoFisico(Producto productoFisico) {
+        this.productoFisico = productoFisico;
+    }
+
+    
 }

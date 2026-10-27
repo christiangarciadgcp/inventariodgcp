@@ -7,12 +7,14 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {Utils} from '../../../../core/utils';
 import {Mensaje} from '../../../../core/mensaje';
+import {MayusculasDirective} from '../../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-marca-dialog',
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatButtonModule, MatFormFieldModule, MatInputModule
+    MatButtonModule, MatFormFieldModule, MatInputModule,
+    MayusculasDirective
   ],
   templateUrl: './marca-dialog.component.html',
   styles: [`mat-form-field { width: 100%; margin-bottom: 10px; }`]
@@ -20,7 +22,7 @@ import {Mensaje} from '../../../../core/mensaje';
 export class MarcaDialogComponent implements OnInit{
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<MarcaDialogComponent>);
-  private ft = Inject(Utils);
+  private ft = inject(Utils);
   private mensaje = inject(Mensaje);
 
   constructor(@Inject(MAT_DIALOG_DATA) public marcaData : any) {}

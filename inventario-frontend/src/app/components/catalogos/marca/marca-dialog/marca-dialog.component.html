@@ -9,7 +9,7 @@
 
     <mat-form-field appearance="outline" class="w-100 mb-2">
       <mat-label>Nombre de la Marca</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ej. HP, DELL" autocomplete="off">
+      <input matInput formControlName="nombre" placeholder="Ej. HP, DELL" autocomplete="off" Mayusculas>
       @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
         <mat-error>El nombre es obligatorio</mat-error>
       }

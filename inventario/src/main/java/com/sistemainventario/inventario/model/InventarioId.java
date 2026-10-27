@@ -2,12 +2,10 @@ package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-    @Data
     @Embeddable 
     public class InventarioId implements Serializable {
 
@@ -30,4 +28,25 @@ import java.util.Objects;
         public int hashCode() {
             return Objects.hash(idProducto, idBodega);
         }
+
+        public InventarioId() {
+        }
+
+        public Integer getIdProducto() {
+            return idProducto;
+        }
+
+        public void setIdProducto(Integer idProducto) {
+            this.idProducto = idProducto;
+        }
+
+        public Integer getIdBodega() {
+            return idBodega;
+        }
+
+        public void setIdBodega(Integer idBodega) {
+            this.idBodega = idBodega;
+        }
+
+        
 }

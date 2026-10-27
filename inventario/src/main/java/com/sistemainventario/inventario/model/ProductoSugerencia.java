@@ -1,10 +1,8 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "producto_sugerencia")
 public class ProductoSugerencia {
@@ -46,5 +44,74 @@ public class ProductoSugerencia {
             this.estado = "PENDIENTE";
         }
     }
+
+    public ProductoSugerencia() {
+    }
+
+    public Integer getIdSugerencia() {
+        return idSugerencia;
+    }
+
+    public void setIdSugerencia(Integer idSugerencia) {
+        this.idSugerencia = idSugerencia;
+    }
+
+    public Categoria getCategoriaSugerida() {
+        return categoriaSugerida;
+    }
+
+    public void setCategoriaSugerida(Categoria categoriaSugerida) {
+        this.categoriaSugerida = categoriaSugerida;
+    }
+
+    public Usuario getUsuarioSolicitante() {
+        return usuarioSolicitante;
+    }
+
+    public void setUsuarioSolicitante(Usuario usuarioSolicitante) {
+        this.usuarioSolicitante = usuarioSolicitante;
+    }
+
+    public String getNombreSugerido() {
+        return nombreSugerido;
+    }
+
+    public void setNombreSugerido(String nombreSugerido) {
+        this.nombreSugerido = nombreSugerido;
+    }
+
+    public String getJustificacion() {
+        return justificacion;
+    }
+
+    public void setJustificacion(String justificacion) {
+        this.justificacion = justificacion;
+    }
+
+    public Instant getFechaSugerencia() {
+        return fechaSugerencia;
+    }
+
+    public void setFechaSugerencia(Instant fechaSugerencia) {
+        this.fechaSugerencia = fechaSugerencia;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    
 
 }

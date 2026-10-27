@@ -1,9 +1,7 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "secuencia_acta")
 public class SecuenciaActa {
@@ -17,5 +15,34 @@ public class SecuenciaActa {
 
     @Column(name = "numero_inicio", nullable = false)
     private Integer numeroInicio;
+
+    public SecuenciaActa() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getAnio() {
+        return anio;
+    }
+
+    public void setAnio(Integer anio) {
+        this.anio = anio;
+    }
+
+    public Integer getNumeroInicio() {
+        return numeroInicio;
+    }
+
+    public void setNumeroInicio(Integer numeroInicio) {
+        this.numeroInicio = numeroInicio;
+    }
+
+    
     
 }

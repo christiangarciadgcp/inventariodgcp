@@ -53,7 +53,7 @@
                     <div class="col-md-5">
                         <mat-form-field appearance="outline" class="w-100 input-lg bg-light-input rounded-2" subscriptSizing="dynamic">
                             <mat-label>Área o Nombre Proyecto</mat-label>
-                            <input matInput formControlName="nombresolicitud" placeholder="Ej. Instalación de Puntos de Red en Duarte Novoa" autocomplete="off">
+                            <input matInput formControlName="nombresolicitud" placeholder="Ej. Instalación de Puntos de Red en Duarte Novoa" autocomplete="off" Mayusculas>
                             <mat-icon matSuffix class="text-primary">edit</mat-icon>
                         </mat-form-field>
                         @if (formCabecera.get('nombresolicitud')?.hasError('required') && formCabecera.get('nombresolicitud')?.touched) {

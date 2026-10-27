@@ -154,8 +154,9 @@ export class ModeloListComponent {
         this.cargarModelos();
         this.mensaje.open('Modelo registrado exitosamente', 'exito');
       },
-      error: (e) => {
-        this.mensaje.open('Error al guardar el modelo', 'error')
+      error : (err) => {
+        const msg = err.error?.mensaje || 'Error al guardar el modelo';
+        this.mensaje.open(msg, 'error');
       }
     });
   }
@@ -190,8 +191,8 @@ export class ModeloListComponent {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
       data: {
-        titulo: '¿Reactivar Marca?',
-        mensaje: 'La Marca volverá a estar visible.',
+        titulo: '¿Reactivar Modelo?',
+        mensaje: 'El Modelo volverá a estar visible.',
         textoBoton: 'Reactivar',
         colorBoton: 'primary'
       }

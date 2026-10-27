@@ -1,9 +1,7 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "unidad_medida")
 public class UnidadMedida {
@@ -22,27 +20,40 @@ public class UnidadMedida {
     @Column(name = "activo")
     private Boolean activo = true;
 
+    public UnidadMedida() {
+    }
+
     public Integer getIdUnidadMedida() {
-        return this.idUnidadMedida;
-    }
-
-    public String getNombreunidadmedida() {
-        return this.nombreunidadmedida;
-    }
-
-    public String getAbreviaturaunidadmedida() {
-        return this.abreviaturaunidadmedida;
+        return idUnidadMedida;
     }
 
     public void setIdUnidadMedida(Integer idUnidadMedida) {
         this.idUnidadMedida = idUnidadMedida;
     }
 
+    public String getNombreunidadmedida() {
+        return nombreunidadmedida;
+    }
+
     public void setNombreunidadmedida(String nombreunidadmedida) {
         this.nombreunidadmedida = nombreunidadmedida;
+    }
+
+    public String getAbreviaturaunidadmedida() {
+        return abreviaturaunidadmedida;
     }
 
     public void setAbreviaturaunidadmedida(String abreviaturaunidadmedida) {
         this.abreviaturaunidadmedida = abreviaturaunidadmedida;
     }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    
 }

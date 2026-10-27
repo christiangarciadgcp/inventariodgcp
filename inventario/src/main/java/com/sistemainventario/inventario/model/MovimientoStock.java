@@ -1,11 +1,8 @@
 package com.sistemainventario.inventario.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.Instant;
 
-@Data
 @Entity
 @Table(name = "movimiento_stock")
 public class MovimientoStock {
@@ -45,4 +42,74 @@ public class MovimientoStock {
             this.fecha = Instant.now();
         }
     }
+
+    public MovimientoStock() {
+    }
+
+    public Long getIdMovimientoStock() {
+        return idMovimientoStock;
+    }
+
+    public void setIdMovimientoStock(Long idMovimientoStock) {
+        this.idMovimientoStock = idMovimientoStock;
+    }
+
+    public Instant getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Instant fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public Bodega getBodega() {
+        return bodega;
+    }
+
+    public void setBodega(Bodega bodega) {
+        this.bodega = bodega;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    
+
 }

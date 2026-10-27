@@ -24,14 +24,14 @@
           <span class="text-dark fw-bold">Pendiente por asignar:</span>
         </div>
         <span class="badge bg-danger text-white fs-6 px-3 py-2 rounded-pill shadow-sm">
-        {{ itemGenerico.cantidadPendiente }} {{ itemGenerico.unidadMedida }}
-      </span>
+          {{ getCantidadRestantePorAsignar() }} {{ itemGenerico.unidadMedida }}
+        </span>
       </div>
     </div>
 
     <div class="col-md-6 d-flex justify-content-end">
       <div class="search-elegant m-0 w-100" style="max-width: 380px;">
-        <input type="text" class="search-input w-100" (keyup)="applyFilter($event)" placeholder="Buscar producto físico..." autocomplete="off">
+        <input type="text" class="search-input w-100" (keyup)="applyFilter($event)" placeholder="Buscar por nombre, serie, inventario..." autocomplete="off">
         <div class="search-btn-circle">
           <mat-icon>search</mat-icon>
         </div>
@@ -49,54 +49,81 @@
           <div class="d-flex justify-content-between align-items-start mb-3">
             <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
 
-              <span class="badge bg-secondary text-white border font-monospace fs-6 px-3 py-2 shadow-sm style-pointer rounded-pill "
-                  style="cursor: pointer;"
-                  matTooltip="Ver Ficha Técnica"
-                  (click)="verDetalles(sust)">
-                  {{ sust.skuProducto }}
+              <span class="badge bg-secondary text-white border font-monospace fs-6 px-3 py-2 shadow-sm style-pointer rounded-pill"
+                    style="cursor: pointer;"
+                    matTooltip="Ver Ficha Técnica"
+                    (click)="verDetalles(sust)">
+                {{ sust.skuProducto }}
               </span>
 
               <span class="badge px-2 py-1 shadow-sm rounded-pill"
-                    [ngClass]="sust.esNuevo ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-warning-subtle text-warning border border-warning-subtle'"
+                    [ngClass]="sust.esNuevo ? 'cond-nuevo' : 'cond-usado'"
                     style="font-size: 0.70rem; letter-spacing: 0.5px;">
                 {{ sust.esNuevo ? 'NUEVO' : 'USADO' }}
               </span>
             </div>
 
-            <div class="text-end ms-2 flex-shrink-0 d-flex gap-2">
+            <div class="text-end ms-2 flex-shrink-0 d-flex gap-2 align-items-center">
+              @if (itemGenerico.esMaterial !== false) {
 
-<!--              <button mat-stroked-button color="primary" class="rounded-pill shadow-sm bg-white" style="height: 32px; line-height: 32px;" (click)="verDetalles(sust)">
-                <mat-icon class="icon-tiny text-primary">visibility</mat-icon>
-              </button>-->
-
-
-              @if (sust.stockGlobal > sust.stockEnDespacho) {
-                <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3"
-                        style="height: 32px; line-height: 32px;"
-                        matTooltip="Realizar Movimiento"
-                        [disabled]="procesando"
-                        (click)="transferirStock(sust)">
-                  <mat-icon class="icon-tiny me-1 text-white">{{ procesando ? 'sync' : 'swap_horiz' }}</mat-icon>
-                  {{ procesando ? 'Guardando...' : 'Mover' }}
-                </button>
+                <!-- BOTÓN MOVER: Solo se habilita si hay stock en bodegas físicas Y AÚN FALTA POR ASIGNAR -->
+                @if (sust.stockGlobal > sust.stockEnDespacho && getCantidadRestantePorAsignar() > 0) {
+                  <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3"
+                          style="height: 32px; line-height: 32px;"
+                          matTooltip="Mover a Bodega Despacho"
+                          [disabled]="procesando"
+                          (click)="transferirStock(sust)">
+                    <mat-icon class="icon-tiny me-1 text-white">{{ procesando ? 'sync' : 'swap_horiz' }}</mat-icon>
+                    {{ procesando ? 'Guardando...' : 'Mover' }}
+                  </button>
+                } @else if (getCantidadRestantePorAsignar() === 0 && sust.stockEnDespacho === 0) {
+                  <span class="badge bg-light text-secondary border px-2 py-1" style="font-size: 0.72rem;">
+                    Completo
+                  </span>
+                } @else if (sust.stockGlobal === 0) {
+                  <span class="badge bg-light text-muted border px-2 py-2">
+                    <mat-icon class="icon-tiny me-1 align-middle">info</mat-icon>Sin existencias
+                  </span>
+                }
               } @else {
-                <span class="badge bg-light text-muted border px-2 py-2"><mat-icon class="icon-tiny me-1 align-middle">info</mat-icon>Sin existencias</span>
+                <!-- EQUIPOS INFORMÁTICOS: Se seleccionan directamente sin mover a Bodega Despacho -->
+                @if (sust.stockEnDespacho > 0) {
+                  <button mat-stroked-button color="warn" class="rounded-pill shadow-sm px-3"
+                          style="height: 32px; line-height: 32px;"
+                          (click)="toggleSeleccionEquipo(sust)">
+                    <mat-icon class="icon-tiny me-1">close</mat-icon> Quitar
+                  </button>
+                } @else if (sust.stockGlobal > 0 && getCantidadRestantePorAsignar() > 0) {
+                  <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3"
+                          style="height: 32px; line-height: 32px;"
+                          (click)="toggleSeleccionEquipo(sust)">
+                    <mat-icon class="icon-tiny me-1 text-white">check_circle</mat-icon> Seleccionar
+                  </button>
+                }
               }
             </div>
+
           </div>
 
           <!-- NOMBRE DEL PRODUCTO -->
-          <strong class="text-dark d-block text-wrap mb-2" style="font-size: 1rem; line-height: 1.2;">
+          <strong class="text-dark d-block text-wrap mb-1" style="font-size: 1rem; line-height: 1.2;">
             {{ sust.nombreProducto }}
-            @if (sust.marcaProducto !== 'SIN ESPECIFICAR') {
+            @if (sust.marcaProducto && sust.marcaProducto !== 'SIN ESPECIFICAR') {
               {{ sust.marcaProducto }}
             }
-            @if (sust.modeloProducto !== 'SIN ESPECIFICAR') {
+            @if (sust.modeloProducto && sust.modeloProducto !== 'SIN ESPECIFICAR') {
               {{ sust.modeloProducto }}
             }
           </strong>
 
-          <!-- ESTATUS EN DESPACHO -->
+          <!-- SERIE E INVENTARIO -->
+          @if (sust.serieProducto || sust.inventarioProducto) {
+            <small class="text-secondary font-monospace d-block mb-2">
+              Serie: <strong>{{ sust.serieProducto || 'S/N' }}</strong> | Inv: <strong>{{ sust.inventarioProducto || 'S/I' }}</strong>
+            </small>
+          }
+
+          <!-- ESTATUS -->
           @if (sust.stockEnDespacho > 0) {
             <div class="mb-3">
               <span class="text-success fw-bold d-inline-flex align-items-center bg-success-subtle px-2 py-1 rounded border border-success-subtle shadow-sm" style="font-size: 0.75rem;">
@@ -108,16 +135,18 @@
           <div class="flex-grow-1"></div>
 
           <div class="d-flex flex-column mt-2 p-2 bg-light rounded border border-light-subtle">
-            <span class="text-muted fw-bold mb-2" style="font-size: 0.75rem;"><mat-icon class="align-middle me-1" style="font-size: 14px; width:14px; height: 14px;">store</mat-icon> Existencias en bodega:</span>
+            <span class="text-muted fw-bold mb-2" style="font-size: 0.75rem;">
+              <mat-icon class="align-middle me-1" style="font-size: 14px; width:14px; height: 14px;">store</mat-icon> Existencias en bodega:
+            </span>
 
             <div class="d-flex flex-wrap gap-1">
               @for (bodega of sust.desgloseBodegas; track bodega.nombreBodega) {
                 <span class="badge bg-white text-secondary border shadow-sm px-2 py-1" style="font-size: 0.75rem;">
-                    {{ bodega.nombreBodega }}: <strong class="text-primary">{{ bodega.cantidadActual }}</strong>
+                  {{ bodega.nombreBodega }}: <strong class="text-primary">{{ bodega.cantidadActual }}</strong>
                 </span>
               }
               @if (sust.desgloseBodegas.length === 0) {
-                <span class="text-muted fst-italic" style="font-size: 0.75rem;">No hay stock para transferir.</span>
+                <span class="text-muted fst-italic" style="font-size: 0.75rem;">No hay stock disponible.</span>
               }
             </div>
           </div>

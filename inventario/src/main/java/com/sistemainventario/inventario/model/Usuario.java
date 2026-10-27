@@ -52,64 +52,66 @@ public class Usuario {
         return idUsuario;
     }
 
-    public String getNombreusuario() {
-        return nombreusuario;
-    }
-
-    public String getPasswordusuario() {
-        return passwordusuario;
-    }
-
-    public String getIniciales() {
-        return iniciales;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public Instant getUltimaConexion() {
-        return ultimaConexion;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public Rol getRol() {
-        return rol;
-    }
-
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public String getNombreusuario() {
+        return nombreusuario;
     }
 
     public void setNombreusuario(String nombreusuario) {
         this.nombreusuario = nombreusuario;
     }
 
+    public String getPasswordusuario() {
+        return passwordusuario;
+    }
+
     public void setPasswordusuario(String passwordusuario) {
         this.passwordusuario = passwordusuario;
+    }
+
+    public String getIniciales() {
+        return iniciales;
     }
 
     public void setIniciales(String iniciales) {
         this.iniciales = iniciales;
     }
 
+    public Boolean getActivo() {
+        return activo;
+    }
+
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public Instant getUltimaConexion() {
+        return ultimaConexion;
     }
 
     public void setUltimaConexion(Instant ultimaConexion) {
         this.ultimaConexion = ultimaConexion;
     }
 
+    public String getIp() {
+        return ip;
+    }
+
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public Rol getRol() {
+        return rol;
     }
 
     public void setRol(Rol rol) {
         this.rol = rol;
     }
+
+   
 
 }

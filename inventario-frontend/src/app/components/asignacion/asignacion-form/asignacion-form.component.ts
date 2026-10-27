@@ -24,6 +24,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { TipoAsignacion } from '../../../models/tipo-asignacion';
 import { Ubicacion } from '../../../models/ubicacion';
 import { AsignacionCreacionDTO } from '../../../models/asignacion';
+import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-asignacion-form',
@@ -32,7 +33,7 @@ import { AsignacionCreacionDTO } from '../../../models/asignacion';
     CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
     MatTableModule, MatAutocompleteModule, MatProgressSpinner, RouterLink,
-    MatTooltipModule
+    MatTooltipModule, MayusculasDirective
   ],
   templateUrl: './asignacion-form.component.html',
   styleUrls: ['./asignacion-form.component.css']

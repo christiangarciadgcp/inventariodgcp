@@ -7,9 +7,11 @@
 
   <form [formGroup]="form" (ngSubmit)="guardar()">
 
-    <mat-form-field appearance="outline" class="w-100 mb-2">
+    <mat-form-field appearance="outline" class="w-100 mb-2" [class.readonly-select]="esEdicion">
       <mat-label>Marca</mat-label>
-      <mat-select formControlName="idMarca">
+      <mat-select formControlName="idMarca"
+                  [tabIndex]="esEdicion ? -1 : 0"
+                  (keydown)="esEdicion ? $event.preventDefault() : null">
         @for (m of listaMarcas; track m.idMarca) {
           <mat-option [value]="m.idMarca">{{m.nombremarca}}</mat-option>
         }
@@ -22,7 +24,7 @@
 
     <mat-form-field appearance="outline" class="w-100 mb-2">
       <mat-label>Modelo</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ej. Envy , Pavilion Desktop" autocomplete="off">
+      <input matInput formControlName="nombre" placeholder="Ej. Envy , Pavilion Desktop" autocomplete="off" Mayusculas>
       @if (form.get('nombre')?.hasError('required') && form.get('nombre')?.touched) {
         <mat-error>Ingrese un Modelo</mat-error>
       }
