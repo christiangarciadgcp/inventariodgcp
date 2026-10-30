@@ -143,9 +143,9 @@ export class UsuarioListComponent implements OnInit {
 
   restablecerPassword(usuario: Usuario ){
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '450px',
+      width: '500px',
       data: {
-        titulo: `¿Deseas restablecer la contraseña del usuario ${usuario.nombreusuario}?`,
+        titulo: `¿Restablecer contraseña ${usuario.nombreusuario}?`,
         mensaje: ' ',
         textoBoton: 'Restablecer',
         colorBoton: 'primary'

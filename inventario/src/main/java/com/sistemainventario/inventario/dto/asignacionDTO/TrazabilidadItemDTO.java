@@ -8,6 +8,8 @@ public class TrazabilidadItemDTO {
     private Long idAsignacion;
     private String numeroActa;
     private String tipoAsignacion;
+    private String nombreUbicacion;
+    private String siglasUbicacion;
     private String responsableDestino;
     private Instant fechaAsignacion;
     private String estadoDetalle;

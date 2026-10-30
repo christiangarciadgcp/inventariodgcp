@@ -62,7 +62,9 @@ export interface TrazabilidadItemDTO {
   idAsignacion: number;
   numeroActa: string;
   tipoAsignacion: string;
-  responsableDestino: string;
+  nombreUbicacion?: string;
+  siglasUbicacion?: string;
+  responsableDestino?: string;
   fechaAsignacion: string;
   estadoDetalle: string;
   fechaDevolucion?: string;
@@ -80,8 +82,10 @@ export interface EquipoTrazabilidadDTO {
   inventarioProducto?: string;
   marca?: string;
   modelo?: string;
-  estadoActual: 'ASIGNADO' | 'EN BODEGA (DEVUELTO)';
-  asignadoA: string;
+  estadoActual: 'ASIGNADO' | 'DEVUELTO' | 'EN BODEGA (DEVUELTO)';
+  nombreUbicacion?: string;
+  siglasUbicacion?: string;
+  asignadoA?: string;
   ultimaActa: string;
   fechaUltimaAsignacion: string;
   totalAsignaciones: number;

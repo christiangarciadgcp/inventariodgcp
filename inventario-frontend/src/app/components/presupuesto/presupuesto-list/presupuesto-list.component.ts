@@ -91,6 +91,7 @@ export class PresupuestoListComponent implements OnInit {
         (data.numeroActa || '') +
         data.nombre_presupuesto +
         data.idusuariopresupuesto.nombreusuario +
+          data.estado +
         (data.ubicacion?.nombreubicacion || '')
       ).toLowerCase();
       return searchStr.includes(filter);

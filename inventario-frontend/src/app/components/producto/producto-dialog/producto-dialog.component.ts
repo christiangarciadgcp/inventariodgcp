@@ -137,8 +137,9 @@ export class ProductoDialogComponent implements OnInit {
       const sug = this.productoData.sugerenciaParaConvertir;
       this.form.patchValue({
         nombreproducto: sug.nombreSugerido,
-        descripcionproducto: `Sugerencia por Técnico UTDI.\nMotivo: ${sug.justificacion}`,
+        descripcionproducto: `Sugerencia por Técnico UTDI: ${sug.justificacion}`,
         idCategoria: sug.categoriaSugerida?.idCategoria
+      //  esGenerico: true -> SI SE REQUIERE QUE SEA PRODUCTO BASE DESDE UN INICIO
       });
     }
 

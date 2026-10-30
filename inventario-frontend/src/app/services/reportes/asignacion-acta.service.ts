@@ -249,12 +249,12 @@ export class AsignacionActaService {
     }
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
+    doc.setFontSize(10);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text('OBSERVACIONES:', 14, yInicioObservaciones);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
+    doc.setFontSize(10);
     doc.text(lineasObs, 14, yInicioObservaciones + 4.5);
 
     const yFinObservaciones = yInicioObservaciones + 4.5 + (lineasObs.length * 3.8);

@@ -90,7 +90,15 @@ export class SugerenciasListComponent implements OnInit {
   }
 
   eliminarSugerencia(id: number) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, { width: '350px' });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        titulo: '¿Eliminar sugerencia?',
+        mensaje: 'Esta acción no se puede deshacer',
+        textoBoton: 'Eliminar',
+        colorBoton: 'primary'
+      }
+    });
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
         this.sugerenciaService.eliminarSugerencia(id).subscribe({
@@ -108,6 +116,7 @@ export class SugerenciasListComponent implements OnInit {
     const dialogRef = this.dialog.open(ProductoDialogComponent, {
       width: '900px',
       maxHeight: '95vh',
+      autoFocus: false,
       data: { sugerenciaParaConvertir: sugerencia } //
     });
 

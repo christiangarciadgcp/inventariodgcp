@@ -103,6 +103,7 @@ export class DashboardComponent implements OnInit{
       case 'ENTRADA': return 'trending_up';
       case 'SALIDA': return 'trending_down';
       case 'DESPACHO': return 'local_shipping';
+      case 'DESCARGO': return 'remove_circle_outline';
       default: return 'swap_horiz';
     }
   }
@@ -112,6 +113,7 @@ export class DashboardComponent implements OnInit{
       case 'ENTRADA': return 'text-success bg-success-subtle';
       case 'SALIDA': return 'text-danger bg-danger-subtle';
       case 'DESPACHO': return 'text-primary bg-primary-subtle';
+      case 'DESCARGO': return 'text-danger bg-danger-subtle';
       default: return 'text-secondary bg-light';
     }
   }

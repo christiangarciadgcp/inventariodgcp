@@ -59,7 +59,7 @@ public class NotificacionService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerNotificacionesUsuario(Integer idUsuario) {
-        List<Notificacion> ultimas = notificacionRepository.findTop10ByOrderByFechaDesc();
+        List<Notificacion> ultimas = notificacionRepository.findTop20ByOrderByFechaDesc();
         List<Long> idsLeidas = notificacionLeidaRepository.findIdsNotificacionesLeidasPorUsuario(idUsuario);
         long noLeidas = notificacionRepository.countNoLeidasPorUsuario(idUsuario);
 

@@ -42,7 +42,7 @@ export class AsignacionTrazabilidadComponent implements OnInit {
   dataSource = new MatTableDataSource<EquipoTrazabilidadDTO>([]);
 
   // Columnas unificadas
-  displayedColumns: string[] = ['fecha', 'producto', 'marca-modelo', 'serie-inventario', 'estado', 'acciones'];
+  displayedColumns: string[] = ['fecha', 'producto', 'marca-modelo', 'serie-inventario', 'ubicacion', 'estado', 'acciones'];
 
   paginator = viewChild(MatPaginator);
   sort = viewChild(MatSort);
@@ -64,6 +64,8 @@ export class AsignacionTrazabilidadComponent implements OnInit {
         (data.serieProducto || '') +
         (data.inventarioProducto || '') +
         (data.skuProducto || '') +
+        (data.nombreUbicacion || '') +
+        (data.siglasUbicacion || '') +
         (data.asignadoA || '') +
         (data.ultimaActa || '') +
         (data.estadoActual || '')
@@ -76,6 +78,7 @@ export class AsignacionTrazabilidadComponent implements OnInit {
         case 'producto': return item.nombreProducto;
         case 'marca-modelo': return (item.marca || '') + ' ' + (item.modelo || '');
         case 'serie-inventario': return (item.serieProducto || '') + ' ' + (item.inventarioProducto || '');
+        case 'ubicacion': return (item.nombreUbicacion || '') + ' ' + (item.asignadoA || '');
         case 'estado': return item.estadoActual;
         case 'fecha': return item.fechaUltimaAsignacion ? new Date(item.fechaUltimaAsignacion).getTime() : 0;
         default: return (item as any)[property];

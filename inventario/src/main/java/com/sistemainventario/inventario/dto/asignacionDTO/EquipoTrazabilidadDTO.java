@@ -12,7 +12,9 @@ public class EquipoTrazabilidadDTO {
     private String inventarioProducto;
     private String marca;
     private String modelo;
-    private String estadoActual; 
+    private String estadoActual;
+    private String nombreUbicacion;
+    private String siglasUbicacion;
     private String asignadoA;
     private String ultimaActa;
     private Instant fechaUltimaAsignacion;

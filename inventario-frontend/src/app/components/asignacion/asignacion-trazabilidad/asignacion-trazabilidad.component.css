@@ -82,32 +82,38 @@
 }
 
 /* DISTRIBUCIÓN DE ANCHOS (100% TOTAL) */
+
+.mat-column-fecha {
+  width: 10%;
+}
+
 .mat-column-producto {
-  width: 30%;
+  width: 23%;
   white-space: normal !important;
   word-wrap: break-word;
 }
 
 .mat-column-marca-modelo {
-  width: 15%;
+  width: 12%;
   white-space: normal !important;
   word-wrap: break-word;
 }
 
 .mat-column-serie-inventario {
-  width: 22%;
+  width: 20%;
   white-space: normal !important;
   word-wrap: break-word;
 }
 
-.mat-column-estado {
-  width: 12%;
+.mat-column-ubicacion {
+  width: 17%;
 }
 
-.mat-column-fecha {
-  width: 12%;
+.mat-column-estado {
+  width: 10%;
 }
+
 
 .mat-column-acciones {
-  width: 12%;
+  width: 8%;
 }

@@ -12,7 +12,7 @@ export class CatalogoComponent {
 
     // Lista de Catálogos
     catalogos = [
-      { titulo: 'Bodegas', icono: 'bi-building', ruta: '/catalogos/bodegas', color: 'dark', desc: 'Ubicaciones físicas' },
+      { titulo: 'Bodegas', icono: 'bi-buildings-fill', ruta: '/catalogos/bodegas', color: 'dark', desc: 'Ubicaciones físicas' },
       { titulo: 'Materiales y Equipo', icono: 'bi-box', ruta: '/catalogos/productos', color: 'dark', desc: 'Inventario General' },
       { titulo: 'Categorías', icono: 'bi-tags', ruta: '/catalogos/categorias', color: 'dark', desc: 'Gestionar tipos de productos' },
       { titulo: 'Proveedores', icono: 'bi-truck', ruta: '/catalogos/proveedores', color: 'dark', desc: 'Lista de Proveedores' },

@@ -9,7 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class AsignacionService {
@@ -388,19 +392,20 @@ public class AsignacionService {
         // Al haber filtrado en el repositorio, todos los detalles son de actas aprobadas (ASIGNADA, DEVOLUCION PARCIAL o TOTAL)
         List<AsignacionDetalle> todosDetalles = detalleRepository.findAllAsignacionesHistoricas();
 
-        java.util.Map<Integer, List<AsignacionDetalle>> agrupados = todosDetalles.stream()
-                .collect(java.util.stream.Collectors.groupingBy(
+        Map<Integer, List<AsignacionDetalle>> agrupados = todosDetalles.stream()
+                .collect(Collectors.groupingBy(
                         d -> d.getProducto().getIdProducto(),
-                        java.util.LinkedHashMap::new,
-                        java.util.stream.Collectors.toList()
+                        LinkedHashMap::new,
+                        Collectors.toList()
                 ));
 
         List<EquipoTrazabilidadDTO> resumenList = new ArrayList<>();
 
-        for (java.util.Map.Entry<Integer, List<AsignacionDetalle>> entry : agrupados.entrySet()) {
+        for (Entry<Integer, List<AsignacionDetalle>> entry : agrupados.entrySet()) {
             List<AsignacionDetalle> historial = entry.getValue();
             AsignacionDetalle ultimo = historial.get(0); // El más reciente
             Producto p = ultimo.getProducto();
+            Asignacion asig = ultimo.getAsignacion();
 
             EquipoTrazabilidadDTO dto = new EquipoTrazabilidadDTO();
             
@@ -415,6 +420,11 @@ public class AsignacionService {
                 if (p.getModelo().getMarca() != null) {
                     dto.setMarca(p.getModelo().getMarca().getNombremarca());
                 }
+            }
+
+              if (asig.getUbicacion() != null) {
+                dto.setNombreUbicacion(asig.getUbicacion().getNombreubicacion());
+                dto.setSiglasUbicacion(asig.getUbicacion().getSiglasubicacion());
             }
 
             // Si el último detalle no ha sido devuelto, está activamente ASIGNADO
@@ -438,10 +448,18 @@ public class AsignacionService {
         List<TrazabilidadItemDTO> timeline = new ArrayList<>();
 
         for (AsignacionDetalle d : detalles) {
+            Asignacion asig = d.getAsignacion();
             TrazabilidadItemDTO dto = new TrazabilidadItemDTO();
+
             dto.setIdAsignacion(d.getAsignacion().getIdAsignacion());
             dto.setNumeroActa(d.getAsignacion().getNumeroActa());
             dto.setTipoAsignacion(d.getAsignacion().getTipoAsignacion().getNombre());
+
+            if (asig.getUbicacion() != null) {
+                dto.setNombreUbicacion(asig.getUbicacion().getNombreubicacion());
+                dto.setSiglasUbicacion(asig.getUbicacion().getSiglasubicacion());
+            }
+            
             dto.setResponsableDestino(d.getAsignacion().getResponsableDestino());
             dto.setFechaAsignacion(d.getAsignacion().getFechaAsignacion());
             dto.setEstadoDetalle(d.getEstado());

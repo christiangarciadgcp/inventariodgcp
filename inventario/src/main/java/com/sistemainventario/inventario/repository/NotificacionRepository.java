@@ -12,7 +12,7 @@ import com.sistemainventario.inventario.model.Notificacion;
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long>{
 
 // Trae las últimas 20 notificaciones globales
-List<Notificacion> findTop10ByOrderByFechaDesc();
+List<Notificacion> findTop20ByOrderByFechaDesc();
 
 // Cuenta cuántas NO ha leído un usuario específico
 @Query("SELECT COUNT(n) FROM Notificacion n WHERE n.idNotificacion NOT IN " +
