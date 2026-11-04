@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../../services/auth.service';
 import { PresupuestoService } from '../../../services/presupuesto.service';
@@ -15,7 +16,6 @@ import { Mensaje } from '../../../core/mensaje';
 import { Utils } from '../../../core/utils';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import { PresupuestoSeleccionFisicoComponent } from '../presupuesto-seleccion-fisico/presupuesto-seleccion-fisico.component';
-import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-presupuesto-despacho',
@@ -67,9 +67,26 @@ export class PresupuestoDespachoComponent implements OnInit {
   cargarDatos(id: number) {
     this.presupuestoService.obtenerDetalleRevision(id).subscribe({
       next: (data) => {
+        // 1. OBTENEMOS EL ESTADO ACTUAL EN MEMORIA
+        const actuales = this.itemsRevision();
+
+        // 2. PRESERVAMOS LA SELECCIÓN DE EQUIPOS INFORMÁTICOS (!esMaterial)
+        if (actuales && actuales.length > 0) {
+          data.forEach((nuevoItem: PresupuestoRevisionItem) => {
+            if (nuevoItem.esMaterial === false) {
+              const previo = actuales.find(a => a.idProducto === nuevoItem.idProducto);
+              if (previo && previo.sustitutosDisponibles) {
+                // Conservamos los sustitutos y la cantidad apartada en memoria
+                nuevoItem.sustitutosDisponibles = previo.sustitutosDisponibles;
+              }
+            }
+          });
+        }
+
         const dataOrdenada = data.sort((a, b) =>
           a.nombreProducto.localeCompare(b.nombreProducto, 'es', { sensitivity: 'base' })
         );
+
         this.itemsRevision.set([...dataOrdenada]);
         this.evaluarBotonDespacho();
       },
@@ -97,10 +114,11 @@ export class PresupuestoDespachoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(resultado => {
       if (resultado && Array.isArray(resultado)) {
-        // Preservar selección en memoria de los Equipos Informáticos (!esMaterial)
         const actuales = this.itemsRevision();
+
+        // Preservar la selección en memoria de los OTROS Equipos Informáticos que no se estaban editando
         resultado.forEach((nuevoItem: PresupuestoRevisionItem) => {
-          if (nuevoItem.esMaterial === false) {
+          if (nuevoItem.esMaterial === false && nuevoItem.idProducto !== item.idProducto) {
             const previo = actuales.find(a => a.idProducto === nuevoItem.idProducto);
             if (previo) {
               nuevoItem.sustitutosDisponibles = previo.sustitutosDisponibles;
@@ -121,7 +139,6 @@ export class PresupuestoDespachoComponent implements OnInit {
   }
 
   getCantidadLista(item: PresupuestoRevisionItem): number {
-    // 1. Si el requerimiento ya se despachó al 100%, no hay nada "LISTO" para despachar hoy.
     if (item.cantidadPendiente <= 0) return 0;
 
     let totalPreparado = 0;
@@ -131,7 +148,6 @@ export class PresupuestoDespachoComponent implements OnInit {
       });
     }
 
-    // 2. Límite de seguridad: el estado "LISTO" nunca debe ser mayor a lo que falta.
     return Math.min(totalPreparado, item.cantidadPendiente);
   }
 
@@ -141,9 +157,7 @@ export class PresupuestoDespachoComponent implements OnInit {
 
     this.itemsRevision().forEach(item => {
       if (item.cantidadPendiente > 0) {
-
         let disponibleEnDespacho = this.getCantidadLista(item);
-
         if (disponibleEnDespacho > 0) algoAsignado = true;
         if (disponibleEnDespacho < item.cantidadPendiente) todoAsignado = false;
       }
@@ -212,7 +226,7 @@ export class PresupuestoDespachoComponent implements OnInit {
     const cantidadLista = this.getCantidadLista(item);
     if (cantidadLista <= 0) return;
 
-    // Si es equipo informático (selección en memoria), solo se limpia en memoria
+    // Si es equipo informático (selección en memoria), se limpia únicamente en memoria
     if (item.esMaterial === false) {
       item.sustitutosDisponibles.forEach(s => s.stockEnDespacho = 0);
       this.itemsRevision.set([...this.itemsRevision()]);
@@ -242,6 +256,7 @@ export class PresupuestoDespachoComponent implements OnInit {
           forkJoin(peticiones).subscribe({
             next: () => {
               this.mensaje.open('Material regresado a su bodega de origen exitosamente', 'exito');
+              // Al recargar, cargarDatos() mantendrá intactos los equipos seleccionados
               this.cargarDatos(this.idPresupuesto);
             },
             error: (err) => this.mensaje.open(err.error?.mensaje || 'Error al regresar el material', 'error')

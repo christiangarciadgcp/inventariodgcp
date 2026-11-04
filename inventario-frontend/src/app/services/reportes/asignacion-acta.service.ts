@@ -290,13 +290,21 @@ export class AsignacionActaService {
     // ==========================================
     // PIE DE PÁGINA
     // ==========================================
-    const lineasDireccion = [
-      'Unidad de Tecnología y Desarrollo Informático',
-      'Colonia El Rosal 49 Av. Sur #752, Edificio PROMERCAN, San Salvador',
-      'www.dgcp.gob.sv'
-    ];
 
     const inicialesCreacion = (asignacion.usuarioCreacion?.iniciales || '').trim();
+
+    const telefonosPorIniciales: Record<string, string> = {
+      'cea': '2227-8763',
+      'apae': '2227-8764'
+    };
+
+    const telefonoContacto = telefonosPorIniciales[inicialesCreacion] || '2227-8752';
+
+    const lineasDireccion = [
+      'Unidad de Tecnología y Desarrollo Informático',
+      `Colonia El Rosal 49 Av. Sur #752, Edificio PROMERCAN, San Salvador Tel. ${telefonoContacto}`,
+      'www.dgcp.gob.sv'
+    ];
 
     const inicialesActa = [this.inicialesJefe, inicialesCreacion]
       .filter(ini => ini.length > 0)
@@ -320,12 +328,12 @@ export class AsignacionActaService {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
-      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text(lineasDireccion[0], centroPagina, 263, { align: 'center' });
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
-      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text(lineasDireccion[1], centroPagina, 266.5, { align: 'center' });
       doc.text(lineasDireccion[2], centroPagina, 270, { align: 'center' });
     }

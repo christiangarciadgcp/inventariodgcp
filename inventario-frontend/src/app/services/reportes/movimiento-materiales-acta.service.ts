@@ -329,15 +329,23 @@ export class MovimientoMaterialesActaService {
 
     // 8. PIE DE PÁGINA (INICIALES JEFE/USUARIO DEBAJO DE LA LÍNEA + DIRECCIÓN)
     const inicialesCreacion = (datos.inicialesUsuarioActa || '').trim();
-    const inicialesActa = [this.inicialesJefe, inicialesCreacion]
-      .filter(ini => ini.length > 0)
-      .join('/');
+
+    const telefonosPorIniciales: Record<string, string> = {
+      'cea': '2227-8763',
+      'apae': '2227-8764'
+    };
+
+    const telefonoContacto = telefonosPorIniciales[inicialesCreacion] || '2227-8752';
 
     const lineasDireccion = [
       'Unidad de Tecnología y Desarrollo Informático',
-      'Colonia El Rosal 49 Av. Sur #752, Edificio PROMERCAN, San Salvador',
+      `Colonia El Rosal 49 Av. Sur #752, Edificio PROMERCAN, San Salvador Tel. ${telefonoContacto}`,
       'www.dgcp.gob.sv'
     ];
+
+    const inicialesActa = [this.inicialesJefe, inicialesCreacion]
+      .filter(ini => ini.length > 0)
+      .join('/');
 
     const totalPaginas = doc.getNumberOfPages();
     for (let i = 1; i <= totalPaginas; i++) {
@@ -356,7 +364,7 @@ export class MovimientoMaterialesActaService {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
-      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
+      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.text(lineasDireccion[0], centroPagina, 263, { align: 'center' });
 
       doc.setFont('helvetica', 'normal');
