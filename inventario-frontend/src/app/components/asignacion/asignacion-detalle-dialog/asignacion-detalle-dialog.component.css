@@ -9,12 +9,6 @@
   padding-bottom: 2rem !important;
 }
 
-/* --- ESTILO DE CABECERA IDÉNTICO A ASIGNACIÓN FORM --- */
-.mat-mdc-header-row {
-  background-color: #f8f9fa !important;
-  border-bottom: 2px solid #e9ecef !important;
-  height: 46px !important;
-}
 
 .mat-mdc-header-cell {
   color: #212529 !important;
@@ -23,6 +17,13 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+.mat-mdc-header-row {
+  background: #ffffff;
+  border-bottom: 2px solid #1467bb !important;
+  height: 50px;
+}
+
 
 /* --- FILAS Y HOVER --- */
 .mat-mdc-row {

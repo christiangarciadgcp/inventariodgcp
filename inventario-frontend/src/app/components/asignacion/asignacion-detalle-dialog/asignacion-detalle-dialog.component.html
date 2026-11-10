@@ -103,13 +103,23 @@
           </td>
         </ng-container>
 
+        <!-- MARCA - MODELO-->
+        <ng-container matColumnDef="marca-modelo">
+          <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-2"> MARCA / MODELO </th>
+          <td mat-cell *matCellDef="let d" class="ps-2 py-2 ">
+            {{ d.producto.modelo?.marca?.nombremarca || 'S/N' }} <br> {{ d.producto.modelo?.nombremodelo || 'S/I' }}
+          </td>
+        </ng-container>
+
         <!-- SERIE / INV -->
         <ng-container matColumnDef="serie">
           <th mat-header-cell *matHeaderCellDef class="bg-light text-dark fw-bold ps-2"> SERIE / INVENTARIO </th>
-          <td mat-cell *matCellDef="let d" class="ps-2 py-2 small font-monospace">
-            Serie: {{ d.producto.serieproducto || 'S/N' }} <br> Inv: {{ d.producto.inventarioproducto || 'S/I' }}
+          <td mat-cell *matCellDef="let d" class="ps-2 py-2">
+             {{ d.producto.serieproducto || 'S/N' }} <br> {{ d.producto.inventarioproducto || 'S/I' }}
           </td>
         </ng-container>
+
+
 
         <!-- BODEGA ORIGEN -->
         <ng-container matColumnDef="bodegaOrigen">
@@ -128,7 +138,7 @@
             </span>
             @if (d.estado === 'DEVUELTO' && d.bodegaDevolucion) {
               <small class="d-block text-muted mt-1" style="font-size: 0.72rem;">
-                Devuelto a: {{ d.bodegaDevolucion.nombrebodega }}
+                 {{ d.bodegaDevolucion.nombrebodega }}
               </small>
             }
           </td>

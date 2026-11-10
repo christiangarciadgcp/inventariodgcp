@@ -171,7 +171,7 @@ export class AsignacionListComponent implements OnInit {
 
   verDetalleHistorial(asignacion: Asignacion) {
     const dialogRef = this.dialog.open(AsignacionDetalleDialogComponent, {
-      width: '850px',
+      width: '1000px',
       maxWidth: '95vw',
       data: { asignacion }
     });

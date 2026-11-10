@@ -35,7 +35,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
   detalles = signal<AsignacionDetalle[]>([]);
   apruebaAsignaciones = signal<boolean>(false);
 
-  displayedColumns: string[] = ['producto', 'serie', 'bodegaOrigen', 'estado'];
+  displayedColumns: string[] = ['producto', 'marca-modelo', 'serie', 'bodegaOrigen', 'estado'];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { asignacion: Asignacion }) {}
 
