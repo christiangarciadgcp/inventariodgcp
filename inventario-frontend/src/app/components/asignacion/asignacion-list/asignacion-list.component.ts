@@ -87,7 +87,7 @@ export class AsignacionListComponent implements OnInit {
     }
   });
 
-  displayedColumns: string[] = ['acta', 'fecha', 'tipo', 'responsable', 'estado', 'acciones'];
+  displayedColumns: string[] = ['acta', 'realizado','fecha', 'tipo', 'responsable', 'estado', 'acciones'];
 
   paginator = viewChild(MatPaginator);
   sort = viewChild(MatSort);
@@ -106,6 +106,7 @@ export class AsignacionListComponent implements OnInit {
     this.dataSource.filterPredicate = (data: Asignacion, filter: string) => {
       const searchStr = (
         data.numeroActa +
+        data.usuarioCreacion.nombreusuario +
         data.tipoAsignacion.nombre +
         (data.responsableDestino || '') +
         (data.ubicacion?.nombreubicacion || '') +

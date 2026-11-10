@@ -225,9 +225,9 @@ export class AsignacionActaService {
       columnStyles: {
         0: { halign: 'center', cellWidth: 8 }, // NUMERO
         1: { halign: 'left', cellWidth: 40, fontStyle: 'bold' }, // NOMBRE DE EQUIPO
-        2: { halign: 'center', cellWidth: 26 }, // MARCA
+        2: { halign: 'center', cellWidth: 'auto' }, // MARCA
         3: { halign: 'center', cellWidth: 26 }, // MODELO
-        4: { halign: 'center', cellWidth: 30, fontStyle: 'normal' }, // SERIE
+        4: { halign: 'center', cellWidth: 35, fontStyle: 'normal' }, // SERIE
         5: { halign: 'center', cellWidth: 30, fontStyle: 'normal' }, // INVENTARIO
         6: { halign: 'center', cellWidth: 30 } // DESTINO
       }

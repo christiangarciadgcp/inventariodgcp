@@ -160,7 +160,7 @@ export class UbicacionListComponent {
       width: '350px',
       data: {
         titulo: '¿Desactivar Ubicación?',
-        mensaje: 'El Ubicación dejará de estar visible.',
+        mensaje: 'La Ubicación dejará de estar visible.',
         textoBoton: 'Desactivar',
         colorBoton: 'primary'
       }
@@ -187,7 +187,7 @@ export class UbicacionListComponent {
       width: '350px',
       data: {
         titulo: '¿Reactivar Ubicación?',
-        mensaje: 'El Ubicación volverá a estar visible.',
+        mensaje: 'La Ubicación volverá a estar visible.',
         textoBoton: 'Reactivar',
         colorBoton: 'primary'
       }

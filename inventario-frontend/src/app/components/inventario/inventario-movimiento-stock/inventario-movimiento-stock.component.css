@@ -94,11 +94,6 @@
   .ls-1 { letter-spacing: 1px; }
 
 
-.mat-mdc-header-row {
-  background-color: #f8fafc !important;
-  height: 46px !important;
-}
-
 .hover-row:hover {
   background-color: #f8faff;
 }
@@ -116,4 +111,8 @@
   border-bottom: 1px solid #e8e6e6 !important;
 }
 
-
+.mat-mdc-header-row {
+  background: #ffffff;
+  border-bottom: 2px solid #1467bb !important;
+  height: 50px;
+}
