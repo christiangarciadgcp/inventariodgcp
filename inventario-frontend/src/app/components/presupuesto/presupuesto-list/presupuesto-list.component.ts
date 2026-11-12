@@ -268,6 +268,43 @@ export class PresupuestoListComponent implements OnInit {
     });
   }
 
+  finalizarPresupuesto(presupuesto: Presupuesto){
+    const idUsuario = this.authService.getIdUsuarioActual();
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        titulo: '¿Desea finalizar este presupuesto?',
+        mensaje: 'La solicitud pasará a estado DESPACHADO',
+        textoBoton: 'Confirmar',
+        colorBoton: 'primary'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmado => {
+      if (confirmado) {
+        this.presupuestoService.finalizarPresupuesto(presupuesto.idPresupuesto!, idUsuario).subscribe({
+          next : () => {
+            this.mensaje.open('Solicitud de Presupuesto finalizada ', 'exito');
+
+            this.currentTab = 3;
+
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: { tab: 3 },
+              queryParamsHandling: 'merge'
+            });
+
+            this.cargarPresupuestos();
+          },
+          error: (err) => {
+            const msg = err.error?.mensaje || 'No se pudo aprobar este presupuesto';
+            this.mensaje.open(msg, 'error');
+          }
+        });
+      }
+    });
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

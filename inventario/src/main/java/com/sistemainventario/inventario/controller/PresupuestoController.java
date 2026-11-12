@@ -85,6 +85,12 @@ public class PresupuestoController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}/finalizar")
+    public ResponseEntity<Void> finalizarPresupuesto(@PathVariable Long id, @RequestParam Integer idUsuario) {
+        presupuestoService.finalizarPresupuesto(id, idUsuario);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{id}/revertir-preparacion")
     public ResponseEntity<Void> revertirPreparacion(
             @PathVariable Long id,

@@ -31,7 +31,7 @@
 
       <button type="button" class="tab-pill-btn" [class.active]="currentTab === 2" (click)="onTabChange(2)">
         <mat-icon class="me-1 icon-tab">local_shipping</mat-icon>
-        Despachos
+        Desp. Parcial
         <span class="tab-badge ms-2">{{ conteoDespachos() }}</span>
       </button>
 
@@ -163,11 +163,17 @@
             <mat-icon>format_list_bulleted</mat-icon>
           </button>
 
-          @if (element.estado === 'PENDIENTE' || (element.estado === 'APROBADO' && esEncargadoInventario()) || ((element.estado === 'DESPACHO PARCIAL' || element.estado === 'DESPACHADO')) && esAdmin()) {
+          @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario())) {
             <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
                     [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
                     [queryParams]="{ returnTab: currentTab }">
               <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (element.estado === 'DESPACHO PARCIAL' && esEncargadoInventario()) {
+            <button mat-icon-button class="action-btn text-success" matTooltip="Finalizar Presupuesto" (click)="finalizarPresupuesto(element)">
+              <mat-icon>task_alt</mat-icon>
             </button>
           }
 
@@ -189,8 +195,8 @@
             <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho" (click)="imprimirDespacho(element)">
               <mat-icon>picture_as_pdf</mat-icon>
             </button>
-
           }
+
 
           @if(esEncargadoInventario() && (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL')){
             <button mat-icon-button class="action-btn text-info-emphasis" matTooltip="Imprimir Acta de Movimiento de Materiales" (click)="imprimirActaMateriales(element)">

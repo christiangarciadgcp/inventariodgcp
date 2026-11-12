@@ -78,6 +78,10 @@ export class PresupuestoService {
     return this.http.put<void>(`${this.apiUrl}/${idPresupuesto}/cancelar?idUsuario=${idUsuario}`, {});
   }
 
+  finalizarPresupuesto(idPresupuesto: number, idUsuario: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${idPresupuesto}/finalizar?idUsuario=${idUsuario}`, {});
+  }
+
   revertirPreparacionMaterial(idPresupuesto: number, idProductoFisico: number, idUsuario: number): Observable<void> {
     return this.http.post<void>(
       `${this.apiUrl}/${idPresupuesto}/revertir-preparacion?idProductoFisico=${idProductoFisico}&idUsuario=${idUsuario}`,

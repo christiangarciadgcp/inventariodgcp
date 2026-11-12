@@ -353,6 +353,17 @@ public class PresupuestoService {
     }
 
     @Transactional
+    public void finalizarPresupuesto(Long idPresupuesto, Integer idUsuario) {
+        Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow();
+        presupuesto.setEstado("DESPACHADO");
+        presupuesto.setFecha_modificacion(Instant.now());
+        presupuestoHistorialRepository.save(new PresupuestoHistorial(presupuesto, usuario, "DESPACHO TOTAL"));
+        notificacionService.registrar(usuario.getNombreusuario(), "ha finalizado el Presupuesto #" + presupuesto.getIdPresupuesto());
+        presupuestoRepository.save(presupuesto);
+    }
+
+    @Transactional
     public void cancelarPresupuesto(Long idPresupuesto, Integer idUsuario) {
         Presupuesto presupuesto = this.obtenerPorId(idPresupuesto);
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow();

@@ -55,7 +55,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
       data: {
         titulo: '¿Aprobar Asignación?',
         mensaje: `Se descontarán los equipos para el Acta <b>${asignacion.numeroActa}</b>.`,
-        textoBoton: 'Aprobar Asignación',
+        textoBoton: 'Aprobar',
         colorBoton: 'primary'
       }
     });
