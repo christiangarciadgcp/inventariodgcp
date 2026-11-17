@@ -159,10 +159,13 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef class="text-center"> ACCIONES </th>
         <td mat-cell *matCellDef="let element" class="col-acciones text-center py-2">
+
+          <!-- VER DETALLES DE PRESUPUESTO -->
           <button mat-icon-button class="action-btn text-dark" matTooltip="Ver Detalles" (click)="verDetallePresupuesto(element)">
             <mat-icon>format_list_bulleted</mat-icon>
           </button>
 
+          <!-- EDITAR PRESUPUESTO -->
           @if (element.estado === 'PENDIENTE' || ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario())) {
             <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Presupuesto"
                     [routerLink]="['/presupuesto/editar_presupuesto', element.idPresupuesto]"
@@ -171,12 +174,14 @@
             </button>
           }
 
+          <!-- FINALIZAR PRESUPUESTO -->
           @if (element.estado === 'DESPACHO PARCIAL' && esEncargadoInventario()) {
             <button mat-icon-button class="action-btn text-success" matTooltip="Finalizar Presupuesto" (click)="finalizarPresupuesto(element)">
               <mat-icon>task_alt</mat-icon>
             </button>
           }
 
+          <!-- EVALUAR PRESUPEUSTO -->
           @if (element.estado === 'PENDIENTE' && esEncargadoInventario()) {
             <button mat-icon-button class="action-btn revision-color" matTooltip="Evaluar Presupuesto"
                     (click)="evaluarPresupuesto(element.idPresupuesto, element.idusuariopresupuesto?.nombreusuario)">
@@ -184,6 +189,7 @@
             </button>
           }
 
+          <!-- DESPACHO DE MATERIALES -->
           @if ((element.estado === 'APROBADO' || element.estado === 'DESPACHO PARCIAL') && esEncargadoInventario()) {
             <button mat-icon-button class="action-btn text-primary" matTooltip="Despachar Materiales"
                     [routerLink]="['/presupuesto/despachar', element.idPresupuesto]">
@@ -191,16 +197,17 @@
             </button>
           }
 
+          <!-- HOJA DE DESPACHO -->
           @if (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL') {
             <button mat-icon-button class="action-btn text-danger" matTooltip="Imprimir Hoja de Despacho" (click)="imprimirDespacho(element)">
               <mat-icon>picture_as_pdf</mat-icon>
             </button>
           }
 
-
+          <!-- ACTA DE MATERIALES -->
           @if(esEncargadoInventario() && (element.estado === 'DESPACHADO' || element.estado === 'DESPACHO PARCIAL')){
             <button mat-icon-button class="action-btn text-info-emphasis" matTooltip="Imprimir Acta de Movimiento de Materiales" (click)="imprimirActaMateriales(element)">
-              <mat-icon>description</mat-icon>
+              <mat-icon>picture_as_pdf</mat-icon>
             </button>
           }
         </td>

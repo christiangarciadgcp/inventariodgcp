@@ -66,7 +66,6 @@
             <div class="text-end ms-2 flex-shrink-0 d-flex gap-2 align-items-center">
               @if (itemGenerico.esMaterial !== false) {
 
-                <!-- BOTÓN MOVER: Solo se habilita si hay stock en bodegas físicas Y AÚN FALTA POR ASIGNAR -->
                 @if (sust.stockGlobal > sust.stockEnDespacho && getCantidadRestantePorAsignar() > 0) {
                   <button mat-flat-button class="btn-transferir rounded-pill shadow-sm text-white px-3"
                           style="height: 32px; line-height: 32px;"
@@ -86,7 +85,6 @@
                   </span>
                 }
               } @else {
-                <!-- EQUIPOS INFORMÁTICOS: Se seleccionan directamente sin mover a Bodega Despacho -->
                 @if (sust.stockEnDespacho > 0) {
                   <button mat-stroked-button color="warn" class="rounded-pill shadow-sm px-3"
                           style="height: 32px; line-height: 32px;"

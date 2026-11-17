@@ -33,7 +33,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
   public utils = inject(Utils);
 
   detalles = signal<AsignacionDetalle[]>([]);
-  apruebaAsignaciones = signal<boolean>(false);
+  finalizarAsignacion = signal<boolean>(false);
 
   displayedColumns: string[] = ['producto', 'marca-modelo', 'serie', 'bodegaOrigen', 'estado'];
 
@@ -41,7 +41,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
 
   ngOnInit(): void {
     const rol = this.authService.getRolUsuario();
-    this.apruebaAsignaciones.set(rol === 'jefe utdi' || rol === 'administrador' || rol === 'coordinador utdi');
+    this.finalizarAsignacion.set(rol === 'inventario utdi' || rol === 'administrador');
 
     if (this.data.asignacion?.idAsignacion) {
       this.asignacionService.listarDetalles(this.data.asignacion.idAsignacion).subscribe(d => this.detalles.set(d));

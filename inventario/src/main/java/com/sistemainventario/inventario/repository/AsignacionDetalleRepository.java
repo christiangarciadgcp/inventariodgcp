@@ -14,7 +14,7 @@ public interface AsignacionDetalleRepository extends JpaRepository<AsignacionDet
 
     List<AsignacionDetalle> findByAsignacion(Asignacion asignacion);
 
-// Solo trae asignaciones que fueron aprobadas (ignora REGISTRADA y  CANCELADA)
+    // Solo trae asignaciones que fueron aprobadas (ignora REGISTRADA y CANCELADA)
     @Query("SELECT d FROM AsignacionDetalle d " +
            "JOIN FETCH d.asignacion a " +
            "JOIN FETCH a.tipoAsignacion " +
@@ -27,7 +27,7 @@ public interface AsignacionDetalleRepository extends JpaRepository<AsignacionDet
            "ORDER BY a.fechaAsignacion DESC")
     List<AsignacionDetalle> findAllAsignacionesHistoricas();
 
-// Línea de tiempo exclusiva de actas aprobadas y movimientos reales del producto
+    // Línea de tiempo exclusiva de actas aprobadas y movimientos reales del producto
     @Query("SELECT d FROM AsignacionDetalle d " +
            "JOIN FETCH d.asignacion a " +
            "JOIN FETCH a.tipoAsignacion " +
@@ -37,4 +37,16 @@ public interface AsignacionDetalleRepository extends JpaRepository<AsignacionDet
            "WHERE d.producto.idProducto = :idProducto AND a.estado NOT IN ('REGISTRADA', 'CANCELADA') " +
            "ORDER BY a.fechaAsignacion ASC")
     List<AsignacionDetalle> findHistorialPorProducto(@Param("idProducto") Integer idProducto);
+
+    // Busca si el equipo está reservado (PENDIENTE) o aprobado (ASIGNADO) para la misma ubicación del presupuesto
+    @Query("SELECT d FROM AsignacionDetalle d " +
+           "JOIN FETCH d.asignacion a " +
+           "JOIN FETCH d.bodegaOrigen " +
+           "WHERE d.producto.idProducto = :idProductoFisico " +
+           "AND a.ubicacion.idUbicacion = :idUbicacion " +
+           "AND a.estado IN ('REGISTRADA', 'ASIGNADA', 'DEVOLUCION PARCIAL') " +
+           "AND d.estado IN ('PENDIENTE', 'ASIGNADO')")
+    List<AsignacionDetalle> buscarAsignacionesActivasEnUbicacion(
+            @Param("idProductoFisico") Integer idProductoFisico,
+            @Param("idUbicacion") Integer idUbicacion);
 }

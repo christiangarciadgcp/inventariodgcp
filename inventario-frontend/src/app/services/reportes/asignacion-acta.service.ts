@@ -174,12 +174,16 @@ export class AsignacionActaService {
 
     // Se construye la tabla con rowSpan en la primera fila para la columna DESTINO
     const filasTabla = detalles.map((d, index) => {
+
+      const marca = (d.producto?.modelo?.marca?.nombremarca || '').trim();
+      const modelo = (d.producto?.modelo?.nombremodelo || '').trim();
+
       const fila: any[] = [
         (index + 1).toString(),
         d.producto?.nombreproducto || 'N/A',
-        d.producto?.modelo?.marca?.nombremarca || 'N/A',
-        d.producto?.modelo?.nombremodelo || 'N/A',
-        d.producto?.serieproducto || 'S/N',
+        marca.toUpperCase() == 'SIN ESPECIFICAR' ? 'S/M' : marca,
+        modelo.toUpperCase() == 'SIN ESPECIFICAR' ? 'S/M' : modelo,
+        d.producto?.serieproducto || 'S/S',
         d.producto?.inventarioproducto || 'S/I'
       ];
 
@@ -224,12 +228,12 @@ export class AsignacionActaService {
       },
       columnStyles: {
         0: { halign: 'center', cellWidth: 8 }, // NUMERO
-        1: { halign: 'left', cellWidth: 40, fontStyle: 'bold' }, // NOMBRE DE EQUIPO
+        1: { halign: 'center', cellWidth: 40, fontStyle: 'bold' }, // NOMBRE DE EQUIPO
         2: { halign: 'center', cellWidth: 'auto' }, // MARCA
-        3: { halign: 'center', cellWidth: 26 }, // MODELO
+        3: { halign: 'center', cellWidth: 'auto' }, // MODELO
         4: { halign: 'center', cellWidth: 35, fontStyle: 'normal' }, // SERIE
-        5: { halign: 'center', cellWidth: 30, fontStyle: 'normal' }, // INVENTARIO
-        6: { halign: 'center', cellWidth: 30 } // DESTINO
+        5: { halign: 'center', cellWidth: 26, fontStyle: 'normal' }, // INVENTARIO
+        6: { halign: 'center', cellWidth: 'auto' } // DESTINO
       }
     });
 

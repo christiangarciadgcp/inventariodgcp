@@ -24,7 +24,7 @@ import { Mensaje } from '../../../core/mensaje';
 import { TipoAsignacion } from '../../../models/tipo-asignacion';
 import { Ubicacion } from '../../../models/ubicacion';
 import { AsignacionCreacionDTO } from '../../../models/asignacion';
-import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
+import { MayusculasDirective } from '../../../core/directives/mayusculas.directive';
 
 @Component({
   selector: 'app-asignacion-form',
@@ -54,11 +54,9 @@ export class AsignacionFormComponent implements OnInit {
   tiposAsignacion = signal<TipoAsignacion[]>([]);
   ubicaciones = signal<Ubicacion[]>([]);
 
-  // CONTROL Y SIGNAL REACTIVO PARA EL AUTOCOMPLETE DE UBICACIÓN
   ubicacionFiltroCtrl = new FormControl<any>('');
   textoFiltroUbicacion = signal<string>('');
 
-  // COMPUTED REACTIVO: Se actualiza en automático cuando llegan las ubicaciones o cuando el usuario escribe
   ubicacionesFiltradas = computed(() => {
     const query = this.textoFiltroUbicacion().toLowerCase().trim();
     const list = this.ubicaciones();
@@ -73,8 +71,8 @@ export class AsignacionFormComponent implements OnInit {
     );
   });
 
-  // BÚSQUEDA DE EQUIPOS
   itemsDisponibles: any[] = [];
+  itemsOriginalesEdicion: any[] = [];
   filtroCtrl = new FormControl('');
   itemsFiltrados!: Observable<any[]>;
 
@@ -98,10 +96,8 @@ export class AsignacionFormComponent implements OnInit {
   ngOnInit(): void {
     this.tipoAsignacionService.listarActivos().subscribe(data => this.tiposAsignacion.set(data));
 
-    // Cargar catálogo de ubicaciones
     this.cargarCatalogoUbicaciones();
 
-    // Escuchar lo que escribe el usuario en el buscador de ubicación
     this.ubicacionFiltroCtrl.valueChanges.subscribe(val => {
       if (typeof val === 'string') {
         this.textoFiltroUbicacion.set(val);
@@ -109,7 +105,6 @@ export class AsignacionFormComponent implements OnInit {
           this.form.get('idUbicacion')?.setValue(null);
         }
       } else if (val) {
-        // Si es el objeto seleccionado, dejamos el filtro de texto limpio para que al hacer clic se vean todas
         this.textoFiltroUbicacion.set('');
       }
     });
@@ -131,7 +126,6 @@ export class AsignacionFormComponent implements OnInit {
   }
 
   cargarCatalogoUbicaciones() {
-    // Compatibilidad por si el servicio tiene getUbicacionesActivas() o getUbicaciones()
     const req$ = typeof (this.ubicacionService as any).getUbicacionesActivas === 'function'
       ? this.ubicacionService.getUbicacionesActivas()
       : this.ubicacionService.getUbicaciones();
@@ -155,7 +149,6 @@ export class AsignacionFormComponent implements OnInit {
     });
   }
 
-  // Abre el panel y asegura que se muestren todas las opciones
   abrirUbicaciones(trigger: any) {
     if (typeof this.ubicacionFiltroCtrl.value !== 'string') {
       this.textoFiltroUbicacion.set('');
@@ -188,7 +181,6 @@ export class AsignacionFormComponent implements OnInit {
     this.form.get('idUbicacion')?.markAsTouched();
   }
 
-  // --- EDICIÓN ---
   cargarDatosEdicion(id: number) {
     forkJoin({
       asignacion: this.asignacionService.obtenerPorId(id),
@@ -215,15 +207,34 @@ export class AsignacionFormComponent implements OnInit {
 
         const itemsMapeados = detalles.map(d => ({
           producto: d.producto,
-          bodega: d.bodegaOrigen
+          bodega: d.bodegaOrigen,
+          cantidad_actual: 1
         }));
+
+        this.itemsOriginalesEdicion = [...itemsMapeados];
         this.itemsSeleccionados.set(itemsMapeados);
+        this.fusionarItemsPropiosEnDisponibles();
       },
       error: () => {
         this.mensaje.open('Error al cargar la información de la asignación', 'error');
         this.router.navigate(['/asignaciones']);
       }
     });
+  }
+
+  private fusionarItemsPropiosEnDisponibles() {
+    if (!this.esEdicion() || this.itemsOriginalesEdicion.length === 0) return;
+
+    this.itemsOriginalesEdicion.forEach(itemActa => {
+      const existe = this.itemsDisponibles.some(
+        disp => disp.producto.idProducto === itemActa.producto.idProducto
+      );
+      if (!existe) {
+        this.itemsDisponibles.push(itemActa);
+      }
+    });
+    this.filtroCtrl.setValue(this.filtroCtrl.value, { emitEvent: true });
+    this.cdr.detectChanges();
   }
 
   cargarInventarioConsolidado(mostrarSpinner: boolean = true) {
@@ -238,6 +249,7 @@ export class AsignacionFormComponent implements OnInit {
           const categoria = (i.producto?.categoria?.nombrecategoria || '').toUpperCase().trim();
           return !i.producto.esGenerico && i.cantidad_actual > 0 && !categoria.includes('MATERIALES');
         });
+        this.fusionarItemsPropiosEnDisponibles();
         this.cargandoEquipos = false;
         this.filtroCtrl.setValue(this.filtroCtrl.value, { emitEvent: true });
         this.cdr.detectChanges();

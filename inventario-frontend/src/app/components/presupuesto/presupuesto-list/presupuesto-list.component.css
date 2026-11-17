@@ -237,11 +237,9 @@ td.mat-column-destino {
   color: #ffffff;
 }
 
-
-/* --- SELECTOR DE FECHAS: 40px EXACTOS, MISMA ALTURA Y CENTRADO COMPLETO --- */
 .form-fecha-historial {
-  width: 290px;
-  height: 50px !important;
+  width: 245px;
+  height: 45px !important;
   display: inline-flex !important;
   align-items: center !important;
 }

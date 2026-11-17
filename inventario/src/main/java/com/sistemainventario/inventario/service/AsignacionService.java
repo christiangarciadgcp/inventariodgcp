@@ -8,15 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 @Service
 public class AsignacionService {
+
+    private final Integer ID_BODEGA_ASIGNACION = 7;
 
     private final AsignacionRepository asignacionRepository;
     private final AsignacionDetalleRepository detalleRepository;
@@ -40,7 +39,7 @@ public class AsignacionService {
                              InventarioRepository inventarioRepository,
                              InventarioService inventarioService,
                              NotificacionService notificacionService,
-                            UbicacionRepository ubicacionRepository) {
+                             UbicacionRepository ubicacionRepository) {
         this.asignacionRepository = asignacionRepository;
         this.detalleRepository = detalleRepository;
         this.secuenciaRepository = secuenciaRepository;
@@ -71,9 +70,6 @@ public class AsignacionService {
         return detalleRepository.findByAsignacion(asignacion);
     }
 
-    /**
-     * Calcula el correlativo vigente omitiendo actas canceladas. Inicia en 1 para el nuevo ciclo.
-     */
     @Transactional(readOnly = true)
     public synchronized int calcularSiguienteCorrelativo(int anio) {
         SecuenciaActa config = secuenciaRepository.findByAnio(anio)
@@ -124,6 +120,7 @@ public class AsignacionService {
         asignacion.setEstado("REGISTRADA");
 
         Asignacion guardada = asignacionRepository.save(asignacion);
+        String motivoReserva = "Reserva para Asignación - Acta N° " + numeroActa;
 
         for (AsignacionCreacionDTO.ItemAsignacionDTO itemDto : dto.getItems()) {
             Producto producto = productoRepository.findById(itemDto.getIdProducto())
@@ -131,16 +128,26 @@ public class AsignacionService {
             Bodega bodegaOrigen = bodegaRepository.findById(itemDto.getIdBodegaOrigen())
                     .orElseThrow(() -> new RuntimeException("Bodega ID " + itemDto.getIdBodegaOrigen() + " no encontrada"));
 
-            InventarioId invId = new InventarioId();
-            invId.setIdProducto(producto.getIdProducto());
-            invId.setIdBodega(bodegaOrigen.getIdBodega());
-            Inventario inv = inventarioRepository.findById(invId)
-                    .orElseThrow(() -> new RuntimeException("El producto " + producto.getNombreproducto() + " no existe en " + bodegaOrigen.getNombrebodega()));
+            // 1. Mover de Bodega Física Origen -> Bodega Asignación (ID = 7)
+            inventarioService.registrarMovimiento(
+                    producto.getIdProducto(),
+                    bodegaOrigen.getIdBodega(),
+                    "SALIDA",
+                    1,
+                    solicitante.getIdUsuario(),
+                    motivoReserva
+            );
 
-            if (inv.getCantidad_actual() < 1) {
-                throw new RuntimeException("Sin stock disponible para " + producto.getNombreproducto() + " en " + bodegaOrigen.getNombrebodega());
-            }
+            inventarioService.registrarMovimiento(
+                    producto.getIdProducto(),
+                    ID_BODEGA_ASIGNACION,
+                    "ENTRADA",
+                    1,
+                    solicitante.getIdUsuario(),
+                    motivoReserva
+            );
 
+            // 2. Guardar detalle conservando su bodega física de origen
             AsignacionDetalle detalle = new AsignacionDetalle();
             detalle.setAsignacion(guardada);
             detalle.setProducto(producto);
@@ -179,29 +186,81 @@ public class AsignacionService {
 
         asignacion.setTipoAsignacion(tipo);
         asignacion.setUbicacion(ubicacion);
-        asignacion.setResponsableDestino(dto.getResponsableDestino());
+        asignacion.setResponsableDestino(dto.getResponsableDestino() != null ? dto.getResponsableDestino().trim() : "");
         asignacion.setObservaciones(dto.getObservaciones());
 
-        // Eliminamos los detalles previos de la asignación
         List<AsignacionDetalle> detallesActuales = detalleRepository.findByAsignacion(asignacion);
+
+        Set<Integer> idsNuevos = dto.getItems().stream()
+                .map(AsignacionCreacionDTO.ItemAsignacionDTO::getIdProducto)
+                .collect(Collectors.toSet());
+
+        Map<Integer, AsignacionDetalle> mapaAnteriores = detallesActuales.stream()
+                .collect(Collectors.toMap(d -> d.getProducto().getIdProducto(), d -> d, (a, b) -> a));
+
+        // 1. Devolver a su bodega física de origen los equipos que fueron QUITADOS en la edición
+        for (AsignacionDetalle detAntiguo : detallesActuales) {
+            Integer idProdAntiguo = detAntiguo.getProducto().getIdProducto();
+            if (!idsNuevos.contains(idProdAntiguo)) {
+                InventarioId invReservaId = new InventarioId();
+                invReservaId.setIdProducto(idProdAntiguo);
+                invReservaId.setIdBodega(ID_BODEGA_ASIGNACION);
+
+                boolean estaEnReserva = inventarioRepository.findById(invReservaId)
+                        .map(i -> i.getCantidad_actual() > 0)
+                        .orElse(false);
+
+                if (estaEnReserva) {
+                    String motivoLiberacion = "Liberación de reserva por edición - Acta N° " + asignacion.getNumeroActa();
+                    inventarioService.registrarMovimiento(
+                            idProdAntiguo,
+                            ID_BODEGA_ASIGNACION,
+                            "SALIDA",
+                            1,
+                            editor.getIdUsuario(),
+                            motivoLiberacion
+                    );
+                    inventarioService.registrarMovimiento(
+                            idProdAntiguo,
+                            detAntiguo.getBodegaOrigen().getIdBodega(),
+                            "ENTRADA",
+                            1,
+                            editor.getIdUsuario(),
+                            motivoLiberacion
+                    );
+                }
+            }
+        }
+
         detalleRepository.deleteAll(detallesActuales);
         detalleRepository.flush();
 
-        // Guardamos los nuevos detalles en estado PENDIENTE
+        // 2. Procesar la nueva lista de equipos
         for (AsignacionCreacionDTO.ItemAsignacionDTO itemDto : dto.getItems()) {
             Producto producto = productoRepository.findById(itemDto.getIdProducto())
                     .orElseThrow(() -> new RuntimeException("Producto ID " + itemDto.getIdProducto() + " no encontrado"));
             Bodega bodegaOrigen = bodegaRepository.findById(itemDto.getIdBodegaOrigen())
                     .orElseThrow(() -> new RuntimeException("Bodega ID " + itemDto.getIdBodegaOrigen() + " no encontrada"));
 
-            InventarioId invId = new InventarioId();
-            invId.setIdProducto(producto.getIdProducto());
-            invId.setIdBodega(bodegaOrigen.getIdBodega());
-            Inventario inv = inventarioRepository.findById(invId)
-                    .orElseThrow(() -> new RuntimeException("El producto " + producto.getNombreproducto() + " no existe en " + bodegaOrigen.getNombrebodega()));
-
-            if (inv.getCantidad_actual() < 1) {
-                throw new RuntimeException("Sin stock disponible para " + producto.getNombreproducto() + " en " + bodegaOrigen.getNombrebodega());
+            // Si es un equipo NUEVO que no estaba reservado en esta acta, moverlo a Bodega Asignación (ID = 7)
+            if (!mapaAnteriores.containsKey(producto.getIdProducto())) {
+                String motivoReserva = "Reserva para Asignación (Edición) - Acta N° " + asignacion.getNumeroActa();
+                inventarioService.registrarMovimiento(
+                        producto.getIdProducto(),
+                        bodegaOrigen.getIdBodega(),
+                        "SALIDA",
+                        1,
+                        editor.getIdUsuario(),
+                        motivoReserva
+                );
+                inventarioService.registrarMovimiento(
+                        producto.getIdProducto(),
+                        ID_BODEGA_ASIGNACION,
+                        "ENTRADA",
+                        1,
+                        editor.getIdUsuario(),
+                        motivoReserva
+                );
             }
 
             AsignacionDetalle detalle = new AsignacionDetalle();
@@ -233,17 +292,30 @@ public class AsignacionService {
         List<AsignacionDetalle> detalles = detalleRepository.findByAsignacion(asignacion);
 
         for (AsignacionDetalle det : detalles) {
-            // Salida física de la bodega
+            Integer idProd = det.getProducto().getIdProducto();
+
+            InventarioId invReservaId = new InventarioId();
+            invReservaId.setIdProducto(idProd);
+            invReservaId.setIdBodega(ID_BODEGA_ASIGNACION);
+
+            boolean estaEnBodegaAsignacion = inventarioRepository.findById(invReservaId)
+                    .map(i -> i.getCantidad_actual() > 0)
+                    .orElse(false);
+
+            Integer idBodegaDescargo = estaEnBodegaAsignacion
+                    ? ID_BODEGA_ASIGNACION
+                    : det.getBodegaOrigen().getIdBodega();
+
+            // Descargo definitivo desde Bodega Asignación (ID = 7)
             inventarioService.registrarMovimiento(
-                    det.getProducto().getIdProducto(),
-                    det.getBodegaOrigen().getIdBodega(),
+                    idProd,
+                    idBodegaDescargo,
                     "SALIDA",
                     1,
                     idUsuarioJefe,
                     "Salida por Asignación - Acta N° " + asignacion.getNumeroActa() + " para " + asignacion.getUbicacion().getNombreubicacion()
             );
 
-            // CAMBIO DE ESTADO DEL EQUIPO: Pasa formalmente a ASIGNADO
             det.setEstado("ASIGNADO");
             detalleRepository.save(det);
         }
@@ -269,8 +341,44 @@ public class AsignacionService {
         Usuario usuario = usuarioRepository.findById(idUsuarioJefe).orElseThrow();
         String numeroActaAnulado = asignacion.getNumeroActa();
 
+        List<AsignacionDetalle> detalles = detalleRepository.findByAsignacion(asignacion);
+
+        // Regresar cada equipo reservado desde Bodega Asignación (ID = 7) hacia su Bodega Física de Origen
+        for (AsignacionDetalle det : detalles) {
+            Integer idProd = det.getProducto().getIdProducto();
+
+            InventarioId invReservaId = new InventarioId();
+            invReservaId.setIdProducto(idProd);
+            invReservaId.setIdBodega(ID_BODEGA_ASIGNACION);
+
+            boolean estaEnBodegaAsignacion = inventarioRepository.findById(invReservaId)
+                    .map(i -> i.getCantidad_actual() > 0)
+                    .orElse(false);
+
+            if (estaEnBodegaAsignacion) {
+                String motivoCancelacion = "Reversión de reserva por cancelación - Acta N° " + numeroActaAnulado;
+                inventarioService.registrarMovimiento(
+                        idProd,
+                        ID_BODEGA_ASIGNACION,
+                        "SALIDA",
+                        1,
+                        idUsuarioJefe,
+                        motivoCancelacion
+                );
+
+                inventarioService.registrarMovimiento(
+                        idProd,
+                        det.getBodegaOrigen().getIdBodega(),
+                        "ENTRADA",
+                        1,
+                        idUsuarioJefe,
+                        motivoCancelacion
+                );
+            }
+        }
+
         asignacion.setEstado("CANCELADA");
-        asignacion.setCorrelativo(null); // Libera el número para la siguiente asignación
+        asignacion.setCorrelativo(null);
         asignacion.setNumeroActa(" (" + numeroActaAnulado + ")");
 
         asignacion.getHistorial().add(new AsignacionHistorial(asignacion, usuario, "CANCELACION", "Cancelación de solicitud. Número " + numeroActaAnulado + " liberado"));
@@ -279,7 +387,7 @@ public class AsignacionService {
         notificacionService.registrar(usuario.getNombreusuario(), "ha cancelado la Asignación con número original " + numeroActaAnulado);
     }
 
-@Transactional
+    @Transactional
     public void devolverEquipo(DevolucionItemDTO dto) {
         AsignacionDetalle detalle = detalleRepository.findById(dto.getIdAsignacionDetalle())
                 .orElseThrow(() -> new RuntimeException("Detalle de asignación no encontrado"));
@@ -296,7 +404,6 @@ public class AsignacionService {
 
         Asignacion asignacion = detalle.getAsignacion();
 
-        // Reingreso físico de existencias
         inventarioService.registrarMovimiento(
                 detalle.getProducto().getIdProducto(),
                 bodegaDestino.getIdBodega(),
@@ -316,7 +423,6 @@ public class AsignacionService {
         List<AsignacionDetalle> todos = detalleRepository.findByAsignacion(asignacion);
         boolean quedanAsignados = todos.stream().anyMatch(d -> "ASIGNADO".equals(d.getEstado()));
 
-        // Ambos estados mantienen la estructura "Devuelto equipo: [nombre] a [bodega]"
         String detalleHistorial = "Devuelto equipo: " + detalle.getProducto().getNombreproducto() + " a " + bodegaDestino.getNombrebodega();
 
         if (quedanAsignados) {
@@ -347,10 +453,7 @@ public class AsignacionService {
             throw new RuntimeException("No hay equipos asignados pendientes de devolución en esta acta.");
         }
 
-        // Reingresamos cada equipo individualmente
-        for (int i = 0; i < pendientes.size(); i++) {
-            AsignacionDetalle det = pendientes.get(i);
-            
+        for (AsignacionDetalle det : pendientes) {
             inventarioService.registrarMovimiento(
                     det.getProducto().getIdProducto(),
                     bodegaDestino.getIdBodega(),
@@ -367,7 +470,6 @@ public class AsignacionService {
             det.setUsuarioDevolucion(usuario);
             detalleRepository.save(det);
 
-            // Cada equipo queda reflejado en el historial con DEVOLUCION TOTAL
             asignacion.getHistorial().add(new AsignacionHistorial(
                     asignacion,
                     usuario,
@@ -382,14 +484,8 @@ public class AsignacionService {
         notificacionService.registrar(usuario.getNombreusuario(), "ha registrado devolución total en Acta N° " + asignacion.getNumeroActa());
     }
 
-    // @Transactional(readOnly = true)
-    // public List<AsignacionDetalle> listarEquiposActualmenteAsignados() {
-    //     return detalleRepository.findEquiposActualmenteAsignados();
-    // }
-
-@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<EquipoTrazabilidadDTO> listarResumenTrazabilidadEquipos() {
-        // Al haber filtrado en el repositorio, todos los detalles son de actas aprobadas (ASIGNADA, DEVOLUCION PARCIAL o TOTAL)
         List<AsignacionDetalle> todosDetalles = detalleRepository.findAllAsignacionesHistoricas();
 
         Map<Integer, List<AsignacionDetalle>> agrupados = todosDetalles.stream()
@@ -403,12 +499,11 @@ public class AsignacionService {
 
         for (Entry<Integer, List<AsignacionDetalle>> entry : agrupados.entrySet()) {
             List<AsignacionDetalle> historial = entry.getValue();
-            AsignacionDetalle ultimo = historial.get(0); // El más reciente
+            AsignacionDetalle ultimo = historial.get(0);
             Producto p = ultimo.getProducto();
             Asignacion asig = ultimo.getAsignacion();
 
             EquipoTrazabilidadDTO dto = new EquipoTrazabilidadDTO();
-            
             dto.setIdProducto(p.getIdProducto());
             dto.setNombreProducto(p.getNombreproducto());
             dto.setSkuProducto(p.getSkuproducto());
@@ -422,14 +517,12 @@ public class AsignacionService {
                 }
             }
 
-              if (asig.getUbicacion() != null) {
+            if (asig.getUbicacion() != null) {
                 dto.setNombreUbicacion(asig.getUbicacion().getNombreubicacion());
                 dto.setSiglasUbicacion(asig.getUbicacion().getSiglasubicacion());
             }
 
-            // Si el último detalle no ha sido devuelto, está activamente ASIGNADO
             boolean estaAsignado = "ASIGNADO".equals(ultimo.getEstado());
-
             dto.setEstadoActual(estaAsignado ? "ASIGNADO" : "DEVUELTO");
             dto.setAsignadoA(ultimo.getAsignacion().getResponsableDestino());
             dto.setUltimaActa(ultimo.getAsignacion().getNumeroActa());
@@ -459,7 +552,7 @@ public class AsignacionService {
                 dto.setNombreUbicacion(asig.getUbicacion().getNombreubicacion());
                 dto.setSiglasUbicacion(asig.getUbicacion().getSiglasubicacion());
             }
-            
+
             dto.setResponsableDestino(d.getAsignacion().getResponsableDestino());
             dto.setFechaAsignacion(d.getAsignacion().getFechaAsignacion());
             dto.setEstadoDetalle(d.getEstado());

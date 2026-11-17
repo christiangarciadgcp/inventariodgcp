@@ -109,11 +109,11 @@ export class DespachoService {
 
     const startYTabla = 38 + alturaDinamicaTarjeta + 5;
 
-    const columnas = ['#', 'SKU', 'Material', 'u.m.', 'Req.', 'Desp.', 'Estado'];
+    const columnas = ['#', 'Inventario', 'Material', 'u.m.', 'Req.', 'Desp.', 'Estado'];
     const bodyData: any[] = [];
     let indexGlobal = 1;
 
-    // --- CONSTRUCCIÓN DE LA TABLA JERÁRQUICA ---
+    // INICIO DE LA TABLA DE INFORMACION
     data.items.forEach((itemPadre) => {
       let colorEstado: [number, number, number] = [100, 100, 100];
       if (itemPadre.estadoItem === 'COMPLETADO') colorEstado = [25, 135, 84];
@@ -123,7 +123,7 @@ export class DespachoService {
       bodyData.push([
         { content: indexGlobal++, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 242, 245] } },
         { content: '', styles: { fillColor: [240, 242, 245] } },
-        { content: itemPadre.nombreGenerico, styles: { halign: 'center', fontStyle: 'italic', fillColor: [240, 242, 245] } },
+        { content: itemPadre.nombreGenerico, styles: { halign: 'center', fontStyle: 'bolditalic', fillColor: [240, 242, 245] } },
         { content: itemPadre.unidadMedida, styles: { halign: 'center', fillColor: [240, 242, 245] } },
         { content: itemPadre.cantidadSolicitada, styles: { halign: 'center', fontStyle: 'bold', fillColor: [240, 242, 245] } },
         { content: itemPadre.cantidadDespachada, styles: { halign: 'center', fontStyle: 'bold', textColor: [25, 135, 84], fillColor: [240, 242, 245] } },
@@ -132,10 +132,18 @@ export class DespachoService {
 
       if (itemPadre.entregasFisicas && itemPadre.entregasFisicas.length > 0) {
         itemPadre.entregasFisicas.forEach(sub => {
+
+          const invLimpio = (sub.inventario || '').trim();
+          const _inventario = ['SIN ESPECIFICAR', 'S/I', 'N/A'].includes(invLimpio.toUpperCase()) ? '' : invLimpio;
+
+          const marcaLimpia = (sub.marca || '').trim();
+          const _marca = ['SIN ESPECIFICAR', 'S/M', 'N/A'].includes(marcaLimpia.toUpperCase()) ? '' : marcaLimpia;
+
+
           bodyData.push([
             '',
-            { content: sub.skuFisico, styles: { textColor: [80, 80, 80], fontStyle: 'bold' } },
-            { content: `${sub.nombreFisico}\n${sub.bodegaOrigen}`, styles: { textColor: [80, 80, 80], fontStyle: 'normal' } },
+            { content: _inventario, styles: { halign: 'center', textColor: [80, 80, 80], fontStyle: 'bold' } },
+            { content: `${sub.nombreFisico} ${_marca}\n${sub.bodegaOrigen}`, styles: { textColor: [80, 80, 80], fontStyle: 'normal' } },
             '',
             '',
             { content: sub.cantidad, styles: { halign: 'center', textColor: [25, 135, 84], fontStyle: 'bold' } },
