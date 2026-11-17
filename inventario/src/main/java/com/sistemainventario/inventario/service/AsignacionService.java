@@ -327,7 +327,7 @@ public class AsignacionService {
         asignacion.getHistorial().add(new AsignacionHistorial(asignacion, jefe, "APROBACION", "Aprobación y descargo físico de existencias"));
         asignacionRepository.save(asignacion);
 
-        notificacionService.registrar(jefe.getNombreusuario(), "ha aprobado la Asignación Acta N° " + asignacion.getNumeroActa());
+        notificacionService.registrar(jefe.getNombreusuario(), "ha despachado Equipos en la Asignación Acta N° " + asignacion.getNumeroActa());
     }
 
     @Transactional
