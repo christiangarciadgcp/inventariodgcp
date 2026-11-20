@@ -167,8 +167,12 @@ public class AsignacionService {
     public Asignacion actualizarAsignacion(Long id, AsignacionCreacionDTO dto) {
         Asignacion asignacion = obtenerPorId(id);
 
-        if (!"REGISTRADA".equals(asignacion.getEstado())) {
-            throw new RuntimeException("Solo se pueden editar asignaciones en estado REGISTRADA.");
+        // if (!"REGISTRADA".equals(asignacion.getEstado())) {
+        //     throw new RuntimeException("Solo se pueden editar asignaciones en estado REGISTRADA.");
+        // }
+
+        if ("DEVOLUCION TOTAL".equals(asignacion.getEstado())) {
+            throw new RuntimeException("Solo se pueden editar asignaciones que no esten finalizadas");
         }
 
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
@@ -324,7 +328,7 @@ public class AsignacionService {
         asignacion.setUsuarioAprobacion(jefe);
         asignacion.setFechaAprobacion(Instant.now());
 
-        asignacion.getHistorial().add(new AsignacionHistorial(asignacion, jefe, "APROBACION", "Aprobación y descargo físico de existencias"));
+        asignacion.getHistorial().add(new AsignacionHistorial(asignacion, jefe, "ASIGNACION", "Aprobación y descargo físico de existencias"));
         asignacionRepository.save(asignacion);
 
         notificacionService.registrar(jefe.getNombreusuario(), "ha despachado Equipos en la Asignación Acta N° " + asignacion.getNumeroActa());

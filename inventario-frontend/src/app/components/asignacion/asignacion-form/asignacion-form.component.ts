@@ -187,7 +187,7 @@ export class AsignacionFormComponent implements OnInit {
       detalles: this.asignacionService.listarDetalles(id)
     }).subscribe({
       next: ({ asignacion, detalles }) => {
-        if (asignacion.estado !== 'REGISTRADA') {
+        if (asignacion.estado === 'DEVOLUCION TOTAL') {
           this.mensaje.open('Solo se pueden editar asignaciones en estado REGISTRADA', 'warning');
           this.router.navigate(['/asignaciones']);
           return;

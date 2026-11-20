@@ -144,7 +144,7 @@
             </button>
 
             <!-- EDITAR ASIGNACION -->
-            @if (element.estado === 'REGISTRADA') {
+            @if (element.estado !== 'DEVOLUCION TOTAL') {
               <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Asignación" [routerLink]="['/asignaciones/editar', element.idAsignacion]">
                 <mat-icon>edit</mat-icon>
               </button>

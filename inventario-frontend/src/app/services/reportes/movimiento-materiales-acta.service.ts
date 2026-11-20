@@ -356,7 +356,7 @@ export class MovimientoMaterialesActaService {
       doc.line(90, 260, 125, 260);
 
       if (inicialesActa) {
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('helvetica', 'normal');
         doc.setFontSize(6);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.text(inicialesActa, 14, 266.5);

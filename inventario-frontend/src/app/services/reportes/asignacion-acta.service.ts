@@ -237,16 +237,55 @@ export class AsignacionActaService {
       }
     });
 
-// ==========================================
-    // OBSERVACIONES (STRING DIRECTO)
-    // ==========================================
+
     const obsTexto = asignacion.observaciones?.trim() || 'Sin observaciones registradas.';
-    const lineasObs = doc.splitTextToSize(obsTexto, 188);
-    const altoObservaciones = 6 + (lineasObs.length * 3.8);
+    const etiquetaObs = 'OBSERVACIONES: ';
+    const margenIzq = 14;
+    const anchoTotal = 188; // De x=14 hasta x=202
+
+    // 1. Medir el ancho de la etiqueta en negrita tamaño 10
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    const anchoEtiquetaObs = doc.getTextWidth(etiquetaObs);
+    const xTextoObs = margenIzq + anchoEtiquetaObs;
+    const anchoPrimeraLinea = anchoTotal - anchoEtiquetaObs;
+
+    // 2. Dividir la primera línea (espacio reducido) y el resto (ancho completo 188 mm)
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+
+    const parrafos = obsTexto.split(/\r?\n/).map(p => p.replace(/\s+/g, ' ').trim());
+    const primerParrafo = parrafos[0] || '';
+
+    let primeraLineaTexto = '';
+    const lineasRestantes: string[] = [];
+
+    if (primerParrafo) {
+      const splitPrimero = doc.splitTextToSize(primerParrafo, anchoPrimeraLinea);
+      primeraLineaTexto = splitPrimero[0] || '';
+
+      if (splitPrimero.length > 1) {
+        const restoPrimerParrafo = primerParrafo.substring(primeraLineaTexto.length).trimStart();
+        if (restoPrimerParrafo) {
+          lineasRestantes.push(...doc.splitTextToSize(restoPrimerParrafo, anchoTotal));
+        }
+      }
+    }
+
+    for (let i = 1; i < parrafos.length; i++) {
+      if (parrafos[i]) {
+        lineasRestantes.push(...doc.splitTextToSize(parrafos[i], anchoTotal));
+      } else {
+        lineasRestantes.push('');
+      }
+    }
+
+    const altoLineaObs = 4.2;
+    const totalLineasObs = 1 + lineasRestantes.length;
+    const altoObservaciones = totalLineasObs * altoLineaObs;
 
     let yInicioObservaciones = (doc as any).lastAutoTable.finalY + 7;
 
-    // Si las observaciones no caben antes del pie de página, pasarlas a la siguiente
     if (yInicioObservaciones + altoObservaciones > LIMITE_INFERIOR_PAGINA) {
       doc.addPage();
       yInicioObservaciones = 20;
@@ -255,19 +294,25 @@ export class AsignacionActaService {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text('OBSERVACIONES:', 14, yInicioObservaciones);
+    doc.text(etiquetaObs, margenIzq, yInicioObservaciones);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text(lineasObs, 14, yInicioObservaciones + 4.5);
+    if (primeraLineaTexto) {
+      doc.text(primeraLineaTexto, xTextoObs, yInicioObservaciones);
+    }
 
-    const yFinObservaciones = yInicioObservaciones + 4.5 + (lineasObs.length * 3.8);
+    lineasRestantes.forEach((linea, index) => {
+      const yLinea = yInicioObservaciones + ((index + 1) * altoLineaObs);
+      doc.text(linea, margenIzq, yLinea);
+    });
 
+    const yFinObservaciones = yInicioObservaciones + altoObservaciones;
 
     // ==========================================
     // EVALUACIÓN Y SECCIÓN DE FIRMA CENTRADA
     // ==========================================
-    const altoFirmaRequerido = 35;
+    const altoFirmaRequerido = 50; // 40 mm espacio de firma + 8.5 mm texto de nombre y cargo
     let yLineaFirma: number;
 
     if (yFinObservaciones + altoFirmaRequerido > LIMITE_INFERIOR_PAGINA) {
@@ -278,7 +323,6 @@ export class AsignacionActaService {
     }
 
     const centroPagina = pageWidth / 2;
-    const anchoLineaFirma = 75;
 
 
     doc.setFont('helvetica', 'normal');

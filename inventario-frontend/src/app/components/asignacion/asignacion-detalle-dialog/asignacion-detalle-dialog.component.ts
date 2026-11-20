@@ -181,6 +181,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
       case 'CREACION': return 'note_add';
       case 'EDICION': return 'edit';
       case 'APROBACION': return 'verified';
+      case 'ASIGNACION': return 'verified';
       case 'DEVOLUCION PARCIAL':
       case 'DEVOLUCION TOTAL': return 'assignment_return';
       case 'CANCELACION': return 'close';
@@ -193,6 +194,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
       case 'CREACION': return 'tl-creacion';
       case 'EDICION': return 'tl-edicion';
       case 'APROBACION': return 'tl-aprobacion';
+      case 'ASIGNACION': return 'tl-aprobacion';
       case 'DEVOLUCION PARCIAL': return 'tl-parcial';
       case 'DEVOLUCION TOTAL': return 'tl-total';
       case 'CANCELACION': return 'tl-cancelacion';
@@ -205,6 +207,7 @@ export class AsignacionDetalleDialogComponent implements OnInit {
       case 'CREACION': return 'bg-creacion-subtle text-creacion';
       case 'EDICION': return 'bg-warning-subtle text-warning';
       case 'APROBACION': return 'bg-success-subtle text-success';
+      case 'ASIGNACION': return 'bg-success-subtle text-success';
       case 'DEVOLUCION PARCIAL': return 'bg-parcial-subtle text-parcial';
       case 'DEVOLUCION TOTAL': return 'bg-info-subtle text-info';
       case 'CANCELACION': return 'bg-danger-subtle text-danger';
