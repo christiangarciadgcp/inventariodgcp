@@ -144,16 +144,18 @@
             </button>
 
             <!-- EDITAR ASIGNACION -->
-            @if (element.estado !== 'DEVOLUCION TOTAL') {
+            @if (element.estado !== 'DEVOLUCION TOTAL' && element.estado !== 'CANCELADA') {
               <button mat-icon-button class="action-btn edit-color" matTooltip="Editar Asignación" [routerLink]="['/asignaciones/editar', element.idAsignacion]">
                 <mat-icon>edit</mat-icon>
               </button>
             }
 
+            @if(element.estado !== 'CANCELADA'){
             <!-- ACTA DE MOVIMIENTO DE EQUIPLO -->
             <button mat-icon-button class="action-btn text-info-emphasis" matTooltip="Ver / Imprimir Acta" (click)="verActa(element)">
               <mat-icon>picture_as_pdf</mat-icon>
             </button>
+            }
 
             <!-- DEVOLUCION DE EQUIPO -->
             @if (element.estado === 'ASIGNADA' || element.estado === 'DEVOLUCION PARCIAL') {

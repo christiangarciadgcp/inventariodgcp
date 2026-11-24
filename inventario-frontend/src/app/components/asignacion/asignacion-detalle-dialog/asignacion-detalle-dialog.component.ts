@@ -107,13 +107,17 @@ export class AsignacionDetalleDialogComponent implements OnInit {
     return estadoItem || 'PENDIENTE';
   }
 
+
   obtenerClaseBadgeItem(estadoItem: string, estadoAsignacion?: string): string {
     const estado = this.obtenerTextoBadgeItem(estadoItem, estadoAsignacion);
-    if (estado === 'PENDIENTE') return 'badge-pendiente';
-    if (estado === 'ASIGNADO') return 'bg-success text-white';
-    if (estado === 'DEVUELTO') return 'badge-devuelto';
-    return 'bg-secondary text-white';
+    switch ((estado || '').toUpperCase()) {
+      case 'PENDIENTE': return 'item-pendiente';
+      case 'ASIGNADO': return 'item-asignado';
+      case 'DEVUELTO': return 'item-devuelto';
+      default: return 'item-default';
+    }
   }
+
 
   obtenerTextoBadgeAccion(accion: string): string {
     if (!accion) return '';

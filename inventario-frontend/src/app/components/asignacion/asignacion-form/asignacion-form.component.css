@@ -36,3 +36,39 @@
   border-bottom: 2px solid #1467bb !important;
   height: 50px;
 }
+
+.badge-estado-item {
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-pendiente {
+  background-color: #fff8dd;
+  color: #ac870c;
+  border: 1px solid #dfc688;
+}
+
+.item-asignado {
+  background-color: #e1ffe3;
+  color: #009912;
+  border: 1px solid #7ae582;
+}
+
+.item-devuelto {
+  background-color: #e7f6f8;
+  color: #0695af;
+  border: 1px solid #80ceda;
+}
+
+.item-nuevo {
+  background-color: #ebf3fe;
+  color: #153863;
+  border: 1px solid #b8d0f8;
+}

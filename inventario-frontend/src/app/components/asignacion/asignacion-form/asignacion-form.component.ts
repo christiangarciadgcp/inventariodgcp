@@ -12,6 +12,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Observable, forkJoin } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
 
@@ -25,6 +26,7 @@ import { TipoAsignacion } from '../../../models/tipo-asignacion';
 import { Ubicacion } from '../../../models/ubicacion';
 import { AsignacionCreacionDTO } from '../../../models/asignacion';
 import { MayusculasDirective } from '../../../core/directives/mayusculas.directive';
+import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-asignacion-form',
@@ -33,7 +35,7 @@ import { MayusculasDirective } from '../../../core/directives/mayusculas.directi
     CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule,
     MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
     MatTableModule, MatAutocompleteModule, MatProgressSpinner, RouterLink,
-    MatTooltipModule, MayusculasDirective
+    MatTooltipModule, MatDialogModule, MayusculasDirective
   ],
   templateUrl: './asignacion-form.component.html',
   styleUrls: ['./asignacion-form.component.css']
@@ -50,6 +52,7 @@ export class AsignacionFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   tiposAsignacion = signal<TipoAsignacion[]>([]);
   ubicaciones = signal<Ubicacion[]>([]);
@@ -77,7 +80,6 @@ export class AsignacionFormComponent implements OnInit {
   itemsFiltrados!: Observable<any[]>;
 
   itemsSeleccionados = signal<any[]>([]);
-  displayedColumns: string[] = ['producto', 'marca', 'modelo', 'serie', 'inventario', 'bodega', 'acciones'];
 
   guardando = signal<boolean>(false);
   cargandoEquipos: boolean = false;
@@ -85,6 +87,13 @@ export class AsignacionFormComponent implements OnInit {
   esEdicion = signal<boolean>(false);
   idAsignacion = signal<number | null>(null);
   numeroActa = signal<string>('');
+  estadoAsignacion = signal<string>('');
+
+  displayedColumns = computed<string[]>(() =>
+    this.esEdicion()
+      ? ['producto', 'marca', 'modelo', 'serie', 'inventario', 'bodega', 'estado', 'acciones']
+      : ['producto', 'marca', 'modelo', 'serie', 'inventario', 'bodega', 'acciones']
+  );
 
   form: FormGroup = this.fb.group({
     idAsignacionTipo: [null, Validators.required],
@@ -187,13 +196,14 @@ export class AsignacionFormComponent implements OnInit {
       detalles: this.asignacionService.listarDetalles(id)
     }).subscribe({
       next: ({ asignacion, detalles }) => {
-        if (asignacion.estado === 'DEVOLUCION TOTAL') {
-          this.mensaje.open('Solo se pueden editar asignaciones en estado REGISTRADA', 'warning');
+        if (asignacion.estado === 'DEVOLUCION TOTAL' || asignacion.estado === 'CANCELADA') {
+          this.mensaje.open('No se pueden editar asignaciones finalizadas o canceladas', 'warning');
           this.router.navigate(['/asignaciones']);
           return;
         }
 
         this.numeroActa.set(asignacion.numeroActa);
+        this.estadoAsignacion.set(asignacion.estado);
         this.form.patchValue({
           idAsignacionTipo: asignacion.tipoAsignacion.idAsignacionTipo,
           idUbicacion: asignacion.ubicacion?.idUbicacion,
@@ -208,7 +218,10 @@ export class AsignacionFormComponent implements OnInit {
         const itemsMapeados = detalles.map(d => ({
           producto: d.producto,
           bodega: d.bodegaOrigen,
-          cantidad_actual: 1
+          cantidad_actual: 1,
+          estadoDetalle: asignacion.estado === 'REGISTRADA' ? 'PENDIENTE' : (d.estado || 'ASIGNADO'),
+          bodegaDevolucion: d.bodegaDevolucion,
+          esOriginal: true
         }));
 
         this.itemsOriginalesEdicion = [...itemsMapeados];
@@ -226,11 +239,13 @@ export class AsignacionFormComponent implements OnInit {
     if (!this.esEdicion() || this.itemsOriginalesEdicion.length === 0) return;
 
     this.itemsOriginalesEdicion.forEach(itemActa => {
-      const existe = this.itemsDisponibles.some(
+      const idx = this.itemsDisponibles.findIndex(
         disp => disp.producto.idProducto === itemActa.producto.idProducto
       );
-      if (!existe) {
+      if (idx === -1) {
         this.itemsDisponibles.push(itemActa);
+      } else {
+        this.itemsDisponibles[idx] = itemActa;
       }
     });
     this.filtroCtrl.setValue(this.filtroCtrl.value, { emitEvent: true });
@@ -295,12 +310,64 @@ export class AsignacionFormComponent implements OnInit {
       return;
     }
 
-    this.itemsSeleccionados.update(list => [...list, invItem]);
+    const itemParaLista = invItem.esOriginal
+      ? invItem
+      : { ...invItem, estadoDetalle: 'NUEVO', esOriginal: false };
+
+    this.itemsSeleccionados.update(list => [...list, itemParaLista]);
     this.filtroCtrl.setValue('');
   }
 
   eliminarItem(index: number) {
+    const item = this.itemsSeleccionados()[index];
+    if (!item) return;
+
+    // Enfoque híbrido: si el equipo ya fue despachado (ASIGNADO), avisar que al guardar volverá a su bodega origen
+    if (this.esEdicion() && item.esOriginal && item.estadoDetalle === 'ASIGNADO') {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '460px',
+        data: {
+          titulo: '¿Quitar equipo asignado?',
+          mensaje: `El equipo <b>${item.producto.nombreproducto}</b> ya fue despachado (<b>ASIGNADO</b>).<br><br>Al guardar los cambios, se <b>reingresará automáticamente</b> a su bodega de origen (<b>${item.bodega?.nombrebodega || 'Bodega Origen'}</b>) y se eliminará de esta acta.`,
+          textoBoton: 'Quitar y devolver',
+          colorBoton: 'warn'
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(confirmado => {
+        if (confirmado) {
+          this.itemsSeleccionados.update(list => list.filter((_, i) => i !== index));
+        }
+      });
+      return;
+    }
+
+    // Si ya fue devuelto previamente por el modal de devoluciones, solo se retira del acta
+    if (this.esEdicion() && item.esOriginal && item.estadoDetalle === 'DEVUELTO') {
+      this.itemsSeleccionados.update(list => list.filter((_, i) => i !== index));
+      this.mensaje.open('Equipo ya devuelto se retira de la lista (al guardar no afectará el stock).', 'info');
+      return;
+    }
+
+    // Si está PENDIENTE o es un ítem recién agregado en memoria
     this.itemsSeleccionados.update(list => list.filter((_, i) => i !== index));
+  }
+
+  obtenerClaseEstadoItem(estado: string): string {
+    switch ((estado || '').toUpperCase()) {
+      case 'PENDIENTE': return 'item-pendiente';
+      case 'ASIGNADO': return 'item-asignado';
+      case 'DEVUELTO': return 'item-devuelto';
+      case 'NUEVO': return 'item-nuevo';
+      default: return 'item-pendiente';
+    }
+  }
+
+  obtenerTooltipEliminar(item: any): string {
+    if (!this.esEdicion() || !item.esOriginal) return 'Quitar equipo de la lista';
+    if (item.estadoDetalle === 'ASIGNADO') return 'Quitar del acta y devolver automáticamente a bodega origen al guardar';
+    if (item.estadoDetalle === 'DEVUELTO') return 'Retirar equipo ya devuelto del acta';
+    return 'Quitar equipo de la reserva';
   }
 
   guardar() {
@@ -337,7 +404,8 @@ export class AsignacionFormComponent implements OnInit {
           this.router.navigate(['/asignaciones']);
         },
         error: (err) => {
-          this.mensaje.open(err.error?.mensaje || 'Error al actualizar la asignación', 'error');
+          const msg = err.error?.mensaje || err.error?.message || 'Error al actualizar la asignación';
+          this.mensaje.open(msg, 'error');
           this.guardando.set(false);
         }
       });
@@ -349,7 +417,8 @@ export class AsignacionFormComponent implements OnInit {
           this.router.navigate(['/asignaciones']);
         },
         error: (err) => {
-          this.mensaje.open(err.error?.mensaje || 'Error al guardar la asignación', 'error');
+          const msg = err.error?.mensaje || err.error?.message || 'Error al guardar la asignación';
+          this.mensaje.open(msg, 'error');
           this.guardando.set(false);
         }
       });

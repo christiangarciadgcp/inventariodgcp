@@ -10,7 +10,7 @@ export interface AsignacionDetalle {
   producto: Producto;
   bodegaOrigen: Bodega;
   bodegaDevolucion?: Bodega;
-  estado: 'ASIGNADO' | 'DEVUELTO';
+  estado: 'PENDIENTE' | 'ASIGNADO' | 'DEVUELTO';
   fechaDevolucion?: string;
   observacionDevolucion?: string;
   usuarioDevolucion?: Usuario;

@@ -166,13 +166,11 @@ public class AsignacionService {
     @Transactional
     public Asignacion actualizarAsignacion(Long id, AsignacionCreacionDTO dto) {
         Asignacion asignacion = obtenerPorId(id);
+        String estadoActualActa = asignacion.getEstado();
 
-        // if (!"REGISTRADA".equals(asignacion.getEstado())) {
-        //     throw new RuntimeException("Solo se pueden editar asignaciones en estado REGISTRADA.");
-        // }
-
-        if ("DEVOLUCION TOTAL".equals(asignacion.getEstado())) {
-            throw new RuntimeException("Solo se pueden editar asignaciones que no esten finalizadas");
+        // 1. Bloquear edición si el acta está finalizada o cancelada
+        if ("DEVOLUCION TOTAL".equals(estadoActualActa) || "CANCELADA".equals(estadoActualActa)) {
+            throw new RuntimeException("No se pueden editar asignaciones finalizadas (DEVOLUCION TOTAL) o canceladas.");
         }
 
         if (dto.getItems() == null || dto.getItems().isEmpty()) {
@@ -193,6 +191,8 @@ public class AsignacionService {
         asignacion.setResponsableDestino(dto.getResponsableDestino() != null ? dto.getResponsableDestino().trim() : "");
         asignacion.setObservaciones(dto.getObservaciones());
 
+        boolean actaYaAprobada = "ASIGNADA".equals(estadoActualActa) || "DEVOLUCION PARCIAL".equals(estadoActualActa);
+
         List<AsignacionDetalle> detallesActuales = detalleRepository.findByAsignacion(asignacion);
 
         Set<Integer> idsNuevos = dto.getItems().stream()
@@ -202,52 +202,104 @@ public class AsignacionService {
         Map<Integer, AsignacionDetalle> mapaAnteriores = detallesActuales.stream()
                 .collect(Collectors.toMap(d -> d.getProducto().getIdProducto(), d -> d, (a, b) -> a));
 
-        // 1. Devolver a su bodega física de origen los equipos que fueron QUITADOS en la edición
+        List<String> resumenCambios = new ArrayList<>();
+        List<AsignacionDetalle> detallesAEliminar = new ArrayList<>();
+
+        // 2. PROCESAR ÚNICAMENTE LOS EQUIPOS QUITADOS (sin tocar los que permanecen en el acta)
         for (AsignacionDetalle detAntiguo : detallesActuales) {
             Integer idProdAntiguo = detAntiguo.getProducto().getIdProducto();
             if (!idsNuevos.contains(idProdAntiguo)) {
-                InventarioId invReservaId = new InventarioId();
-                invReservaId.setIdProducto(idProdAntiguo);
-                invReservaId.setIdBodega(ID_BODEGA_ASIGNACION);
+                String estadoItem = detAntiguo.getEstado() != null ? detAntiguo.getEstado().toUpperCase() : "PENDIENTE";
+                String nombreProd = detAntiguo.getProducto().getNombreproducto();
+                String nombreBodegaOrigen = detAntiguo.getBodegaOrigen().getNombrebodega();
 
-                boolean estaEnReserva = inventarioRepository.findById(invReservaId)
-                        .map(i -> i.getCantidad_actual() > 0)
-                        .orElse(false);
+                if ("PENDIENTE".equals(estadoItem)) {
+                    // Equipo en reserva (Bodega Asignación ID 7) -> Regresar a bodega física de origen
+                    InventarioId invReservaId = new InventarioId();
+                    invReservaId.setIdProducto(idProdAntiguo);
+                    invReservaId.setIdBodega(ID_BODEGA_ASIGNACION);
 
-                if (estaEnReserva) {
-                    String motivoLiberacion = "Liberación de reserva por edición - Acta N° " + asignacion.getNumeroActa();
-                    inventarioService.registrarMovimiento(
-                            idProdAntiguo,
-                            ID_BODEGA_ASIGNACION,
-                            "SALIDA",
-                            1,
-                            editor.getIdUsuario(),
-                            motivoLiberacion
-                    );
+                    boolean estaEnReserva = inventarioRepository.findById(invReservaId)
+                            .map(i -> i.getCantidad_actual() > 0)
+                            .orElse(false);
+
+                    if (estaEnReserva) {
+                        String motivoLiberacion = "Liberación de reserva por edición - Acta N° " + asignacion.getNumeroActa();
+                        inventarioService.registrarMovimiento(
+                                idProdAntiguo,
+                                ID_BODEGA_ASIGNACION,
+                                "SALIDA",
+                                1,
+                                editor.getIdUsuario(),
+                                motivoLiberacion
+                        );
+                        inventarioService.registrarMovimiento(
+                                idProdAntiguo,
+                                detAntiguo.getBodegaOrigen().getIdBodega(),
+                                "ENTRADA",
+                                1,
+                                editor.getIdUsuario(),
+                                motivoLiberacion
+                        );
+                    }
+                    resumenCambios.add("Retirado de reserva: " + nombreProd);
+                } else if ("ASIGNADO".equals(estadoItem)) {
+                    // Enfoque híbrido: Equipo ya despachado -> Devolver automáticamente a su bodega física de origen
+                    String motivoDevolucionAuto = "Devolución automática por edición - Acta N° " + asignacion.getNumeroActa();
                     inventarioService.registrarMovimiento(
                             idProdAntiguo,
                             detAntiguo.getBodegaOrigen().getIdBodega(),
                             "ENTRADA",
                             1,
                             editor.getIdUsuario(),
-                            motivoLiberacion
+                            motivoDevolucionAuto
                     );
+                    resumenCambios.add("Devuelto a " + nombreBodegaOrigen + " y retirado: " + nombreProd);
+                } else if ("DEVUELTO".equals(estadoItem)) {
+                    // Ya fue devuelto previamente -> Solo eliminar del acta sin alterar stock
+                    resumenCambios.add("Retirado del acta (ya devuelto): " + nombreProd);
                 }
+
+                detallesAEliminar.add(detAntiguo);
             }
         }
 
-        detalleRepository.deleteAll(detallesActuales);
-        detalleRepository.flush();
+        if (!detallesAEliminar.isEmpty()) {
+            detalleRepository.deleteAll(detallesAEliminar);
+            detalleRepository.flush();
+        }
 
-        // 2. Procesar la nueva lista de equipos
+        // 3. PROCESAR ÚNICAMENTE LOS EQUIPOS NUEVOS AGREGADOS (los existentes conservan intacto su estado y fechas)
         for (AsignacionCreacionDTO.ItemAsignacionDTO itemDto : dto.getItems()) {
-            Producto producto = productoRepository.findById(itemDto.getIdProducto())
-                    .orElseThrow(() -> new RuntimeException("Producto ID " + itemDto.getIdProducto() + " no encontrado"));
+            Integer idProd = itemDto.getIdProducto();
+
+            if (mapaAnteriores.containsKey(idProd)) {
+                continue;
+            }
+
+            Producto producto = productoRepository.findById(idProd)
+                    .orElseThrow(() -> new RuntimeException("Producto ID " + idProd + " no encontrado"));
             Bodega bodegaOrigen = bodegaRepository.findById(itemDto.getIdBodegaOrigen())
                     .orElseThrow(() -> new RuntimeException("Bodega ID " + itemDto.getIdBodegaOrigen() + " no encontrada"));
 
-            // Si es un equipo NUEVO que no estaba reservado en esta acta, moverlo a Bodega Asignación (ID = 7)
-            if (!mapaAnteriores.containsKey(producto.getIdProducto())) {
+            AsignacionDetalle nuevoDetalle = new AsignacionDetalle();
+            nuevoDetalle.setAsignacion(asignacion);
+            nuevoDetalle.setProducto(producto);
+            nuevoDetalle.setBodegaOrigen(bodegaOrigen);
+
+            if (actaYaAprobada) {
+                // Acta ya aprobada: salida directa de bodega física y estado ASIGNADO
+                inventarioService.registrarMovimiento(
+                        producto.getIdProducto(),
+                        bodegaOrigen.getIdBodega(),
+                        "SALIDA",
+                        1,
+                        editor.getIdUsuario(),
+                        "Salida por Asignación (Edición) - Acta N° " + asignacion.getNumeroActa() + " para " + ubicacion.getNombreubicacion()
+                );
+                nuevoDetalle.setEstado("ASIGNADO");
+            } else {
+                // Acta aún en REGISTRADA: mover de bodega origen -> Bodega Asignación (ID = 7) en estado PENDIENTE
                 String motivoReserva = "Reserva para Asignación (Edición) - Acta N° " + asignacion.getNumeroActa();
                 inventarioService.registrarMovimiento(
                         producto.getIdProducto(),
@@ -265,17 +317,38 @@ public class AsignacionService {
                         editor.getIdUsuario(),
                         motivoReserva
                 );
+                nuevoDetalle.setEstado("PENDIENTE");
             }
 
-            AsignacionDetalle detalle = new AsignacionDetalle();
-            detalle.setAsignacion(asignacion);
-            detalle.setProducto(producto);
-            detalle.setBodegaOrigen(bodegaOrigen);
-            detalle.setEstado("PENDIENTE");
-            detalleRepository.save(detalle);
+            detalleRepository.save(nuevoDetalle);
+            resumenCambios.add("Agregado: " + producto.getNombreproducto());
         }
 
-        asignacion.getHistorial().add(new AsignacionHistorial(asignacion, editor, "EDICION", "Edición de información y equipos asignados"));
+        detalleRepository.flush();
+
+        // 4. RECALCULAR ESTADO DE CABECERA EN ACTAS YA APROBADAS
+        if (actaYaAprobada) {
+            List<AsignacionDetalle> detallesFinales = detalleRepository.findByAsignacion(asignacion);
+            boolean hayAsignados = detallesFinales.stream().anyMatch(d -> "ASIGNADO".equalsIgnoreCase(d.getEstado()));
+            boolean hayDevueltos = detallesFinales.stream().anyMatch(d -> "DEVUELTO".equalsIgnoreCase(d.getEstado()));
+
+            if (hayAsignados && hayDevueltos) {
+                asignacion.setEstado("DEVOLUCION PARCIAL");
+            } else if (hayAsignados) {
+                asignacion.setEstado("ASIGNADA");
+            } else if (hayDevueltos) {
+                asignacion.setEstado("DEVOLUCION TOTAL");
+            }
+        }
+
+        String detalleHistorial = resumenCambios.isEmpty()
+                ? "Edición de datos generales del acta"
+                : "Edición de acta: " + String.join(" | ", resumenCambios);
+        if (detalleHistorial.length() > 495) {
+            detalleHistorial = detalleHistorial.substring(0, 492) + "...";
+        }
+
+        asignacion.getHistorial().add(new AsignacionHistorial(asignacion, editor, "EDICION", detalleHistorial));
         asignacionRepository.save(asignacion);
 
         notificacionService.registrar(editor.getNombreusuario(), "ha editado la Asignación con Acta N° " + asignacion.getNumeroActa());
@@ -310,7 +383,6 @@ public class AsignacionService {
                     ? ID_BODEGA_ASIGNACION
                     : det.getBodegaOrigen().getIdBodega();
 
-            // Descargo definitivo desde Bodega Asignación (ID = 7)
             inventarioService.registrarMovimiento(
                     idProd,
                     idBodegaDescargo,
@@ -347,7 +419,6 @@ public class AsignacionService {
 
         List<AsignacionDetalle> detalles = detalleRepository.findByAsignacion(asignacion);
 
-        // Regresar cada equipo reservado desde Bodega Asignación (ID = 7) hacia su Bodega Física de Origen
         for (AsignacionDetalle det : detalles) {
             Integer idProd = det.getProducto().getIdProducto();
 

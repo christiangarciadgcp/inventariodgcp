@@ -42,25 +42,6 @@
   border-bottom: 1px solid #ebebeb !important;
 }
 
-/* --- BADGES --- */
-.badge-pill {
-  padding: 5px 14px;
-  font-size: 0.75rem;
-  border-radius: 15px;
-  background-color: #f1f5f9;
-  border: 1px solid #b2b3b6;
-  color: #1e293b;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap; /* Evita que el nombre salte de línea */
-  max-width: 190px;    /* Límite estético */
-  overflow: hidden;
-  text-overflow: ellipsis; /* Si supera el ancho, coloca puntos suspensivos */
-  line-height: 1.2;
-}
-
 .badge-devuelto {
   background-color: #556272 !important;
   color: #ffffff !important;
@@ -327,4 +308,49 @@
   width: 18px !important;
   height: 18px !important;
   color: #153863;
+}
+
+/* --- BADGES DE ESTADO DE EQUIPOS (UNIFICADOS CON FORMULARIO) --- */
+.badge-pill,
+.badge-estado-item {
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  border-radius: 15px;
+  background-color: #f1f5f9;
+  border: 1px solid #b2b3b6;
+  color: #1e293b;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; /* Evita que el nombre salte de línea */
+  max-width: 190px;    /* Límite estético */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Si supera el ancho, coloca puntos suspensivos */
+  line-height: 1.2;
+}
+
+
+.item-pendiente {
+  background-color: #fff8dd;
+  color: #ac870c;
+  border: 1px solid #dfc688;
+}
+
+.item-asignado {
+  background-color: #e1ffe3;
+  color: #009912;
+  border: 1px solid #7ae582;
+}
+
+.item-devuelto {
+  background-color: #e7f6f8;
+  color: #0695af;
+  border: 1px solid #80ceda;
+}
+
+.item-default {
+  background-color: #f3f4f6;
+  color: #5d6676;
+  border: 1px solid #d1d5db;
 }
