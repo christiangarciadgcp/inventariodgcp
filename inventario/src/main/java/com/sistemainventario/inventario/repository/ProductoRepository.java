@@ -3,9 +3,15 @@ package com.sistemainventario.inventario.repository;
 import com.sistemainventario.inventario.model.Producto;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +28,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
            "LEFT JOIN FETCH p.productoPadre pad " +
            "LEFT JOIN FETCH pad.categoria " +
            "LEFT JOIN FETCH pad.unidadMedida " +
+           "LEFT JOIN FETCH p.usuarioCreacion uc " +
+           "LEFT JOIN FETCH uc.rol " +
            "ORDER BY p.idProducto ASC")
     List<Producto> findAllOptimizado(Sort sort);
 
@@ -34,6 +42,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
            "LEFT JOIN FETCH p.productoPadre pad " +
            "LEFT JOIN FETCH pad.categoria " +
            "LEFT JOIN FETCH pad.unidadMedida " +
+           "LEFT JOIN FETCH p.usuarioCreacion uc " +
+           "LEFT JOIN FETCH uc.rol " +
            "WHERE p.activo = true " +
            "ORDER BY p.idProducto ASC")
     List<Producto> findByActivoTrueOptimizado(Sort sort);
@@ -54,6 +64,8 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
            "LEFT JOIN FETCH p.categoria " +
            "LEFT JOIN FETCH p.unidadMedida " +
            "LEFT JOIN FETCH p.imagenes " +
+           "LEFT JOIN FETCH p.usuarioCreacion uc " +
+           "LEFT JOIN FETCH uc.rol " +
            "WHERE p.esGenerico = true AND p.activo = true " +
            "ORDER BY p.nombreproducto ASC")
     List<Producto> findByEsGenericoTrueAndActivoTrue();
@@ -64,5 +76,56 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer>{
     List<Producto> findByEsAsignableTrue(Sort sort);
 
     Long countByEsGenericoFalse();
+
+    @EntityGraph(attributePaths = {
+            "categoria",
+            "proveedor",
+            "unidadMedida",
+            "modelo",
+            "modelo.marca",
+            "productoPadre",
+            "productoPadre.categoria",
+            "productoPadre.unidadMedida",
+            "usuarioCreacion",
+            "usuarioCreacion.rol"
+    })
+    @Query(value = "SELECT p FROM Producto p " +
+            "LEFT JOIN p.categoria c " +
+            "LEFT JOIN p.modelo m " +
+            "LEFT JOIN m.marca ma " +
+            "LEFT JOIN p.proveedor pr " +
+            "WHERE p.esGenerico = :esGenerico " +
+            "AND (:filtro = '' OR " +
+            "  LOWER(p.nombreproducto) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(p.skuproducto) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(p.serieproducto, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(p.inventarioproducto, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(c.nombrecategoria, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(ma.nombremarca, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(m.nombremodelo, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(pr.nombreproveedor, '')) LIKE LOWER(CONCAT('%', :filtro, '%'))" +
+            ")",
+            countQuery = "SELECT COUNT(p) FROM Producto p " +
+            "LEFT JOIN p.categoria c " +
+            "LEFT JOIN p.modelo m " +
+            "LEFT JOIN m.marca ma " +
+            "LEFT JOIN p.proveedor pr " +
+            "WHERE p.esGenerico = :esGenerico " +
+            "AND (:filtro = '' OR " +
+            "  LOWER(p.nombreproducto) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(p.skuproducto) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(p.serieproducto, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(p.inventarioproducto, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(c.nombrecategoria, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(ma.nombremarca, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(m.nombremodelo, '')) LIKE LOWER(CONCAT('%', :filtro, '%')) OR " +
+            "  LOWER(COALESCE(pr.nombreproveedor, '')) LIKE LOWER(CONCAT('%', :filtro, '%'))" +
+            ")")
+    Page<Producto> buscarPaginado(
+            @Param("esGenerico") Boolean esGenerico,
+            @Param("filtro") String filtro,
+            Pageable pageable);
+
+
         
 }

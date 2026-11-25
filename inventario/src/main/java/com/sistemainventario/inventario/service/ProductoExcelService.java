@@ -160,7 +160,7 @@ public class ProductoExcelService {
                 dto.setSerieproducto(serie);
                 dto.setInventarioproducto(inventarioStr);
                 dto.setDescripcionproducto(descripcion);
-
+                dto.setIdUsuario(idUsuario);
                 dto.setEsNuevo(esNuevo);
                 dto.setEsGenerico(false);
                 

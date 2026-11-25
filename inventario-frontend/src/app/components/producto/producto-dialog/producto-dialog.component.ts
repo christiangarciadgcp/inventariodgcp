@@ -25,6 +25,7 @@ import { ProductoService } from '../../../services/producto.service';
 import { ProductoRegistroDTO } from '../../../models/producto';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
 import {MayusculasDirective} from '../../../core/directives/mayusculas.directive';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -53,6 +54,7 @@ export class ProductoDialogComponent implements OnInit {
   private marcaService = inject(MarcaService);
   private modeloService = inject(ModeloService);
   private productoService = inject(ProductoService);
+  private authService = inject(AuthService);
 
   constructor(@Inject(MAT_DIALOG_DATA) public productoData: any) {}
 
@@ -220,6 +222,8 @@ export class ProductoDialogComponent implements OnInit {
       }, 200);
 
       this.form.get('precioventaproducto')?.disable();
+    } else if (this.productoData?.esGenericoPorDefecto !== undefined) {
+      this.form.get('esGenerico')?.setValue(this.productoData.esGenericoPorDefecto);
     }
   }
 
@@ -357,7 +361,8 @@ export class ProductoDialogComponent implements OnInit {
       idModelo: valores.idModelo,
       esGenerico: valores.esGenerico,
       idProductoPadre: valores.esGenerico ? null : valores.idProductoPadre,
-      esNuevo: valores.esNuevo
+      esNuevo: valores.esNuevo,
+      idUsuario: this.authService.getIdUsuarioActual(),
     };
 
     if (this.esEdicion) {

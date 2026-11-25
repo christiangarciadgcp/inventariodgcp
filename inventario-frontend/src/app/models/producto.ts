@@ -3,6 +3,7 @@ import { Proveedor } from './proveedor';
 import { UnidadMedida } from './unidades-medidas';
 import {Marca} from './marca';
 import {Modelo} from './modelo';
+import { Usuario } from './usuario';
 
 export interface Producto {
     idProducto?: number;
@@ -23,6 +24,7 @@ export interface Producto {
     proveedor?: Proveedor;
     unidadMedida?: UnidadMedida;
     modelo?: Modelo;
+    usuarioCreacion?: Usuario;
 }
 
 // Interfaz para el envío de datos
@@ -42,5 +44,14 @@ export interface ProductoRegistroDTO {
     esNuevo?: boolean;
     esGenerico: boolean;
     idProductoPadre: number | null;
+    idUsuario?: number;
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
 }
 

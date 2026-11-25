@@ -21,5 +21,6 @@ public class ProductoRegistroDTO {
         public Boolean esNuevo;
         public Boolean esGenerico;
         public Integer idProductoPadre;
+        public Integer idUsuario;
 
 }

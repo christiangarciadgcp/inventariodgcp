@@ -23,6 +23,7 @@
   min-width: 0 !important; /* <--- La magia está aquí */
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  transition: opacity 0.15s ease 0.15s;
 }
 
 .mat-mdc-table {
@@ -172,4 +173,18 @@
 .qr-icon:hover {
   color: #031e3f !important;
   background-color: rgba(21, 56, 99, 0.08) !important;
+}
+
+.barra-progreso-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: 3px !important;
+}
+
+.tabla-actualizando {
+  opacity: 0.55;
+  pointer-events: none;
 }

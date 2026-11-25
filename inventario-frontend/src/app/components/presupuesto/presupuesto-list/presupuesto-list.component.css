@@ -123,19 +123,20 @@ td.mat-column-destino {
 .status-despachado {
   background-color: #e1f0ff;
   color: #009ef7;
-  border-color: #cce9ff;
+  border: 1px solid #92d0ff;
 }
 
 .status-despacho-parcial {
   background-color: #fef1ed;
   color: #f36739;
-  border-color: #ffd9cb;
+  border: 1px solid #f1a285;
 }
 
 .status-cancelado {
   background-color: #fff5f8;
   color: #f1416c;
-  border-color: #ffe1e9;
+  border: 1px solid #ffe1e9;
+
 }
 
 .text-muted-hover:hover {

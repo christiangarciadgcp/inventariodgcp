@@ -102,7 +102,7 @@
 .estado-registrada {
   background-color: #fff8dd;
   color: #bd9606;
-  border: 1px solid #dfc688;
+  border: 1px solid #f8d682;
 }
 
 .estado-registrada2 {
@@ -136,7 +136,7 @@
 .estado-cancelada {
   background-color: #ffeeee;
   color: #b20000;
-  border: 1px solid #ff9999;
+  border: 1px solid #fd8181;
 }
 
 .btn-nuevo {

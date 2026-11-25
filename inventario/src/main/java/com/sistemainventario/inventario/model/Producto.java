@@ -8,6 +8,8 @@ import java.util.List;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "producto")
 public class Producto {
@@ -37,10 +39,15 @@ public class Producto {
     @JoinColumn(name = "idmodelo")
     private Modelo modelo;
 
-    // --- RELACIÓN PADRE (Genérico) -> HIJO (Físico) ---
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto_padre")
+    @JsonIgnoreProperties({"productoPadre", "imagenes", "proveedor", "modelo", "usuarioCreacion"})
     private Producto productoPadre;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idusuariocreacion")
+    private Usuario usuarioCreacion;
 
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -224,6 +231,14 @@ public class Producto {
 
     public void setEsAsignable(Boolean esAsignable) {
         this.esAsignable = esAsignable;
+    }
+
+    public Usuario getUsuarioCreacion() {
+        return usuarioCreacion;
+    }
+
+    public void setUsuarioCreacion(Usuario usuarioCreacion) {
+        this.usuarioCreacion = usuarioCreacion;
     }
 
     

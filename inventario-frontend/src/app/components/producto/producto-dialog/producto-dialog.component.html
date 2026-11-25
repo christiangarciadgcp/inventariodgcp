@@ -1,12 +1,17 @@
 <h2 mat-dialog-title class="fw-bold text-dark pb-2 border-bottom m-0">
-  {{ esEdicion ? 'Editar Producto' : 'Nuevo Producto' }}
+  @if (esEdicion) {
+    {{ form.get('esGenerico')?.value ? 'Editar Producto Base' : 'Editar Producto Físico' }}
+  } @else {
+    {{ form.get('esGenerico')?.value ? 'Nuevo Producto Base' : 'Nuevo Producto Físico' }}
+  }
 </h2>
+
 
 <mat-dialog-content class="dialog-scroll-container pt-3">
 
   <form [formGroup]="form" class="row g-2">
 
-    <div class="col-12 mb-3">
+    <div class="col-12 mb-1">
       <div class="row g-2">
 
         <div [ngClass]="form.get('esGenerico')?.value ? 'col-12' : 'col-md-6'">
@@ -268,10 +273,26 @@
   </form>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end" class="dialog-actions-fixed px-3 py-2 border-top bg-light m-0">
-  <button mat-button class="btn-cancel px-4 rounded-pill" type="button" (click)="cancelar()">Cancelar</button>
+<mat-dialog-actions class="dialog-actions-fixed d-flex justify-content-between align-items-center px-3 py-2 border-top bg-light m-0">
 
-  <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="guardando" type="button" (click)="guardar()">
-    {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}
-  </button>
+  <div class="d-flex align-items-center gap-1 text-muted small">
+    @if (esEdicion && productoData?.producto?.usuarioCreacion?.nombreusuario) {
+      <span>Registrado por:</span>
+      <strong class="text-dark">
+        {{ productoData?.producto?.usuarioCreacion?.nombreusuario
+        ? sn.formatearNombre(productoData.producto.usuarioCreacion.nombreusuario)
+        : '' }}
+      </strong>
+    }
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <button mat-button class="btn-cancel px-4 rounded-pill" type="button" (click)="cancelar()">Cancelar</button>
+
+    <button mat-raised-button class="btn-confirm px-4 rounded-pill" [disabled]="guardando" type="button" (click)="guardar()">
+      {{ guardando ? 'Procesando...' : (esEdicion ? 'Guardar Cambios' : 'Guardar Producto') }}
+    </button>
+  </div>
+
 </mat-dialog-actions>
+

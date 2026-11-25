@@ -1,29 +1,34 @@
-import { Component, OnInit, inject, signal, ViewChild, effect } from '@angular/core';
+import { Component, OnInit, inject, signal, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-// Modelos y Servicios
+import { RouterLink } from '@angular/router';
+
 import { ProductoService } from '../../../services/producto.service';
-import { Producto, ProductoRegistroDTO } from '../../../models/producto';
+import { Producto } from '../../../models/producto';
 import { ProductoDialogComponent } from '../producto-dialog/producto-dialog.component';
 import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog.component';
-import { RouterLink } from '@angular/router';
 import { Mensaje } from '../../../core/mensaje';
-import {ProductoGaleriaDialogComponent} from '../producto-galeria-dialog/producto-galeria-dialog.component';
+import { ProductoGaleriaDialogComponent } from '../producto-galeria-dialog/producto-galeria-dialog.component';
 import { AuthService } from '../../../services/auth.service';
-import {LayoutService} from '../../../services/layout.service';
-import {ProductoQrDialogComponent} from '../producto-qr-dialog/producto-qr-dialog.component';
+import { LayoutService } from '../../../services/layout.service';
+import { ProductoQrDialogComponent } from '../producto-qr-dialog/producto-qr-dialog.component';
 
 @Component({
   selector: 'app-producto-list',
@@ -31,7 +36,8 @@ import {ProductoQrDialogComponent} from '../producto-qr-dialog/producto-qr-dialo
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatButtonModule,
     MatIconModule, MatCardModule, MatTooltipModule, MatDialogModule,
-    MatSnackBarModule, MatFormFieldModule, MatInputModule, RouterLink,MatSortModule, MatProgressSpinnerModule
+    MatSnackBarModule, MatFormFieldModule, MatInputModule, RouterLink,
+    MatSortModule, MatProgressSpinnerModule, MatProgressBarModule
   ],
   templateUrl: './producto-list.component.html',
   styleUrl: './producto-list.component.css',
@@ -40,113 +46,108 @@ export class ProductoListComponent implements OnInit {
 
   displayedColumns: string[] = ['id', 'sku', 'nombre', 'categoria', 'marca', 'ser-inv', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<Producto>([]);
-  productos = signal<Producto[]>([]);
-  cargandoExcel = false;
-  cargando: boolean = true;
 
+  cargaInicial = signal<boolean>(true);
+  cargando = signal<boolean>(true);
+  cargandoExcel = signal<boolean>(false);
+
+  // Estado de vista y paginación en servidor
   tipoVista = signal<'NORMAL' | 'BASE'>('NORMAL');
+  totalRegistros = signal<number>(0);
+  pageIndex = signal<number>(0);
+  pageSize = signal<number>(50);
+  sortBy = signal<string>('id');
+  sortDir = signal<'asc' | 'desc'>('asc');
+  filtroActual = signal<string>('');
 
-/*  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;*/
+  private busqueda$ = new Subject<string>();
+  private recargar$ = new Subject<void>();
 
   private productoService = inject(ProductoService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private mensaje = inject(Mensaje);
+  private destroyRef = inject(DestroyRef);
   public layoutService = inject(LayoutService);
 
-  private _paginator!: MatPaginator;
-  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
-    if (mp) {
-      this._paginator = mp;
-      this.dataSource.paginator = this._paginator;
-    }
-  }
-
-  private _sort!: MatSort;
-  @ViewChild(MatSort) set matSort(ms: MatSort) {
-    if (ms) {
-      this._sort = ms;
-      this.dataSource.sort = this._sort;
-    }
-  }
-
-  constructor() {
-    effect(() => {
-      this.dataSource.data  = this.productos().filter(p =>
-        this.tipoVista() === 'NORMAL' ? !p.esGenerico : p.esGenerico
-      );
-
-      //this.dataSource.data = filtrados;
-/*      if (this.paginator) this.dataSource.paginator = this.paginator;
-      if (this.sort) this.dataSource.sort = this.sort;*/
+  ngOnInit(): void {
+    // Buscador con debounce para evitar peticiones innecesarias al escribir
+    this.busqueda$.pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(texto => {
+      this.filtroActual.set(texto);
+      this.pageIndex.set(0);
+      this.cargarProductos();
     });
 
-    // CONFIGURACIÓN DE BÚSQUEDA LOCAL
-    this.dataSource.filterPredicate = (data : Producto, filter: string) => {
-      const searchStr = (data.skuproducto + data.serieproducto + data.inventarioproducto + data.nombreproducto + data.categoria?.nombrecategoria + data.modelo?.marca?.nombremarca + data.modelo?.nombremodelo + data.proveedor?.nombreproveedor ).toLowerCase();
-      //const nombre = data.nombreproducto ? data.nombreproducto.toLowerCase() : '';
-      //const term = filter.trim().toLowerCase();
-      return searchStr.includes(filter); // Retorna true si el nombre contiene el texto buscado
-    };
-
-    this.dataSource.sortingDataAccessor = (item : Producto, property : string) => {
-      switch(property){
-        case 'id':
-          return item.idProducto;
-        case 'sku':
-          return item.skuproducto;
-        case 'nombre':
-          return item.nombreproducto;
-        case 'categoria':
-          return item.categoria?.nombrecategoria;
-        case 'marca':
-          return item.modelo?.marca?.nombremarca;
-        case 'proveedor':
-          return item.proveedor?.nombreproveedor;
-        case 'estado':
-          return item.activo;
-        default:
-          return (item as any)[property];
+    this.recargar$.pipe(
+      switchMap(() => {
+        this.cargando.set(true);
+        return this.productoService.getProductosPaginado(
+          this.tipoVista() === 'BASE',
+          this.filtroActual(),
+          this.pageIndex(),
+          this.pageSize(),
+          this.sortBy(),
+          this.sortDir()
+        ).pipe(
+          catchError(err => {
+            const msg = err.error?.mensaje || err.error?.message || 'Error al cargar productos';
+            this.mensaje.open(msg, 'warning');
+            this.cargando.set(false);
+            this.cargaInicial.set(false);
+            return of(null);
+          })
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(res => {
+      if (res) {
+        this.dataSource.data = res.content;
+        this.totalRegistros.set(res.totalElements);
+        this.cargando.set(false);
+        this.cargaInicial.set(false);
       }
-    };
-  }
+    });
 
-  ngOnInit(): void {
+
     this.cargarProductos();
   }
 
+  cargarProductos() {
+    this.recargar$.next();
+  }
 
   cambiarVista(tipo: 'NORMAL' | 'BASE') {
+    if (this.tipoVista() === tipo) return;
     this.tipoVista.set(tipo);
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.pageIndex.set(0);
+    this.cargarProductos();
   }
 
-  // Se activa al escribir en la barra de búsqueda
   applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    const filterValue = (event.target as HTMLInputElement).value.trim();
+    this.busqueda$.next(filterValue);
   }
 
-  cargarProductos() {
-    this.cargando = true;
-    this.productoService.getProductos().subscribe({
-      next: (data) => {
-        this.productos.set(data)
-        this.cargando = false;
-      },
-      error: (err) => {
-        this.cargando = false;
-        const msg = err.error?.mensaje || err.error?.message || 'Error al cargar productos';
-        this.mensaje.open(msg, 'warning');
-      }
-    });
+  onPageChange(event: PageEvent) {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.cargarProductos();
+  }
+
+  onSortChange(sortState: Sort) {
+    if (!sortState.direction) {
+      this.sortBy.set('id');
+      this.sortDir.set('asc');
+    } else {
+      this.sortBy.set(sortState.active);
+      this.sortDir.set(sortState.direction);
+    }
+    this.pageIndex.set(0);
+    this.cargarProductos();
   }
 
   verGaleria(producto: any) {
@@ -167,11 +168,12 @@ export class ProductoListComponent implements OnInit {
   abrirFormulario(producto?: Producto) {
     const dialogRef = this.dialog.open(ProductoDialogComponent, {
       width: '900px',
-/*      height: '85vh',*/
       maxHeight: '90vh',
       disableClose: true,
       autoFocus: false,
-      data: producto ? { producto: producto } : null
+      data: producto
+        ? { producto: producto }
+        : { esGenericoPorDefecto: this.tipoVista() === 'BASE' }
     });
 
     dialogRef.keydownEvents().subscribe(event => {
@@ -181,68 +183,11 @@ export class ProductoListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(exito => {
-
       if (exito === true) {
         this.cargarProductos();
       }
     });
   }
-
-/*   actualizarProducto(id: number, producto: any) {
-    const productoDTO: ProductoRegistroDTO = {
-      nombreproducto: producto.nombreproducto,
-      skuproducto: producto.skuproducto,
-      descripcionproducto: producto.descripcionproducto,
-      serieproducto: producto.serieproducto,
-      inventarioproducto : producto.inventarioproducto,
-      preciocostoproducto: producto.preciocostoproducto,
-      precioventaproducto: producto.precioventaproducto,
-      idCategoria: producto.idCategoria,
-      idProveedor: producto.idProveedor,
-      idUnidadMedida: producto.idUnidadMedida,
-      idMarca : producto.idMarca,
-      idModelo : producto.idModelo
-    };
-
-    this.productoService.updateProducto(id, productoDTO).subscribe({
-      next: () => {
-        this.cargarProductos();
-        this.mensaje.open("Producto actualizado exitosamente", 'exito');
-      },
-      error: (err) => {
-        const msg = err.error?.message || 'Error al actualizar el producto';
-        this.mensaje.open(msg, 'error');
-      }
-    });
-  }
-
-  registrarProducto(datosForm: any) {
-    const productoDTO: ProductoRegistroDTO = {
-      nombreproducto: datosForm.nombreproducto,
-      skuproducto: datosForm.skuproducto,
-      descripcionproducto: datosForm.descripcionproducto,
-      serieproducto : datosForm.serieproducto,
-      inventarioproducto : datosForm.inventarioproducto,
-      preciocostoproducto: datosForm.preciocostoproducto,
-      precioventaproducto: datosForm.precioventaproducto,
-      idCategoria: datosForm.idCategoria,
-      idProveedor: datosForm.idProveedor,
-      idUnidadMedida: datosForm.idUnidadMedida,
-      idMarca : datosForm.idMarca,
-      idModelo : datosForm.idModelo
-    };
-
-    this.productoService.createProducto(productoDTO).subscribe({
-      next: () => {
-        this.mensaje.open('Producto registrado exitosamente', 'exito');
-        this.cargarProductos();
-      },
-      error: (err) => {
-        const msg = err.error?.mensaje || 'Error al registrar el producto';
-        this.mensaje.open(msg, 'warning');
-      }
-    });
-  } */
 
   desactivarProducto(id: number) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -254,7 +199,6 @@ export class ProductoListComponent implements OnInit {
         colorBoton: 'primary'
       }
     });
-
 
     dialogRef.afterClosed().subscribe(confirmado => {
       if (confirmado) {
@@ -302,19 +246,20 @@ export class ProductoListComponent implements OnInit {
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     if (file) {
-      this.cargandoExcel = true;
+      this.cargandoExcel.set(true);
       this.mensaje.open('Procesando archivo, por favor espere...', 'info');
       const idActual = this.authService.getIdUsuarioActual();
       this.productoService.subirExcelMasivo(file, idActual).subscribe({
         next: (res) => {
-          this.cargandoExcel = false;
+          this.cargandoExcel.set(false);
           const totalProductos = res.cantidad || 0;
           this.mensaje.open(`Se agregaron ${totalProductos} productos exitosamente`, 'exito');
+          this.pageIndex.set(0);
           this.cargarProductos();
           event.target.value = '';
         },
         error: (err) => {
-          this.cargandoExcel = false;
+          this.cargandoExcel.set(false);
           const errorMsg = err.error?.mensaje || 'Error al procesar el archivo Excel';
           this.mensaje.open(errorMsg, 'error');
           event.target.value = '';
@@ -323,12 +268,10 @@ export class ProductoListComponent implements OnInit {
     }
   }
 
-
   verCodigoQr(producto: Producto): void {
     this.dialog.open(ProductoQrDialogComponent, {
       width: '380px',
       data: { producto: producto }
     });
   }
-
 }

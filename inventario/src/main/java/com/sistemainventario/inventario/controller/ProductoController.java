@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 
 import java.util.List;
@@ -52,6 +53,18 @@ public class ProductoController {
     public List<Producto> buscarProductos(@RequestParam String nombre) {
         return productoService.buscarPorNombre(nombre);
     }
+
+    @GetMapping("/paginado")
+    public Page<Producto> listarProductosPaginado(
+            @RequestParam(defaultValue = "false") Boolean esGenerico,
+            @RequestParam(defaultValue = "") String filtro,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+        return productoService.listarPaginado(esGenerico, filtro, page, size, sortBy, sortDir);
+    }
+
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public Producto guardarProducto(

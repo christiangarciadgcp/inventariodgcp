@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, viewChild, effect} from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, viewChild, effect, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -54,6 +54,7 @@ export class InventarioDetalleComponent implements OnInit {
 
   nombreBodega: string = '';
   idBodega: number = 0;
+  esBodegaFisica = signal<boolean>(false);
   totalValorizado: number = 0;
   cargando: boolean = true;
 
@@ -116,6 +117,8 @@ export class InventarioDetalleComponent implements OnInit {
       const id = params.get('id');
       if (id) {
         this.idBodega = +id;
+        this.esBodegaFisica.set(false);
+        this.mostrarBuscador = false;
         this.cargarNombreBodega(this.idBodega);
         this.cargarProductos(this.idBodega);
       }
@@ -200,6 +203,7 @@ export class InventarioDetalleComponent implements OnInit {
         const bodegaActual = bodegas.find(b => b.idBodega === id);
         if (bodegaActual) {
           this.nombreBodega = bodegaActual.nombrebodega;
+          this.esBodegaFisica.set(bodegaActual.bodegaTipo?.idBodegaTipo === 2);
           this.cdr.detectChanges();
         }
       }

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Producto, ProductoRegistroDTO } from '../models/producto';
+import { Producto, ProductoRegistroDTO, PageResponse } from '../models/producto';
 import { environment } from '../../environments/environment.development';
 
 @Injectable({
@@ -14,6 +14,25 @@ export class ProductoService {
 
   getProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>(this.apiUrl);
+  }
+
+  getProductosPaginado(
+    esGenerico: boolean,
+    filtro: string = '',
+    page: number = 0,
+    size: number = 50,
+    sortBy: string = 'id',
+    sortDir: 'asc' | 'desc' = 'asc'
+  ): Observable<PageResponse<Producto>> {
+    const params = new HttpParams()
+      .set('esGenerico', esGenerico)
+      .set('filtro', filtro.trim())
+      .set('page', page)
+      .set('size', size)
+      .set('sortBy', sortBy)
+      .set('sortDir', sortDir);
+
+    return this.http.get<PageResponse<Producto>>(`${this.apiUrl}/paginado`, { params });
   }
 
   getProductosActivos(): Observable<Producto[]> {

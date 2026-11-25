@@ -10,6 +10,7 @@ import com.sistemainventario.inventario.repository.ProductoImagenRepository;
 import com.sistemainventario.inventario.repository.ProductoRepository;
 import com.sistemainventario.inventario.repository.ProveedorRepository;
 import com.sistemainventario.inventario.repository.UnidadMedidaRepository;
+import com.sistemainventario.inventario.repository.UsuarioRepository;
 
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -20,9 +21,15 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +52,7 @@ public class ProductoService {
     private final UnidadMedidaRepository unidadMedidaRepository;
     private final ModeloRepository modeloRepository;
     private final ProductoImagenRepository productoImagenRepository;
+    private final UsuarioRepository usuarioRepository;
 
     //CONSTRUCTOR
     public ProductoService(ProductoRepository productoRepository, 
@@ -54,7 +62,8 @@ public class ProductoService {
                             ProveedorRepository proveedorRepository,
                             UnidadMedidaRepository unidadMedidaRepository,
                             ModeloRepository modeloRepository,
-                            ProductoImagenRepository productoImagenRepository){
+                            ProductoImagenRepository productoImagenRepository,
+                            UsuarioRepository usuarioRepository){
         this.productoRepository = productoRepository;
         this.bodegaRepository = bodegaRepository;
         this.inventarioRepository = inventarioRepository;
@@ -63,6 +72,7 @@ public class ProductoService {
         this.unidadMedidaRepository = unidadMedidaRepository;
         this.modeloRepository = modeloRepository;
         this.productoImagenRepository = productoImagenRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional(readOnly = true)
@@ -86,6 +96,35 @@ public class ProductoService {
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreproductoContainingIgnoreCase(nombre);
     }
+
+    @Transactional(readOnly = true)
+    public Page<Producto> listarPaginado(Boolean esGenerico, String filtro, int page, int size, String sortBy, String sortDir) {
+        String textoLimpio = filtro != null ? filtro.trim() : "";
+
+        String propiedadOrden = switch (sortBy != null ? sortBy : "id") {
+            case "sku" -> "skuproducto";
+            case "nombre" -> "nombreproducto";
+            case "categoria" -> "c.nombrecategoria";
+            case "marca" -> "ma.nombremarca";
+            case "ser-inv" -> "serieproducto";
+            case "estado" -> "activo";
+            default -> "idProducto";
+        };
+
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        int pageSeguro = Math.max(0, page);
+        int sizeSeguro = Math.min(Math.max(1, size), 200);
+        Pageable pageable = PageRequest.of(pageSeguro, sizeSeguro, Sort.by(direction, propiedadOrden));
+
+        Page<Producto> resultado = productoRepository.buscarPaginado(Boolean.TRUE.equals(esGenerico), textoLimpio, pageable);
+        resultado.getContent().forEach(p -> p.getImagenes().size());
+        return resultado;
+    }
+
+
 
     @Transactional
     public Producto guardarProducto(ProductoRegistroDTO dto, MultipartFile[] imagenes){
@@ -112,6 +151,12 @@ public class ProductoService {
                     .orElseThrow(() -> new RuntimeException("Proveedor no encontrado"));
         }
 
+        Usuario usuario = null;
+        if(dto.getIdUsuario() != null){
+            usuario = usuarioRepository.findById(dto.getIdUsuario())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        }
+
         Producto producto = new Producto();
         producto.setNombreproducto(dto.getNombreproducto());
         producto.setDescripcionproducto(dto.getDescripcionproducto());
@@ -126,6 +171,7 @@ public class ProductoService {
         producto.setUnidadMedida(unidadMedida);
         producto.setModelo(modelo);
         producto.setProveedor(proveedor);
+        producto.setUsuarioCreacion(usuario);
 
         
         producto.setEsGenerico(dto.getEsGenerico() != null ? dto.getEsGenerico() : false);
@@ -143,6 +189,7 @@ public class ProductoService {
         productoGuardado.setSkuproducto(sku);
 
         productoGuardado = productoRepository.save(productoGuardado);
+        
 
         if (imagenes != null && imagenes.length > 0) {
             guardarImagenesFisicas(productoGuardado, imagenes);
